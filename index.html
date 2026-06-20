@@ -298,7 +298,11 @@
         <label class="block text-xs text-neutral-600 mb-1">模型名称</label>
         <input type="text" id="apiModel" class="input-field w-full px-4 py-2 rounded-lg text-xs" placeholder="gpt-4o / deepseek-chat">
       </div>
-      <button onclick="saveLLMConfig()" class="btn-ghost w-full py-2.5 rounded-lg text-xs">保存 LLM 配置</button>
+      <div class="flex gap-2">
+        <button onclick="saveLLMConfig()" class="btn-ghost flex-1 py-2.5 rounded-lg text-xs">保存配置</button>
+        <button onclick="testLLM()" id="testLLMBtn" class="btn-ghost px-4 py-2.5 rounded-lg text-xs shrink-0">🔍 检测连接</button>
+      </div>
+      <p id="testResult" class="hidden text-xs text-center mt-2"></p>
     </div>
   </div>
   </div>
@@ -987,6 +991,66 @@ function saveLLMConfig() {
   btn.textContent = '✅ 已保存';
   btn.style.borderColor = '#1a3a1a'; btn.style.color = '#4a9';
   setTimeout(() => { btn.textContent = '保存 LLM 配置'; btn.style.borderColor = '#1a1a1a'; btn.style.color = '#999'; }, 2000);
+}
+
+async function testLLM() {
+  const btn = document.getElementById('testLLMBtn');
+  const result = document.getElementById('testResult');
+  btn.disabled = true;
+  btn.textContent = '⏳ 检测中...';
+  result.classList.remove('hidden');
+  result.className = 'text-xs text-center mt-2 text-neutral-400';
+  result.textContent = '正在连接...';
+
+  // 先保存当前配置
+  saveLLMConfigSilent();
+
+  const endpoint = localStorage.getItem('llm_endpoint') || '';
+  const apiKey = localStorage.getItem('llm_key') || '';
+  const model = localStorage.getItem('llm_model') || 'gpt-4o';
+
+  if (!endpoint || !apiKey) {
+    result.className = 'text-xs text-center mt-2 text-red-400';
+    result.textContent = '❌ 请填写 API 地址和 Key';
+    btn.disabled = false; btn.textContent = '🔍 检测连接'; return;
+  }
+
+  try {
+    const res = await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+      body: JSON.stringify({ model, messages: [{ role: 'user', content: 'Hi' }], max_tokens: 5 }),
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+      const reply = data.choices?.[0]?.message?.content;
+      result.className = 'text-xs text-center mt-2 text-green-400';
+      result.textContent = `✅ 连接成功！模型回复：${reply ? '"' + reply.slice(0,30) + '"' : '(空)'}`;
+    } else if (res.status === 401 || res.status === 403) {
+      result.className = 'text-xs text-center mt-2 text-red-400';
+      result.textContent = '❌ Key 无效 (401)——请检查 API Key';
+    } else if (res.status === 404) {
+      result.className = 'text-xs text-center mt-2 text-red-400';
+      result.textContent = '❌ 地址不存在 (404)——请用下拉预设';
+    } else {
+      const err = await res.text();
+      result.className = 'text-xs text-center mt-2 text-amber-400';
+      result.textContent = `⚠️ 状态 ${res.status}：${err.slice(0,80)}`;
+    }
+  } catch (e) {
+    result.className = 'text-xs text-center mt-2 text-red-400';
+    result.textContent = `❌ 网络不通：${e.message.slice(0,60)}`;
+  }
+
+  btn.disabled = false;
+  btn.textContent = '🔍 检测连接';
+}
+
+function saveLLMConfigSilent() {
+  localStorage.setItem('llm_endpoint', document.getElementById('apiEndpoint').value.trim());
+  localStorage.setItem('llm_key', document.getElementById('apiKey').value.trim());
+  localStorage.setItem('llm_model', document.getElementById('apiModel').value.trim());
 }
 
 function loadLLMConfig() {
