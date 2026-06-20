@@ -1,4 +1,4 @@
-<!-- 页面1：信息输入页 — 今日运势分析器 -->
+<!-- 页面1：信息输入页 — 今日运势分析器（响应式：移动端+桌面端） -->
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -12,84 +12,120 @@
         .btn-primary { background: linear-gradient(135deg, #667eea, #764ba2); transition: all 0.3s; }
         .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(102,126,234,0.4); }
         .btn-primary:active { transform: translateY(0); }
-        .pulse-dot { animation: pulse 2s infinite; }
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-        input[type="date"], input[type="time"] {
-            color-scheme: light;
-        }
+        input[type="date"], input[type="time"] { color-scheme: light; }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        .float-anim { animation: float 4s ease-in-out infinite; }
     </style>
 </head>
-<body class="gradient-bg min-h-screen flex items-center justify-center p-4">
-    <div class="w-full max-w-md">
-        <!-- 顶部标注 -->
-        <div class="text-center text-white/70 text-xs mb-3">📐 交互原型 - 非正式产品</div>
+<body class="gradient-bg min-h-screen flex items-center justify-center p-4 md:p-8">
+    <div class="w-full max-w-4xl">
 
-        <!-- 主卡片 -->
-        <div class="bg-white rounded-2xl p-8 card-shadow">
-            <!-- 头部 -->
-            <div class="text-center mb-8">
-                <div class="text-4xl mb-2">🧧</div>
-                <h1 class="text-2xl font-bold text-gray-800">今日运势分析器</h1>
-                <p class="text-sm text-gray-400 mt-1">星座 × 传统命理 · 每日运势早知道</p>
+        <!-- 顶部原型标注 -->
+        <div class="text-center text-white/60 text-xs mb-4 md:mb-6">📐 交互原型 - 非正式产品</div>
+
+        <!-- 桌面端：左右分栏 | 移动端：单列 -->
+        <div class="flex flex-col md:flex-row md:items-center md:gap-10 lg:gap-16">
+
+            <!-- 左侧：品牌介绍（桌面端可见） -->
+            <div class="hidden md:flex md:flex-1 flex-col text-white text-center md:text-left">
+                <div class="text-7xl mb-4 float-anim">🧧</div>
+                <h1 class="text-3xl lg:text-4xl font-bold mb-3 leading-tight">
+                    今日运势<br>分析器
+                </h1>
+                <p class="text-white/70 text-base lg:text-lg mb-6 leading-relaxed">
+                    融合<b class="text-white">西方星座</b>与<b class="text-white">中国传统命理</b>，<br>
+                    输入出生信息，获取专属于你的<br>
+                    精准、有逻辑的每日运势报告。
+                </p>
+                <div class="space-y-3 text-white/60 text-sm">
+                    <div class="flex items-center gap-2">
+                        <span class="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center text-xs">♈</span>
+                        <span>12 星座精准运势分析</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center text-xs">☯️</span>
+                        <span>八字排盘 + 十神推算</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center text-xs">🤝</span>
+                        <span>每日人际契合指南</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center text-xs">🔒</span>
+                        <span>数据仅本地计算 · 不上传</span>
+                    </div>
+                </div>
             </div>
 
-            <!-- 表单 -->
-            <form id="fortuneForm" onsubmit="goToResult(event)" class="space-y-5">
-                <!-- 出生日期 -->
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">
-                        📅 出生年月日 <span class="text-red-400">*</span>
-                    </label>
-                    <input type="date" id="birthday" required
-                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-gray-700
-                               focus:outline-none focus:border-purple-400 transition text-base"
-                        placeholder="请选择出生日期">
-                </div>
+            <!-- 右侧：表单卡片（移动端+桌面端通用） -->
+            <div class="md:flex-1">
+                <div class="bg-white rounded-2xl p-6 sm:p-8 card-shadow">
 
-                <!-- 出生时间 -->
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">
-                        ⏰ 出生时间
-                        <span class="text-gray-400 font-normal text-xs">（选填，推荐填写）</span>
-                    </label>
-                    <input type="time" id="birthtime"
-                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-gray-700
-                               focus:outline-none focus:border-purple-400 transition text-base"
-                        placeholder="请选择出生时间">
-                    <p class="text-xs text-purple-500 mt-1.5 flex items-center gap-1">
-                        <span>💡</span> 填写出生时间后可解锁八字精算，运势更精准
+                    <!-- 移动端才显示的头部 -->
+                    <div class="md:hidden text-center mb-6">
+                        <div class="text-4xl mb-2">🧧</div>
+                        <h1 class="text-2xl font-bold text-gray-800">今日运势分析器</h1>
+                        <p class="text-sm text-gray-400 mt-1">星座 × 传统命理 · 每日运势早知道</p>
+                    </div>
+
+                    <!-- 桌面端表单标题 -->
+                    <div class="hidden md:block text-center mb-6">
+                        <h2 class="text-xl font-bold text-gray-800">🔮 开始测算</h2>
+                        <p class="text-sm text-gray-400 mt-1">填写出生信息，查看今日运势</p>
+                    </div>
+
+                    <!-- 表单 -->
+                    <form id="fortuneForm" onsubmit="goToResult(event)" class="space-y-5">
+                        <!-- 出生日期 -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                📅 出生年月日 <span class="text-red-400">*</span>
+                            </label>
+                            <input type="date" id="birthday" required
+                                class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-gray-700
+                                       focus:outline-none focus:border-purple-400 transition text-base">
+                        </div>
+
+                        <!-- 出生时间 -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                ⏰ 出生时间
+                                <span class="text-gray-400 font-normal text-xs">（选填，推荐）</span>
+                            </label>
+                            <input type="time" id="birthtime"
+                                class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-gray-700
+                                       focus:outline-none focus:border-purple-400 transition text-base">
+                            <p class="text-xs text-purple-500 mt-1.5 flex items-center gap-1">
+                                <span>💡</span> 填写后可解锁八字精算，运势更精准
+                            </p>
+                        </div>
+
+                        <!-- 提交按钮 -->
+                        <button type="submit"
+                            class="btn-primary w-full py-3.5 text-white rounded-xl text-lg font-semibold mt-2">
+                            🔮 查看今日运势
+                        </button>
+                    </form>
+
+                    <!-- 分隔线 -->
+                    <div class="relative my-5">
+                        <div class="border-t border-gray-200"></div>
+                        <span class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white px-3 text-xs text-gray-400">或</span>
+                    </div>
+
+                    <!-- 随机体验 -->
+                    <button id="randomBtn"
+                        class="w-full py-3 border-2 border-purple-200 text-purple-600 rounded-xl text-base font-medium
+                               hover:bg-purple-50 transition">
+                        🎲 随机体验（生成虚拟生日）
+                    </button>
+
+                    <!-- 免责声明 -->
+                    <p class="text-center text-xs text-gray-300 mt-5">
+                        ⚠️ 仅供娱乐参考 · 所有数据仅在本地计算，不会上传
                     </p>
                 </div>
-
-                <!-- 提交按钮 -->
-                <button type="submit"
-                    class="btn-primary w-full py-3.5 text-white rounded-xl text-lg font-semibold mt-2">
-                    🔮 查看今日运势
-                </button>
-            </form>
-
-            <!-- 分隔线 -->
-            <div class="relative my-5">
-                <div class="border-t border-gray-200"></div>
-                <span class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white px-3 text-xs text-gray-400">
-                    或
-                </span>
             </div>
-
-            <!-- 随机体验 -->
-            <button id="randomBtn"
-                class="w-full py-3 border-2 border-purple-200 text-purple-600 rounded-xl text-base font-medium
-                       hover:bg-purple-50 transition">
-                🎲 随机体验（生成虚拟生日）
-            </button>
-
-            <!-- 免责声明 -->
-            <p class="text-center text-xs text-gray-300 mt-5">
-                ⚠️ 仅供娱乐参考 · 所有数据仅在本地计算，不会上传
-            </p>
         </div>
     </div>
 
@@ -108,33 +144,25 @@
     </div>
 
     <script>
-        // 表单提交 → 跳转结果页
         function goToResult(event) {
             event.preventDefault();
             const birthday = document.getElementById('birthday').value;
             const birthtime = document.getElementById('birthtime').value;
             if (!birthday) return;
-
-            // 显示加载动画
             const modal = document.getElementById('loadingModal');
             modal.classList.remove('hidden');
-
-            // 模拟计算延迟后跳转
             setTimeout(() => {
                 const params = new URLSearchParams({ birthday, birthtime });
                 window.location.href = 'result.html?' + params.toString();
             }, 1500);
         }
 
-        // 随机体验
         document.getElementById('randomBtn').addEventListener('click', () => {
             const year = 1980 + Math.floor(Math.random() * 25);
             const month = String(1 + Math.floor(Math.random() * 12)).padStart(2, '0');
             const day = String(1 + Math.floor(Math.random() * 28)).padStart(2, '0');
             document.getElementById('birthday').value = `${year}-${month}-${day}`;
             document.getElementById('birthtime').value = `${String(6 + Math.floor(Math.random() * 16)).padStart(2, '0')}:${String(Math.floor(Math.random() * 60)).padStart(2, '0')}`;
-
-            // 高亮闪烁提示
             const btn = document.getElementById('randomBtn');
             btn.textContent = '✅ 已随机生成！点击上方查看运势';
             btn.classList.add('bg-purple-50', 'border-purple-400', 'text-purple-700');
@@ -144,8 +172,6 @@
             }, 2000);
         });
 
-        // 预填当天日期为默认（让用户有真实感）
-        const today = new Date();
         document.getElementById('birthday').value = '1995-06-20';
     </script>
 </body>
