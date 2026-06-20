@@ -1,0 +1,246 @@
+<!-- 页面2：运势报告页 — 今日运势分析器 -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📊 今日运势报告</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .score-ring {
+            width: 140px; height: 140px;
+            border-radius: 50%;
+            background: conic-gradient(#10b981 0deg 306deg, #e5e7eb 306deg 360deg);
+            display: flex; align-items: center; justify-content: center;
+            position: relative;
+        }
+        .score-inner {
+            width: 110px; height: 110px;
+            border-radius: 50%;
+            background: white;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+        .bar-fill { height: 8px; border-radius: 4px; transition: width 0.8s ease; }
+        .bar-bg { background: #f3f4f6; height: 8px; border-radius: 4px; }
+        .section-card { background: white; border-radius: 16px; padding: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.04); }
+        .gradient-header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="max-w-md mx-auto">
+
+        <!-- 顶部导航 -->
+        <header class="gradient-header text-white px-4 py-3 flex items-center justify-between sticky top-0 z-10">
+            <a href="input.html" class="text-white/90 hover:text-white text-sm flex items-center gap-1">
+                <span>←</span> 返回修改
+            </a>
+            <span class="text-xs text-white/70">📐 交互原型</span>
+            <button onclick="shareCard()" class="text-white/90 hover:text-white text-sm flex items-center gap-1">
+                📤 <span>分享</span>
+            </button>
+        </header>
+
+        <!-- ──────── 综合评分区域 ──────── -->
+        <div class="gradient-header text-white text-center pb-8 pt-2 px-4">
+            <p class="text-white/60 text-xs mb-2">2026年6月20日 · 今日运势报告</p>
+            <div class="flex justify-center mb-4">
+                <div class="score-ring" style="width:130px;height:130px;">
+                    <div class="score-inner" style="width:102px;height:102px;">
+                        <span class="text-4xl font-extrabold text-gray-800">85</span>
+                        <span class="text-sm text-green-600 font-semibold">吉 · 运势良好</span>
+                    </div>
+                </div>
+            </div>
+            <p class="text-lg font-medium px-2 leading-relaxed">
+                💬 "今日木星与太阳呈三分相，贵人运旺盛；但午后火星逆行需注意言辞，避免口舌之争。"
+            </p>
+            <p class="text-white/50 text-xs mt-2">
+                基于 狮子座 ♌ + 乙亥年丙火日主 综合分析
+            </p>
+        </div>
+
+        <!-- ──────── 分类运势 ──────── -->
+        <div class="px-4 -mt-4">
+            <div class="section-card mb-3">
+                <h3 class="text-base font-bold text-gray-800 mb-4">📋 分类运势</h3>
+
+                <!-- 事业运 -->
+                <div class="mb-3">
+                    <div class="flex justify-between text-sm mb-1.5">
+                        <span class="font-medium text-gray-700">💼 事业运</span>
+                        <span class="text-green-600 font-semibold">85 · 吉</span>
+                    </div>
+                    <div class="bar-bg"><div class="bar-fill bg-green-500" style="width:85%"></div></div>
+                    <p class="text-xs text-gray-400 mt-1">今日适合主动汇报工作，领导认可度高；下午3点后利于谈判签约。</p>
+                </div>
+
+                <!-- 财运 -->
+                <div class="mb-3">
+                    <div class="flex justify-between text-sm mb-1.5">
+                        <span class="font-medium text-gray-700">💰 财运</span>
+                        <span class="text-green-600 font-semibold">80 · 吉</span>
+                    </div>
+                    <div class="bar-bg"><div class="bar-fill bg-green-500" style="width:80%"></div></div>
+                    <p class="text-xs text-gray-400 mt-1">正财运稳定，偏财运一般。不宜大额投资，但小额理财可考虑。</p>
+                </div>
+
+                <!-- 感情运 -->
+                <div class="mb-3">
+                    <div class="flex justify-between text-sm mb-1.5">
+                        <span class="font-medium text-gray-700">❤️ 感情运</span>
+                        <span class="text-yellow-600 font-semibold">62 · 平</span>
+                    </div>
+                    <div class="bar-bg"><div class="bar-fill bg-yellow-400" style="width:62%"></div></div>
+                    <p class="text-xs text-gray-400 mt-1">单身者今日桃花运一般，不宜强求；有伴者注意沟通方式，小事莫计较。</p>
+                </div>
+
+                <!-- 健康运 -->
+                <div class="mb-1">
+                    <div class="flex justify-between text-sm mb-1.5">
+                        <span class="font-medium text-gray-700">🏥 健康运</span>
+                        <span class="text-yellow-600 font-semibold">72 · 平</span>
+                    </div>
+                    <div class="bar-bg"><div class="bar-fill bg-yellow-400" style="width:72%"></div></div>
+                    <p class="text-xs text-gray-400 mt-1">注意颈椎和用眼疲劳，建议每小时起身活动5分钟。</p>
+                </div>
+            </div>
+
+            <!-- ──────── 性格解析 ──────── -->
+            <div class="section-card mb-3">
+                <h3 class="text-base font-bold text-gray-800 mb-3">🧠 性格解析</h3>
+                <div class="flex gap-4 mb-3">
+                    <div class="flex-1 bg-purple-50 rounded-xl p-3 text-center">
+                        <div class="text-2xl mb-1">♌</div>
+                        <p class="text-xs font-semibold text-purple-700">狮子座</p>
+                        <p class="text-xs text-gray-500 mt-0.5">热情自信 · 领导力强</p>
+                    </div>
+                    <div class="text-gray-300 flex items-center text-lg">+</div>
+                    <div class="flex-1 bg-orange-50 rounded-xl p-3 text-center">
+                        <div class="text-2xl mb-1">☀️</div>
+                        <p class="text-xs font-semibold text-orange-700">丙火日主</p>
+                        <p class="text-xs text-gray-500 mt-0.5">光明磊落 · 感染力强</p>
+                    </div>
+                </div>
+                <p class="text-sm text-gray-600 leading-relaxed">
+                    你的星座是<b>狮子座</b>，八字日主为<b>丙火</b>——双重火象特质叠加，让你天生具备强大的感染力与领导力。
+                    你像太阳一样耀眼，在人群中自然成为焦点。热情主动是你的底色，但有时也因过于直接而忽略了细节。
+                    你在需要<b>创造力</b>和<b>决断力</b>的领域往往表现优异，但需注意培养耐心，学会倾听他人的声音。
+                </p>
+                <div class="mt-3 flex flex-wrap gap-1.5">
+                    <span class="px-2 py-0.5 bg-purple-50 text-purple-600 text-xs rounded-full">🔥 双重火象</span>
+                    <span class="px-2 py-0.5 bg-blue-50 text-blue-600 text-xs rounded-full">🎯 目标导向</span>
+                    <span class="px-2 py-0.5 bg-green-50 text-green-600 text-xs rounded-full">💪 感染力强</span>
+                    <span class="px-2 py-0.5 bg-orange-50 text-orange-600 text-xs rounded-full">⚡ 行动力高</span>
+                </div>
+            </div>
+
+            <!-- ──────── 今日人际契合 ──────── -->
+            <div class="section-card mb-3">
+                <h3 class="text-base font-bold text-gray-800 mb-3">🤝 今日人际契合</h3>
+
+                <div class="bg-green-50 rounded-xl p-3 mb-3">
+                    <p class="text-sm font-semibold text-green-700 mb-1">✅ 今日宜近</p>
+                    <div class="flex gap-2 flex-wrap">
+                        <span class="px-3 py-1 bg-white text-green-600 text-xs rounded-full border border-green-200">🧘 沉稳务实型</span>
+                        <span class="px-3 py-1 bg-white text-green-600 text-xs rounded-full border border-green-200">🧠 理性分析型</span>
+                        <span class="px-3 py-1 bg-white text-green-600 text-xs rounded-full border border-green-200">🌊 温和包容型</span>
+                    </div>
+                    <p class="text-xs text-green-600/70 mt-2">今日你的火象能量充足，与土象或水象特质的人互补，合作效率加倍。</p>
+                </div>
+
+                <div class="bg-orange-50 rounded-xl p-3">
+                    <p class="text-sm font-semibold text-orange-700 mb-1">⚠️ 今日宜远</p>
+                    <div class="flex gap-2 flex-wrap">
+                        <span class="px-3 py-1 bg-white text-orange-600 text-xs rounded-full border border-orange-200">🔥 急躁冲动型</span>
+                        <span class="px-3 py-1 bg-white text-orange-600 text-xs rounded-full border border-orange-200">🌪 情绪多变型</span>
+                    </div>
+                    <p class="text-xs text-orange-600/70 mt-2">火星逆行期间，两个火象性格相遇易引发冲突，请保持冷静。</p>
+                </div>
+            </div>
+
+            <!-- ──────── 今日幸运物 ──────── -->
+            <div class="section-card mb-3">
+                <h3 class="text-base font-bold text-gray-800 mb-3">🎨 今日幸运物</h3>
+                <div class="grid grid-cols-3 gap-3 text-center">
+                    <div class="bg-blue-50 rounded-xl p-3">
+                        <div class="w-10 h-10 rounded-full mx-auto mb-2" style="background:#4A90D9;"></div>
+                        <p class="text-xs font-semibold text-gray-700">海洋蓝</p>
+                        <p class="text-xs text-gray-400">幸运色</p>
+                    </div>
+                    <div class="bg-purple-50 rounded-xl p-3">
+                        <div class="text-2xl mb-1">🔢</div>
+                        <p class="text-sm font-bold text-purple-600">7 · 23</p>
+                        <p class="text-xs text-gray-400">幸运数字</p>
+                    </div>
+                    <div class="bg-indigo-50 rounded-xl p-3">
+                        <div class="text-2xl mb-1">🧭</div>
+                        <p class="text-sm font-bold text-indigo-600">东南方</p>
+                        <p class="text-xs text-gray-400">幸运方位</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ──────── 分享按钮 ──────── -->
+            <div class="mb-6">
+                <button onclick="shareCard()"
+                    class="w-full py-3.5 bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded-xl text-base font-semibold
+                           hover:shadow-lg transition active:scale-[0.98]">
+                    📤 生成分享卡片
+                </button>
+                <p class="text-center text-xs text-gray-300 mt-2">
+                    ⚠️ 仅供娱乐参考 · 传统文化科普 · 命运掌握在自己手中
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 分享弹窗 -->
+    <div id="shareModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl p-6 max-w-sm w-full text-center">
+            <div class="text-4xl mb-3">📤</div>
+            <h3 class="text-lg font-bold text-gray-800 mb-1">分享今日运势</h3>
+            <p class="text-sm text-gray-400 mb-5">生成运势卡片，分享到社交平台</p>
+            <div class="bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl p-5 text-white mb-4">
+                <p class="text-xs text-white/60 mb-1">2026年6月20日 · 今日运势</p>
+                <p class="text-3xl font-extrabold">85 分</p>
+                <p class="text-sm font-semibold">吉 · 运势良好</p>
+                <p class="text-xs text-white/70 mt-2">"今日木星三分相，贵人运旺盛"</p>
+                <div class="text-xs text-white/50 mt-3">—— 🧧 今日运势分析器</div>
+            </div>
+            <div class="flex gap-3">
+                <button onclick="closeShare()" class="flex-1 py-2.5 border border-gray-200 rounded-xl text-gray-600 text-sm">关闭</button>
+                <button onclick="closeShare()" class="flex-1 py-2.5 bg-purple-600 text-white rounded-xl text-sm font-semibold">💾 保存图片</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 读取 URL 参数
+        const params = new URLSearchParams(window.location.search);
+        const birthday = params.get('birthday') || '未知';
+        const birthtime = params.get('birthtime') || '未填写';
+        console.log('📅 出生日期:', birthday, '⏰ 出生时间:', birthtime || '未填写');
+
+        // 进度条动画
+        window.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.bar-fill').forEach(bar => {
+                const target = bar.style.width;
+                bar.style.width = '0%';
+                setTimeout(() => { bar.style.width = target; }, 200);
+            });
+        });
+
+        // 分享
+        function shareCard() {
+            document.getElementById('shareModal').classList.remove('hidden');
+        }
+        function closeShare() {
+            document.getElementById('shareModal').classList.add('hidden');
+        }
+        // 点击遮罩关闭
+        document.getElementById('shareModal').addEventListener('click', function(e) {
+            if (e.target === this) closeShare();
+        });
+    </script>
+</body>
+</html>
