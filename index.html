@@ -560,29 +560,36 @@ function handleLogin(event) {
 
 // 进入应用
 function enterApp(username, id) {
-  // 更新所有显示用户名/ID 的地方
-  document.getElementById('inputUsername').textContent = username;
-  document.getElementById('inputUserId').textContent = id;
-  document.getElementById('resultUsername').textContent = username;
-  document.getElementById('resultUserId').textContent = id;
+  try {
+    // 更新所有显示用户名/ID 的地方
+    document.getElementById('inputUsername').textContent = username;
+    document.getElementById('inputUserId').textContent = id;
+    document.getElementById('resultUsername').textContent = username;
+    document.getElementById('resultUserId').textContent = id;
 
-  // 回填之前保存的出生信息
-  const users = loadUsers();
-  const current = getCurrentUser();
-  let hasBirthInfo = false;
-  if (current && users[current.key]) {
-    const u = users[current.key];
-    if (u.birthday) { document.getElementById('birthday').value = u.birthday; hasBirthInfo = true; }
-    if (u.birthtime) document.getElementById('birthtime').value = u.birthtime;
-  }
+    // 回填之前保存的出生信息
+    const users = loadUsers();
+    const current = getCurrentUser();
+    let hasBirthInfo = false;
+    if (current && users[current.key]) {
+      const u = users[current.key];
+      if (u.birthday) { document.getElementById('birthday').value = u.birthday; hasBirthInfo = true; }
+      if (u.birthtime) document.getElementById('birthtime').value = u.birthtime;
+    }
 
-  if (hasBirthInfo) {
-    // 已有出生信息 → 直接生成今日运势
-    showView('loadingView');
-    autoGenerate();
-  } else {
-    // 首次使用 → 显示输入页
-    showView('inputView');
+    if (hasBirthInfo) {
+      showView('loadingView');
+      autoGenerate();
+    } else {
+      showView('inputView');
+    }
+
+    // 确保底部导航可见
+    document.getElementById('bottomNav').classList.remove('hidden');
+    updateNavActive('input');
+  } catch(e) {
+    showError('进入失败：' + e.message);
+    console.error(e);
   }
 }
 
