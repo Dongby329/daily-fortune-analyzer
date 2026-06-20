@@ -237,13 +237,16 @@
 
 <!-- ═══════════ 底部导航 ═══════════ -->
 <nav id="bottomNav" class="hidden nav-bar flex items-center justify-around py-2.5">
-  <button onclick="navTo('input')" id="navInput" class="nav-item flex flex-col items-center gap-0.5 text-xs px-4 py-1">
+  <button onclick="navTo('input')" id="navInput" class="nav-item flex flex-col items-center gap-0.5 text-xs px-3 py-1">
     <span class="text-lg">🔮</span><span>运势</span>
   </button>
-  <button onclick="navTo('dialogue')" id="navDialogue" class="nav-item flex flex-col items-center gap-0.5 text-xs px-4 py-1">
-    <span class="text-lg">🌌</span><span>超时空对话</span>
+  <button onclick="navTo('outfit')" id="navOutfit" class="nav-item flex flex-col items-center gap-0.5 text-xs px-3 py-1">
+    <span class="text-lg">👕</span><span>穿搭</span>
   </button>
-  <button onclick="navTo('profile')" id="navProfile" class="nav-item flex flex-col items-center gap-0.5 text-xs px-4 py-1">
+  <button onclick="navTo('dialogue')" id="navDialogue" class="nav-item flex flex-col items-center gap-0.5 text-xs px-3 py-1">
+    <span class="text-lg">🌌</span><span>超时空</span>
+  </button>
+  <button onclick="navTo('profile')" id="navProfile" class="nav-item flex flex-col items-center gap-0.5 text-xs px-3 py-1">
     <span class="text-lg">👤</span><span>我的</span>
   </button>
 </nav>
@@ -348,6 +351,23 @@
 
   <div id="figureList" class="grid md:grid-cols-2 gap-3 mt-4"></div>
   <button id="refreshFigures" onclick="matchFigures()" class="btn-ghost w-full py-3 rounded-lg text-xs mt-4">🔄 重新匹配</button>
+</div>
+
+<!-- ═══════════ 今日穿搭 ═══════════ -->
+<div id="outfitView" class="hidden relative z-10 mx-auto max-w-lg md:max-w-2xl px-4 md:px-8 pb-20 md:pb-24">
+  <header class="flex items-center justify-between py-5 text-xs">
+    <span class="text-neutral-400 tracking-wider">今日穿搭</span>
+    <span class="text-neutral-700" id="outfitDate"></span>
+  </header>
+
+  <div class="text-center py-6 fade-in">
+    <p class="text-3xl mb-3">👕</p>
+    <p class="text-sm text-neutral-400 font-light">基于今日幸运色与五行</p>
+    <p class="text-sm text-neutral-400 font-light">为你匹配时尚穿搭灵感</p>
+  </div>
+
+  <div id="outfitGridStandalone" class="grid grid-cols-2 md:grid-cols-3 gap-3 mt-2"></div>
+  <p id="outfitNoData" class="hidden text-neutral-600 text-xs text-center py-8">请先在运势页生成今日运势</p>
 </div>
 
 <!-- ═══════════ 超时空对话——聊天 ═══════════ -->
@@ -713,8 +733,38 @@ function generateOutfits(lucky, wuxing, gender, daySeed) {
   return outfits;
 }
 
-function renderOutfits(outfits) {
-  document.getElementById('outfitGrid').innerHTML = outfits.map((o, i) => `
+function generateStandaloneOutfits() {
+  const today = new Date();
+  const daySeed = daysSince2000(today.getFullYear(), today.getMonth() + 1, today.getDate());
+  document.getElementById('outfitDate').textContent = `${today.getFullYear()}/${(today.getMonth()+1).toString().padStart(2,'0')}/${today.getDate().toString().padStart(2,'0')}`;
+
+  // 从账号获取信息
+  const curUser = getCurrentUser();
+  const allUsers = loadUsers();
+  const user = curUser ? allUsers[curUser.key] : null;
+
+  if (!user || !user.birthday) {
+    document.getElementById('outfitNoData').classList.remove('hidden');
+    document.getElementById('outfitGridStandalone').innerHTML = '';
+    return;
+  }
+  document.getElementById('outfitNoData').classList.add('hidden');
+
+  const [by, bm, bd] = user.birthday.split('-').map(Number);
+  const sign = getStarSign(bm, bd);
+  const bazi = calcBaZi(by, bm, bd, user.birthtime ? parseInt(user.birthtime.split(':')[0]) : 12, !!user.birthtime);
+  const lucky = generateLuckyItems(bazi, daySeed);
+  const wuxing = generateWuxing(bazi.dayMaster, daySeed);
+  const gender = user.gender || 'female';
+
+  const outfits = generateOutfits(lucky, wuxing, gender, daySeed);
+  renderOutfits(outfits, 'outfitGridStandalone');
+}
+
+function renderOutfits(outfits, targetId = 'outfitGrid') {
+  const grid = document.getElementById(targetId);
+  if (!grid) return;
+  grid.innerHTML = outfits.map((o, i) => `
     <div class="rounded-xl overflow-hidden cursor-pointer hover:ring-1 hover:ring-neutral-700 transition group"
          style="background:#0a0a0a; border:1px solid #141414; animation:fadeIn 0.4s ease ${i*0.06}s both;">
       <!-- 配色条 -->
@@ -742,47 +792,52 @@ function renderOutfits(outfits) {
 // ===================== 超时空对话——历史人物库 =====================
 
 const HISTORICAL_FIGURES = [
-  { name:'诸葛亮', era:'三国', el:'木', traits:['智慧','谋略','忠诚'], emoji:'🎯',
-    soul:`你是诸葛亮，字孔明，三国时期蜀汉丞相。你以神机妙算、鞠躬尽瘁闻名。
-性格：沉稳睿智、善于分析、言简意赅。说话喜欢引经据典，偶尔用兵法比喻。
-回复风格：谦逊而有深度，每句话都有分量，不废话。自称"亮"。`,
-    matchKeys:['智慧','谋略','分析','稳重'] },
-  { name:'李白', era:'盛唐', el:'火', traits:['浪漫','豪放','自由'], emoji:'🍷',
-    soul:`你是李白，字太白，唐代伟大的浪漫主义诗人。你生性豪放，嗜酒如命，诗才横溢。
-性格：热情奔放、不拘小节、出口成章。说话喜欢用诗句表达，豪气冲天。
-回复风格：洒脱不羁，天马行空，偶尔吟诗，语气豪迈。自称"白"。`,
-    matchKeys:['热情','自由','浪漫','豪放'] },
-  { name:'苏轼', era:'北宋', el:'水', traits:['豁达','多才','乐观'], emoji:'🎨',
-    soul:`你是苏轼，号东坡居士，北宋文学家、书画家、美食家。一生坎坷但始终保持乐观。
-性格：豁达开朗、幽默风趣、热爱生活。吃什么都香，看什么都美。
-回复风格：亲切随和，偶尔自嘲，会提到美食和人生感悟。自称"轼"。`,
-    matchKeys:['乐观','豁达','多才','通透'] },
-  { name:'武则天', era:'唐朝', el:'金', traits:['果断','权谋','霸气'], emoji:'👑',
-    soul:`你是武则天，中国历史上唯一的正统女皇帝。你以非凡的魄力和政治智慧登上权力巅峰。
-性格：果敢决断、洞察人心、不怒自威。说话简洁有力，气场强大。
-回复风格：直截了当，不绕弯子，有帝王气场但不失女性的细腻。自称"朕"。`,
-    matchKeys:['果断','领导力','洞察','霸气'] },
-  { name:'庄子', era:'战国', el:'水', traits:['逍遥','深邃','超脱'], emoji:'🦋',
-    soul:`你是庄子，名周，战国时期道家代表人物。你追求精神自由，超然物外。
-性格：逍遥洒脱、思想深邃、看透世事。说话喜欢用寓言和比喻。
-回复风格：飘逸灵动，往往以问代答，让人醍醐灌顶。自称"周"。`,
-    matchKeys:['自由','深邃','超脱','智慧'] },
-  { name:'曹操', era:'三国', el:'土', traits:['雄才','多疑','务实'], emoji:'⚔️',
-    soul:`你是曹操，字孟德，东汉末年杰出的政治家、军事家、文学家。雄才大略但多疑。
-性格：务实果断、知人善任、城府极深。说话犀利直白，不喜虚言。
-回复风格：言简意赅，切中要害，偶尔流露诗人的感性与政治家的冷峻。自称"操"。`,
-    matchKeys:['果断','务实','雄才','领导力'] },
-  { name:'王阳明', era:'明朝', el:'火', traits:['知行合一','心学','刚毅'], emoji:'💡',
-    soul:`你是王阳明，明代心学大师。你提出"知行合一"、"致良知"，影响深远。
-性格：笃定自信、注重实践、温润如玉。说话深入浅出，擅长用生活例子讲大道。
-回复风格：温和而坚定，引导对方向内求索。自称"守仁"。`,
-    matchKeys:['智慧','行动力','笃定','通透'] },
-  { name:'李清照', era:'宋代', el:'木', traits:['才情','敏感','坚韧'], emoji:'🌸',
-    soul:`你是李清照，号易安居士，宋代著名女词人。才情横溢，一生历经繁华与沧桑。
-性格：细腻敏感、才华横溢、外柔内刚。说话婉约含蓄但内心坚定。
-回复风格：温婉中带着锋芒，善用比喻，情感真挚。自称"清照"。`,
-    matchKeys:['才情','细腻','坚韧','敏感'] },
+  { name:'诸葛亮', era:'三国', el:'木', traits:['智慧','谋略','忠诚'], emoji:'🎯', matchKeys:['智慧','谋略','分析','稳重'], soul:'你是诸葛亮，字孔明，三国蜀汉丞相。神机妙算、鞠躬尽瘁。自称"亮"。' },
+  { name:'李白', era:'盛唐', el:'火', traits:['浪漫','豪放','自由'], emoji:'🍷', matchKeys:['热情','自由','浪漫','豪放'], soul:'你是李白，字太白，唐代诗仙。豪放不羁，嗜酒如命。自称"白"。' },
+  { name:'苏轼', era:'北宋', el:'水', traits:['豁达','多才','乐观'], emoji:'🎨', matchKeys:['乐观','豁达','多才','通透'], soul:'你是苏轼，号东坡居士。一生坎坷但乐观，热爱美食。自称"轼"。' },
+  { name:'武则天', era:'唐朝', el:'金', traits:['果断','权谋','霸气'], emoji:'👑', matchKeys:['果断','领导力','洞察','霸气'], soul:'你是武则天，中国唯一女皇帝。果敢决断、气场强大。自称"朕"。' },
+  { name:'庄子', era:'战国', el:'水', traits:['逍遥','深邃','超脱'], emoji:'🦋', matchKeys:['自由','深邃','超脱','智慧'], soul:'你是庄子，道家代表人物。超然物外，善用寓言。自称"周"。' },
+  { name:'曹操', era:'东汉', el:'土', traits:['雄才','多疑','务实'], emoji:'⚔️', matchKeys:['果断','务实','雄才','领导力'], soul:'你是曹操，字孟德。雄才大略，务实果断。自称"操"。' },
+  { name:'王阳明', era:'明朝', el:'火', traits:['知行合一','心学','刚毅'], emoji:'💡', matchKeys:['智慧','行动力','笃定','通透'], soul:'你是王阳明，心学大师。知行合一，温润如玉。自称"守仁"。' },
+  { name:'李清照', era:'宋代', el:'木', traits:['才情','敏感','坚韧'], emoji:'🌸', matchKeys:['才情','细腻','坚韧','敏感'], soul:'你是李清照，号易安居士。才情横溢，外柔内刚。自称"清照"。' },
+  { name:'秦始皇', era:'秦朝', el:'金', traits:['霸气','果断','统一'], emoji:'🏛️', matchKeys:['霸气','果断','领导力','雄才'], soul:'你是秦始皇，千古一帝。气吞山河，杀伐果断。自称"朕"。' },
+  { name:'屈原', era:'战国', el:'木', traits:['忠诚','浪漫','高洁'], emoji:'🌿', matchKeys:['忠诚','浪漫','才情','高洁'], soul:'你是屈原，楚国大夫。忠贞不渝，以诗言志。自称"原"。' },
+  { name:'关羽', era:'三国', el:'火', traits:['忠义','勇猛','骄傲'], emoji:'🐉', matchKeys:['忠义','勇猛','正直','坚定'], soul:'你是关羽，字云长。义薄云天，武艺超群。自称"羽"。' },
+  { name:'司马迁', era:'西汉', el:'土', traits:['坚韧','求真','博学'], emoji:'📜', matchKeys:['坚韧','求真','智慧','深邃'], soul:'你是司马迁，太史公。忍辱负重著《史记》。自称"迁"。' },
+  { name:'花木兰', era:'北魏', el:'金', traits:['勇敢','孝顺','独立'], emoji:'🗡️', matchKeys:['勇敢','果断','独立','坚韧'], soul:'你是花木兰。代父从军，巾帼不让须眉。自称"木兰"。' },
+  { name:'陶渊明', era:'东晋', el:'木', traits:['淡泊','田园','自由'], emoji:'🌾', matchKeys:['淡泊','自由','独立','通透'], soul:'你是陶渊明。不为五斗米折腰，归隐田园。自称"潜"。' },
+  { name:'成吉思汗', era:'元朝', el:'火', traits:['征服','豪迈','军事'], emoji:'🐎', matchKeys:['征服','豪迈','果断','行动力'], soul:'你是成吉思汗，草原霸主。横扫欧亚。自称"铁木真"。' },
+  { name:'杜甫', era:'盛唐', el:'土', traits:['忧国','深沉','写实'], emoji:'🏚️', matchKeys:['深沉','务实','坚韧','细腻'], soul:'你是杜甫，诗圣。忧国忧民，沉郁顿挫。自称"甫"。' },
+  { name:'岳飞', era:'南宋', el:'金', traits:['忠诚','勇武','悲壮'], emoji:'🦅', matchKeys:['忠诚','勇猛','正直','坚韧'], soul:'你是岳飞，精忠报国。文武双全，忠勇悲壮。自称"飞"。' },
+  { name:'王羲之', era:'东晋', el:'水', traits:['飘逸','艺术','洒脱'], emoji:'🖌️', matchKeys:['艺术','飘逸','才情','自由'], soul:'你是王羲之，书圣。笔下风流，洒脱不羁。自称"羲之"。' },
+  { name:'白居易', era:'中唐', el:'水', traits:['通俗','关怀','多产'], emoji:'📝', matchKeys:['通俗','关怀','务实','才情'], soul:'你是白居易，号香山居士。诗求通俗，心系苍生。自称"居易"。' },
+  { name:'墨子', era:'战国', el:'土', traits:['兼爱','节俭','逻辑'], emoji:'🔧', matchKeys:['逻辑','务实','智慧','兼爱'], soul:'你是墨子，墨家创始人。兼爱非攻。自称"翟"。' },
+  { name:'玄奘', era:'唐朝', el:'木', traits:['坚定','智慧','求法'], emoji:'📿', matchKeys:['坚定','智慧','求真','细腻'], soul:'你是玄奘法师。西行取经十七年，意志坚定。自称"奘"。' },
+  { name:'项羽', era:'秦末', el:'火', traits:['勇猛','骄傲','悲情'], emoji:'💪', matchKeys:['勇猛','果断','霸气','悲情'], soul:'你是项羽，西楚霸王。力拔山兮气盖世。自称"籍"。' },
+  { name:'韩信', era:'汉初', el:'水', traits:['谋略','隐忍','军事'], emoji:'♟️', matchKeys:['谋略','隐忍','智慧','深沉'], soul:'你是韩信，兵仙。从胯下之辱到国士无双。自称"信"。' },
+  { name:'蔡文姬', era:'东汉', el:'木', traits:['才情','坎坷','坚韧'], emoji:'🎵', matchKeys:['才情','坚韧','细腻','敏感'], soul:'你是蔡文姬。一生坎坷，胡笳十八拍诉尽悲欢。自称"琰"。' },
+  { name:'张良', era:'汉初', el:'水', traits:['智谋','谦退','预见'], emoji:'🧠', matchKeys:['智谋','智慧','谦退','通透'], soul:'你是张良，字子房。运筹帷幄，决胜千里。自称"良"。' },
+  { name:'林黛玉', era:'清朝', el:'木', traits:['才情','敏感','孤傲'], emoji:'💧', matchKeys:['才情','敏感','细腻','孤傲'], soul:'你是林黛玉。心较比干多一窍。自称"黛玉"。' },
+  { name:'孙武', era:'春秋', el:'金', traits:['兵家','智谋','纪律'], emoji:'📖', matchKeys:['智谋','果断','军略','务实'], soul:'你是孙武，兵圣。《孙子兵法》传世。自称"武"。' },
+  { name:'鬼谷子', era:'战国', el:'水', traits:['神秘','纵横','智慧'], emoji:'🔮', matchKeys:['智慧','谋略','神秘','深邃'], soul:'你是鬼谷子。通天彻地，纵横捭阖。自称"谷"。' },
+  { name:'鲁班', era:'春秋', el:'土', traits:['工匠','创造','务实'], emoji:'🛠️', matchKeys:['务实','创造','智慧','匠心'], soul:'你是鲁班，工匠之祖。巧手匠心。自称"班"。' },
+  { name:'扁鹊', era:'春秋', el:'木', traits:['仁心','医术','洞察'], emoji:'💊', matchKeys:['仁心','智慧','洞察','细腻'], soul:'你是扁鹊，神医。望闻问切，妙手回春。自称"越人"。' },
+  { name:'貂蝉', era:'三国', el:'水', traits:['美貌','智谋','牺牲'], emoji:'🌙', matchKeys:['美貌','智谋','细腻','坚定'], soul:'你是貂蝉。闭月羞花，连环计中显智慧。自称"蝉"。' },
+  { name:'张骞', era:'西汉', el:'火', traits:['探索','开拓','坚韧'], emoji:'🐫', matchKeys:['探索','开拓','坚韧','勇气'], soul:'你是张骞，丝绸之路开拓者。凿空西域。自称"骞"。' },
+  { name:'贾谊', era:'西汉', el:'木', traits:['才华','忧思','年轻'], emoji:'📚', matchKeys:['才华','忧思','智慧','敏感'], soul:'你是贾谊。少年英才，才华横溢。自称"谊"。' },
+  { name:'商鞅', era:'战国', el:'金', traits:['变法','严苛','果决'], emoji:'⚖️', matchKeys:['果决','严苛','务实','领导力'], soul:'你是商鞅。变法图强，为秦国崛起奠基。自称"鞅"。' },
+  { name:'西施', era:'春秋', el:'水', traits:['美貌','牺牲','沉静'], emoji:'💎', matchKeys:['美貌','细腻','牺牲','沉静'], soul:'你是西施，四大美女之首。以身许国。自称"施"。' },
 ];
+
+// 动态混洗
+function shuffleArray(arr, seed) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = hashDay(seed, i * 7) % (i + 1);
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
 
 // ===================== 超时空对话——匹配引擎 =====================
 
@@ -806,8 +861,13 @@ function matchFigures() {
     dmEl = DAY_MASTER_TRAITS[bazi.dayMaster]?.el || '火';
   }
 
-  // 计算每个历史人物的匹配度
-  const scored = HISTORICAL_FIGURES.map(f => {
+  // 混洗 → 每次匹配结果动态变化
+  const todaySeed = daysSince2000(new Date().getFullYear(), new Date().getMonth()+1, new Date().getDate());
+  const pool = shuffleArray(HISTORICAL_FIGURES, todaySeed);
+  const candidates = pool.slice(0, 20);
+
+  // 计算匹配度
+  const scored = candidates.map(f => {
     let score = 50;
     // 元素匹配
     if (f.el === signEl) score += 20;
@@ -1367,6 +1427,10 @@ function navTo(target) {
     }
   }
   else if (target === 'profile') { loadProfile(); loadLLMConfig(); showView('profileView'); }
+  else if (target === 'outfit') {
+    generateStandaloneOutfits();
+    showView('outfitView');
+  }
   else if (target === 'dialogue') {
     document.getElementById('dialogueUserId').textContent =
       getCurrentUser()?.id || '';
@@ -1386,7 +1450,7 @@ function hasSavedBirthInfo() {
 }
 
 function updateNavActive(active) {
-  ['input','profile','dialogue'].forEach(k => {
+  ['input','outfit','profile','dialogue'].forEach(k => {
     const btn = document.getElementById('nav' + k.charAt(0).toUpperCase() + k.slice(1));
     if (btn) btn.classList.toggle('active', k === active);
   });
@@ -1785,13 +1849,13 @@ function generateWuxing(dayMaster, daySeed) {
 let currentResult = null;
 
 function showView(view) {
-  ['loginView','inputView','loadingView','resultView','profileView','dialogueView','chatView'].forEach(id => {
+  ['loginView','inputView','loadingView','resultView','profileView','dialogueView','chatView','outfitView'].forEach(id => {
     document.getElementById(id).classList.add('hidden');
   });
   document.getElementById(view).classList.remove('hidden');
 
   // 底部导航：仅在 input/result/profile/dialogue 显示
-  const showNav = ['inputView','resultView','profileView','dialogueView'].includes(view);
+  const showNav = ['inputView','resultView','profileView','dialogueView','outfitView'].includes(view);
   const nav = document.getElementById('bottomNav');
   if (showNav) nav.classList.remove('hidden');
   else nav.classList.add('hidden');
@@ -1991,7 +2055,7 @@ function renderResult(r, today) {
   document.getElementById('wuxingTip').textContent = r.wuxing.tip;
 
   // 穿搭
-  if (r.outfits) renderOutfits(r.outfits);
+  if (r.outfits) renderOutfits(r.outfits, 'outfitGrid');
 
   // 分享数据
   document.getElementById('shareDate').textContent = document.getElementById('reportDate').textContent;
