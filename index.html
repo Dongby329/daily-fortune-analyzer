@@ -76,25 +76,25 @@
         <label class="block text-xs text-neutral-500 mb-2 tracking-wider">用户名</label>
         <input type="text" id="loginUser" class="input-field w-full px-4 py-3 rounded-lg" placeholder="输入用户名" autocomplete="off">
       </div>
-      <div class="mb-6">
+      <div class="mb-3">
         <label class="block text-xs text-neutral-500 mb-2 tracking-wider">密码</label>
         <input type="password" id="loginPass" class="input-field w-full px-4 py-3 rounded-lg" placeholder="输入密码">
       </div>
+      <!-- 记住我 -->
+      <div class="flex items-center gap-2 mb-5">
+        <input type="checkbox" id="rememberMe" class="accent-white w-3.5 h-3.5 rounded border-neutral-700 bg-neutral-900">
+        <label for="rememberMe" class="text-xs text-neutral-500 cursor-pointer">记住登录，下次自动进入</label>
+      </div>
       <button type="submit" class="btn-main w-full py-3.5 rounded-lg text-sm font-semibold tracking-wider">登录</button>
-      <p class="text-center text-neutral-600 text-xs mt-4">或通过 <span class="text-white cursor-pointer hover:underline" onclick="switchTab('register')">ID 号</span> 查询已注册账号</p>
     </form>
 
     <!-- 错误提示 -->
     <p id="loginError" class="hidden text-red-400 text-xs text-center mt-4"></p>
 
-    <!-- ID 查询 -->
-    <div class="mt-6 pt-5 border-t border-neutral-900">
-      <p class="text-xs text-neutral-600 mb-3 tracking-wider">通过 ID 号查询账号</p>
-      <div class="flex gap-2">
-        <input type="text" id="lookupId" class="input-field flex-1 px-4 py-2.5 rounded-lg text-sm" placeholder="输入 ID 号，如 FT-0001">
-        <button onclick="lookupById()" class="btn-ghost px-4 py-2.5 rounded-lg text-sm shrink-0">查询</button>
-      </div>
-      <p id="lookupResult" class="hidden text-neutral-400 text-xs mt-2"></p>
+    <!-- 快速登录——已记住的账号 -->
+    <div id="quickLogin" class="hidden mt-6 pt-5 border-t border-neutral-900">
+      <p class="text-xs text-neutral-600 mb-3 tracking-wider">快速登录</p>
+      <div id="quickLoginList" class="flex flex-wrap gap-2"></div>
     </div>
   </div>
 </div>
@@ -240,6 +240,7 @@
 
 const STORAGE_KEY = 'fortune_users';
 const CURRENT_KEY = 'fortune_current';
+const REMEMBERED_KEY = 'fortune_remembered';
 
 function loadUsers() {
   try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; }
@@ -253,10 +254,28 @@ function getCurrentUser() {
   catch(e) { return null; }
 }
 function setCurrentUser(user) {
+  // 同时保存到记住列表
+  const remembered = loadRemembered();
+  if (!remembered.includes(user.username)) {
+    remembered.push(user.username);
+    saveRemembered(remembered);
+  }
   localStorage.setItem(CURRENT_KEY, JSON.stringify(user));
 }
 function clearCurrentUser() {
   localStorage.removeItem(CURRENT_KEY);
+}
+function loadRemembered() {
+  try { return JSON.parse(localStorage.getItem(REMEMBERED_KEY)) || []; }
+  catch(e) { return []; }
+}
+function saveRemembered(list) {
+  localStorage.setItem(REMEMBERED_KEY, JSON.stringify(list));
+}
+function removeRemembered(username) {
+  const list = loadRemembered().filter(u => u !== username);
+  saveRemembered(list);
+  renderQuickLogin();
 }
 
 // 生成唯一 ID
@@ -299,8 +318,8 @@ function handleRegister(event) {
   };
   saveUsers(users);
 
-  // 自动登录
-  setCurrentUser({ key: userKey, username, id });
+  // 自动登录并记住
+  setCurrentUser({ key: userKey, username, id, remember: true });
   document.getElementById('regUser').value = '';
   document.getElementById('regPass').value = '';
   document.getElementById('loginError').classList.add('hidden');
@@ -323,9 +342,11 @@ function handleLogin(event) {
   }
 
   const [key, user] = found;
-  setCurrentUser({ key, username: user.username, id: user.id });
+  const remember = document.getElementById('rememberMe').checked;
+  setCurrentUser({ key, username: user.username, id: user.id, remember });
   document.getElementById('loginUser').value = '';
   document.getElementById('loginPass').value = '';
+  document.getElementById('rememberMe').checked = false;
   document.getElementById('loginError').classList.add('hidden');
   enterApp(user.username, user.id);
 }
@@ -355,6 +376,7 @@ function logout() {
   clearCurrentUser();
   document.getElementById('birthday').value = '1995-06-20';
   document.getElementById('birthtime').value = '';
+  renderQuickLogin();
   showView('loginView');
 }
 
@@ -1009,10 +1031,38 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
 // ===================== 初始化 =====================
 
+// 快速登录——渲染已记住的账号列表
+function renderQuickLogin() {
+  const remembered = loadRemembered();
+  const container = document.getElementById('quickLogin');
+  const list = document.getElementById('quickLoginList');
+
+  if (remembered.length === 0) {
+    container.classList.add('hidden');
+    return;
+  }
+
+  container.classList.remove('hidden');
+  list.innerHTML = remembered.map(username => `
+    <button onclick="quickLoginFill('${username}')"
+      class="px-3 py-1.5 rounded-lg text-xs tracking-wider transition border border-neutral-800 text-neutral-500 hover:text-white hover:border-neutral-600"
+      title="点击填入用户名">${username}</button>
+    <button onclick="event.stopPropagation(); removeRemembered('${username}')"
+      class="text-neutral-700 hover:text-red-500 text-xs transition" title="移除">✕</button>
+  `).join('');
+}
+
+// 快速登录——点击填入用户名
+function quickLoginFill(username) {
+  switchTab('login');
+  document.getElementById('loginUser').value = username;
+  document.getElementById('loginPass').focus();
+}
+
 // 检查登录态
 (function checkLogin() {
   const current = getCurrentUser();
-  if (current) {
+  if (current && current.remember !== false) {
     const users = loadUsers();
     const user = users[current.key];
     if (user) {
@@ -1027,6 +1077,9 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
       return;
     }
   }
+  // 未登录或未记住——清除残留，显示登录页
+  clearCurrentUser();
+  renderQuickLogin();
   showView('loginView');
 })();
 
