@@ -1105,39 +1105,37 @@ function renderOutfitsFromShared(targetId) {
 }
 
 function renderOutfitsWithLinks(outfits, targetId) {
-  const grid = document.getElementById(targetId);
+  var grid = document.getElementById(targetId);
   if (!grid) return;
-  grid.innerHTML = outfits.map((o, i) => {
-    var xhsUrl = (o.platforms?.[0]?.webUrl) || (o.platforms?.[0]?.url) || '#';
-    if (!xhsUrl.startsWith('http')) xhsUrl = (o.platforms?.[0]?.webUrl) || '#';
-    return `
-    <a href="${xhsUrl.replace(/'/g, "\\'")}" target="_blank" rel="noopener" class="block rounded-xl overflow-hidden transition group cursor-pointer hover:ring-1 hover:ring-neutral-600" style="background:#0a0a0a; border:1px solid #141414; animation:fadeIn 0.4s ease ${i*0.06}s both; text-decoration:none;">
-      ${o.isAi ? `
-      <div class="p-3">
-        <div class="flex items-center justify-between mb-2">
-          <span class="text-xs text-neutral-400 font-medium">${o.style || '时尚搭配'}</span>
-          <span class="text-xs text-neutral-600">❤ ${o.likes || 200}</span>
-        </div>
-        <p class="text-sm text-white font-medium">${o.top}</p>
-        <p class="text-xs text-neutral-400 mt-0.5">${o.bottom} · ${o.shoe}</p>
-        <p class="text-xs text-neutral-500 mt-0.5">${o.acc || ''}${o.color ? ' · ' + o.color : ''}</p>
-        <div class="flex gap-1.5 mt-3 pt-3 border-t border-neutral-900">
-          ${(o.platforms || []).map(p => `<a href="${p.url}" target="_blank" rel="noopener" onclick="event.stopPropagation()" class="text-xs text-neutral-500 hover:text-white hover:bg-neutral-800 transition px-2 py-1 rounded border border-neutral-800">${p.name}</a>`).join('')}
-        </div>
-        ${/iPhone|iPad|iPod/i.test(navigator.userAgent) ? '<p class="text-xs text-neutral-700 mt-1">💡 点击按钮在新标签页查看穿搭帖子</p>' : (/Android/i.test(navigator.userAgent) ? '<p class="text-xs text-neutral-700 mt-1">💡 点击按钮直接打开APP查看</p>' : '')}
-        </div>
-      </div>
-      ` : `
-      <div class="flex h-2"><div class="flex-1" style="background:${o.mainColor};"></div><div class="flex-1" style="background:${o.subColor};"></div><div class="flex-[0.5]" style="background:${o.mainColor}66;"></div></div>
-      <div class="p-3">
-        <div class="flex items-center justify-between mb-2"><span class="text-xs text-neutral-500">${o.style}</span><span class="text-xs text-neutral-700">${o.platform}</span></div>
-        <p class="text-sm text-white font-medium truncate">${o.top} × ${o.bottom}</p>
-        <p class="text-xs text-neutral-500 mt-0.5">${o.shoe} · ${o.acc}</p>
-        <div class="flex items-center justify-between mt-2 pt-2 border-t border-neutral-900"><span class="text-xs text-neutral-600">${o.season}季</span><span class="text-xs text-neutral-700">❤ ${o.likes}</span></div>
-      </div>
-      `}
-    </a>
-  `}).join('');
+  grid.innerHTML = outfits.map(function(o, i) {
+    var xhsUrl = (o.platforms && o.platforms[0] && o.platforms[0].webUrl) || (o.platforms && o.platforms[0] && o.platforms[0].url) || '#';
+    if (!xhsUrl.startsWith('http')) xhsUrl = (o.platforms && o.platforms[0] && o.platforms[0].webUrl) || '#';
+    var safeUrl = xhsUrl.replace(/'/g, "\\'");
+    var html = '<div onclick="window._openOutfit(\'' + safeUrl + '\')" class="rounded-xl overflow-hidden transition group cursor-pointer hover:ring-1 hover:ring-neutral-600" style="background:#0a0a0a; border:1px solid #141414; animation:fadeIn 0.4s ease ' + (i*0.06) + 's both;">';
+    if (o.isAi) {
+      html += '<div class="p-3">';
+      html += '<div class="flex items-center justify-between mb-2"><span class="text-xs text-neutral-400 font-medium">' + escHtml(o.style || '时尚搭配') + '</span><span class="text-xs text-neutral-600">❤ ' + (o.likes || 200) + '</span></div>';
+      html += '<p class="text-sm text-white font-medium">' + escHtml(o.top || '') + '</p>';
+      html += '<p class="text-xs text-neutral-400 mt-0.5">' + escHtml(o.bottom || '') + ' · ' + escHtml(o.shoe || '') + '</p>';
+      html += '<p class="text-xs text-neutral-500 mt-0.5">' + escHtml(o.acc || '') + (o.color ? ' · ' + escHtml(o.color) : '') + '</p>';
+      html += '<div class="flex gap-1.5 mt-3 pt-3 border-t border-neutral-900">';
+      (o.platforms || []).forEach(function(p) {
+        var pUrl = (p.url || '').replace(/'/g, "\\'");
+        html += '<span onclick="event.stopPropagation(); window._openOutfit(\'' + pUrl + '\')" class="text-xs text-neutral-500 hover:text-white hover:bg-neutral-800 transition px-2 py-1 rounded border border-neutral-800 cursor-pointer">' + escHtml(p.name) + '</span>';
+      });
+      html += '</div></div>';
+    } else {
+      html += '<div class="flex h-2"><div class="flex-1" style="background:' + (o.mainColor || '#333') + ';"></div><div class="flex-1" style="background:' + (o.subColor || '#444') + ';"></div><div class="flex-[0.5]" style="background:' + (o.mainColor || '#333') + '66;"></div></div>';
+      html += '<div class="p-3">';
+      html += '<div class="flex items-center justify-between mb-2"><span class="text-xs text-neutral-500">' + escHtml(o.style || '') + '</span><span class="text-xs text-neutral-700">' + escHtml(o.platform || '') + '</span></div>';
+      html += '<p class="text-sm text-white font-medium truncate">' + escHtml(o.top || '') + ' × ' + escHtml(o.bottom || '') + '</p>';
+      html += '<p class="text-xs text-neutral-500 mt-0.5">' + escHtml(o.shoe || '') + ' · ' + escHtml(o.acc || '') + '</p>';
+      html += '<div class="flex items-center justify-between mt-2 pt-2 border-t border-neutral-900"><span class="text-xs text-neutral-600">' + escHtml(o.season || '') + '季</span><span class="text-xs text-neutral-700">❤ ' + (o.likes || 0) + '</span></div>';
+      html += '</div>';
+    }
+    html += '</div>';
+    return html;
+  }).join('');
 }
 
 function renderOutfits(outfits, targetId = 'outfitGrid') {
@@ -2560,6 +2558,15 @@ function closeShare() {
   document.getElementById('shareModal').classList.add('hidden');
 }
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+// 打开穿搭链接——iOS用location.href触发Universal Links
+window._openOutfit = function(url) {
+  if (!url || url === '#') return;
+  if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+    window.location.href = url;
+  } else {
+    window.open(url, '_blank');
+  }
+};
 function showToast(msg) {
   var t = document.createElement('div'); t.className = 'toast'; t.textContent = msg;
   document.body.appendChild(t); setTimeout(function(){ t.remove(); }, 3000);
