@@ -1,90 +1,803 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🧧 今日运势分析器</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-        .container {
-            background: #fff;
-            border-radius: 20px;
-            padding: 40px;
-            max-width: 480px;
-            width: 100%;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-        }
-        h1 { text-align: center; font-size: 28px; margin-bottom: 8px; }
-        .subtitle { text-align: center; color: #666; margin-bottom: 30px; font-size: 14px; }
-        .form-group { margin-bottom: 20px; }
-        label { display: block; font-weight: 600; margin-bottom: 6px; color: #333; }
-        input, select {
-            width: 100%; padding: 12px 16px;
-            border: 2px solid #e0e0e0; border-radius: 10px;
-            font-size: 16px; transition: border-color 0.3s;
-        }
-        input:focus, select:focus { outline: none; border-color: #667eea; }
-        .optional { color: #999; font-size: 12px; font-weight: normal; }
-        .btn {
-            width: 100%; padding: 14px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: #fff; border: none; border-radius: 10px;
-            font-size: 18px; font-weight: 600; cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(102,126,234,0.4); }
-        .result {
-            margin-top: 30px; padding: 20px;
-            background: #f8f9ff; border-radius: 12px;
-            display: none;
-        }
-        .result.show { display: block; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>今日运势分析器</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  body { background: #000; overflow-x: hidden; }
+  .card { background: #0a0a0a; border: 1px solid #141414; }
+  .bar-track { background: #111; height: 4px; border-radius: 2px; }
+  .bar-fill { height: 4px; border-radius: 2px; transition: width 0.8s ease; }
+  .chip { background: #0d0d0d; border: 1px solid #1a1a1a; color: #999; }
+  .chip-green { border-color: #1a3a1a; color: #4a9; }
+  .chip-amber { border-color: #2a2010; color: #b98; }
+  .input-field { background: #0a0a0a; border: 1px solid #1a1a1a; color: #fff; transition: border-color 0.3s; }
+  .input-field:focus { outline: none; border-color: #444; }
+  .btn-main { background: #fff; color: #000; transition: all 0.3s; }
+  .btn-main:hover { background: #e5e5e5; transform: translateY(-1px); }
+  .btn-ghost { border: 1px solid #1a1a1a; color: #999; transition: all 0.3s; }
+  .btn-ghost:hover { border-color: #444; color: #fff; }
+  input[type="date"], input[type="time"] { color-scheme: dark; }
+  input[type="date"]::-webkit-calendar-picker-indicator,
+  input[type="time"]::-webkit-calendar-picker-indicator { filter: invert(1); }
+  .stars-container { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+  .star { position: absolute; color: #111; user-select: none; animation: drift linear infinite; }
+  @keyframes drift {
+    0%   { transform: translateY(105vh) rotate(0deg); opacity:0; }
+    10%  { opacity:0.5; }
+    90%  { opacity:0.5; }
+    100% { transform: translateY(-15vh) rotate(360deg); opacity:0; }
+  }
+  .hidden { display: none !important; }
+  .fade-in { animation: fadeIn 0.5s ease; }
+  @keyframes fadeIn { from { opacity:0; transform: translateY(10px); } to { opacity:1; transform: translateY(0); } }
+</style>
 </head>
-<body>
-    <div class="container">
-        <h1>🧧 今日运势分析器</h1>
-        <p class="subtitle">星座 × 传统命理 · 每日运势早知道</p>
+<body class="min-h-screen text-white">
 
-        <form id="fortuneForm">
-            <div class="form-group">
-                <label>📅 出生年月日 <span style="color:red">*</span></label>
-                <input type="date" id="birthday" required>
-            </div>
-            <div class="form-group">
-                <label>⏰ 出生时间 <span class="optional">（选填，推荐填写以获得更精准的分析）</span></label>
-                <input type="time" id="birthtime">
-            </div>
-            <button type="submit" class="btn">🔮 查看今日运势</button>
-        </form>
+<!-- 星空 -->
+<div class="stars-container" id="stars"></div>
 
-        <div class="result" id="result">
-            <h3>📊 今日运势报告</h3>
-            <div id="report"></div>
+<!-- ═══════════ 输入态 ═══════════ -->
+<div id="inputView" class="relative z-10 flex items-center justify-center min-h-screen p-4">
+  <div class="w-full max-w-md">
+    <div class="text-center mb-8">
+      <p class="text-neutral-600 text-xs tracking-widest">Daily Fortune</p>
+    </div>
+    <form id="fortuneForm">
+      <div class="mb-6">
+        <label class="block text-xs text-neutral-500 mb-3 tracking-wider">出生年月日 <span class="text-neutral-700">*</span></label>
+        <input type="date" id="birthday" required class="input-field w-full px-4 py-3 rounded-lg text-base">
+      </div>
+      <div class="mb-8">
+        <label class="block text-xs text-neutral-500 mb-3 tracking-wider">出生时间 <span class="text-neutral-700 text-xs">选填</span></label>
+        <input type="time" id="birthtime" class="input-field w-full px-4 py-3 rounded-lg text-base">
+        <p class="text-neutral-700 text-xs mt-2">填写后可解锁八字精算</p>
+      </div>
+      <button type="submit" class="btn-main w-full py-3.5 rounded-lg text-base font-semibold tracking-wider">
+        查看今日运势
+      </button>
+    </form>
+    <div class="flex items-center gap-3 my-6">
+      <div class="flex-1 border-t border-neutral-900"></div>
+      <span class="text-xs text-neutral-700">或</span>
+      <div class="flex-1 border-t border-neutral-900"></div>
+    </div>
+    <button id="randomBtn" class="btn-ghost w-full py-3 rounded-lg text-sm">随机体验</button>
+    <p class="text-center text-neutral-800 text-xs mt-8">仅供娱乐参考 · 数据仅在本地计算</p>
+  </div>
+</div>
+
+<!-- ═══════════ 加载态 ═══════════ -->
+<div id="loadingView" class="hidden relative z-10 flex items-center justify-center min-h-screen">
+  <div class="text-center">
+    <div class="text-4xl mb-4 animate-bounce">🔮</div>
+    <p class="text-white text-sm font-semibold tracking-wider">正在推演今日运势</p>
+    <p class="text-neutral-500 text-xs mt-1" id="loadingStep">星座运势分析中</p>
+  </div>
+</div>
+
+<!-- ═══════════ 结果态 ═══════════ -->
+<div id="resultView" class="hidden relative z-10 mx-auto max-w-3xl px-4 md:px-8">
+
+  <!-- 导航 -->
+  <header class="flex items-center justify-between py-5 text-xs">
+    <button onclick="backToInput()" class="text-neutral-600 hover:text-neutral-400 transition tracking-wider">← 返回</button>
+    <span class="text-neutral-800">今日运势</span>
+    <button onclick="shareCard()" class="text-neutral-600 hover:text-neutral-400 transition tracking-wider">分享</button>
+  </header>
+
+  <!-- 评分区 -->
+  <section class="text-center pt-6 pb-10 md:pt-12 md:pb-16 fade-in">
+    <p class="text-neutral-600 text-xs tracking-widest mb-6" id="reportDate"></p>
+    <div class="flex justify-center mb-8">
+      <div class="relative w-[140px] h-[140px] md:w-[160px] md:h-[160px] flex items-center justify-center">
+        <svg class="absolute inset-0 -rotate-90 w-full h-full" viewBox="0 0 140 140">
+          <circle cx="70" cy="70" r="67" fill="none" stroke="#111" stroke-width="3"/>
+          <circle id="scoreCircle" cx="70" cy="70" r="67" fill="none" stroke="#fff" stroke-width="3"
+            stroke-dasharray="421" stroke-linecap="round"/>
+        </svg>
+        <div class="relative text-center">
+          <span class="text-5xl md:text-6xl font-light tracking-tighter" id="scoreNum">85</span>
+          <p class="text-xs text-neutral-500 mt-1 tracking-wider" id="scoreLabel">GOOD</p>
         </div>
+      </div>
+    </div>
+    <p class="text-base md:text-lg text-neutral-300 leading-relaxed max-w-lg mx-auto font-light" id="summaryText"></p>
+    <p class="text-neutral-700 text-xs mt-4" id="sourceText"></p>
+  </section>
+
+  <!-- 内容区 -->
+  <div class="md:grid md:grid-cols-2 md:gap-4">
+
+    <!-- 分类运势 -->
+    <div class="card rounded-xl p-5 md:p-6 mb-3 md:mb-4 fade-in">
+      <h3 class="text-xs text-neutral-500 tracking-widest mb-5">分类运势</h3>
+      <div class="space-y-5" id="categoryFortunes"></div>
     </div>
 
-    <script>
-        document.getElementById('fortuneForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const birthday = document.getElementById('birthday').value;
-            const birthtime = document.getElementById('birthtime').value;
+    <!-- 性格解析 -->
+    <div class="card rounded-xl p-5 md:p-6 mb-3 md:mb-4 fade-in">
+      <h3 class="text-xs text-neutral-500 tracking-widest mb-5">性格解析</h3>
+      <div class="flex gap-3 mb-4" id="personaCards"></div>
+      <p class="text-sm text-neutral-400 leading-relaxed font-light" id="personaDesc"></p>
+      <div class="flex flex-wrap gap-1.5 mt-4" id="personaTags"></div>
+    </div>
 
-            // TODO: 完整运势分析逻辑
-            const resultDiv = document.getElementById('result');
-            const reportDiv = document.getElementById('report');
-            reportDiv.innerHTML = '<p>🏗️ 分析引擎开发中... 请输入你的出生信息，精彩即将呈现！</p>';
-            resultDiv.classList.add('show');
-        });
-    </script>
+    <!-- 人际契合 -->
+    <div class="card rounded-xl p-5 md:p-6 mb-3 md:mb-4 fade-in">
+      <h3 class="text-xs text-neutral-500 tracking-widest mb-5">今日人际</h3>
+      <div id="interpersonalContent"></div>
+    </div>
+
+    <!-- 幸运物 + 五行 -->
+    <div class="card rounded-xl p-5 md:p-6 mb-3 md:mb-4 fade-in">
+      <h3 class="text-xs text-neutral-500 tracking-widest mb-5">今日幸运</h3>
+      <div class="grid grid-cols-3 gap-3 text-center mb-5" id="luckyItems"></div>
+      <div class="pt-4 border-t border-neutral-900">
+        <p class="text-xs text-neutral-600 tracking-widest mb-3">五行</p>
+        <div class="flex gap-1.5 text-center text-xs" id="wuxingBars"></div>
+        <p class="text-neutral-700 text-xs mt-2" id="wuxingTip"></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 分享按钮 -->
+  <div class="max-w-md mx-auto mt-4 mb-10 fade-in">
+    <button onclick="shareCard()" class="w-full py-3.5 rounded-lg text-sm tracking-wider transition bg-white text-black font-semibold hover:bg-neutral-200">
+      生成分享卡片
+    </button>
+    <p class="text-center text-neutral-800 text-xs mt-4">仅供娱乐参考 · 命运掌握在自己手中</p>
+  </div>
+</div>
+
+<!-- 分享弹窗 -->
+<div id="shareModal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+  <div class="card rounded-xl p-6 max-w-sm w-full text-center">
+    <p class="text-xs text-neutral-500 tracking-widest mb-4">分享运势</p>
+    <div class="rounded-xl p-6 mb-5" style="background:#080808; border:1px solid #1a1a1a;">
+      <p class="text-xs text-neutral-600 mb-2" id="shareDate"></p>
+      <p class="text-4xl font-light text-white" id="shareScore"></p>
+      <p class="text-sm text-neutral-400 mt-1" id="shareLabel"></p>
+      <p class="text-xs text-neutral-600 mt-3" id="shareSummary"></p>
+    </div>
+    <div class="flex gap-3">
+      <button onclick="closeShare()" class="flex-1 py-2.5 border border-neutral-800 rounded-lg text-neutral-400 text-sm">关闭</button>
+      <button onclick="closeShare()" class="flex-1 py-2.5 bg-white text-black rounded-lg text-sm font-semibold">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ 全部 JS 逻辑 ═══════════ -->
+<script>
+// ===================== 数据常量 =====================
+
+const STEMS = ['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
+const BRANCHES = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+const ZODIAC_ANIMALS = ['鼠','牛','虎','兔','龙','蛇','马','羊','猴','鸡','狗','猪'];
+const ZODIAC_EMOJI = ['🐭','🐮','🐯','🐰','🐲','🐍','🐴','🐑','🐵','🐔','🐶','🐷'];
+const HOUR_NAMES = ['子时','丑时','寅时','卯时','辰时','巳时','午时','未时','申时','酉时','戌时','亥时'];
+
+// 星座日期
+const STAR_SIGNS = [
+  { name:'摩羯座', emoji:'♑', el:'土', start:'01-01', end:'01-19' },
+  { name:'水瓶座', emoji:'♒', el:'风', start:'01-20', end:'02-18' },
+  { name:'双鱼座', emoji:'♓', el:'水', start:'02-19', end:'03-20' },
+  { name:'白羊座', emoji:'♈', el:'火', start:'03-21', end:'04-19' },
+  { name:'金牛座', emoji:'♉', el:'土', start:'04-20', end:'05-20' },
+  { name:'双子座', emoji:'♊', el:'风', start:'05-21', end:'06-21' },
+  { name:'巨蟹座', emoji:'♋', el:'水', start:'06-22', end:'07-22' },
+  { name:'狮子座', emoji:'♌', el:'火', start:'07-23', end:'08-22' },
+  { name:'处女座', emoji:'♍', el:'土', start:'08-23', end:'09-22' },
+  { name:'天秤座', emoji:'♎', el:'风', start:'09-23', end:'10-23' },
+  { name:'天蝎座', emoji:'♏', el:'水', start:'10-24', end:'11-22' },
+  { name:'射手座', emoji:'♐', el:'火', start:'11-23', end:'12-21' },
+  { name:'摩羯座', emoji:'♑', el:'土', start:'12-22', end:'12-31' },
+];
+
+// 节气近似日期 (月+日)
+const SOLAR_TERMS = [
+  { m:2, d:4,  branch:2 },  // 立春~ 寅
+  { m:3, d:6,  branch:3 },  // 惊蛰~ 卯
+  { m:4, d:5,  branch:4 },  // 清明~ 辰
+  { m:5, d:6,  branch:5 },  // 立夏~ 巳
+  { m:6, d:6,  branch:6 },  // 芒种~ 午
+  { m:7, d:7,  branch:7 },  // 小暑~ 未
+  { m:8, d:8,  branch:8 },  // 立秋~ 申
+  { m:9, d:8,  branch:9 },  // 白露~ 酉
+  { m:10,d:8,  branch:10 }, // 寒露~ 戌
+  { m:11,d:8,  branch:11 }, // 立冬~ 亥
+  { m:12,d:7,  branch:0 },  // 大雪~ 子
+  { m:1, d:6,  branch:1 },  // 小寒~ 丑
+];
+// 月干起始 (五虎遁): yearStem→[甲/己, 乙/庚, 丙/辛, 丁/壬, 戊/癸]
+const MONTH_STEM_START = [2,4,6,8,0]; // 丙=2,戊=4,庚=6,壬=8,甲=0
+
+// 日主性格
+const DAY_MASTER_TRAITS = {
+  '甲': { name:'甲木', el:'木', desc:'参天大树，正直坚定，领导力强', tags:['正直','领导力','坚韧'] },
+  '乙': { name:'乙木', el:'木', desc:'藤萝花草，柔韧灵活，善于适应', tags:['灵活','细腻','适应力'] },
+  '丙': { name:'丙火', el:'火', desc:'太阳之火，光明磊落，感染力强', tags:['热情','感染力','光明'] },
+  '丁': { name:'丁火', el:'火', desc:'灯烛之火，温和细腻，洞察人心', tags:['细腻','洞察','温和'] },
+  '戊': { name:'戊土', el:'土', desc:'城墙之土，稳重厚道，可靠踏实', tags:['稳重','可靠','包容'] },
+  '己': { name:'己土', el:'土', desc:'田园之土，滋养万物，耐心细致', tags:['耐心','滋养','务实'] },
+  '庚': { name:'庚金', el:'金', desc:'刀剑之金，刚毅果断，执行力强', tags:['果断','刚毅','执行'] },
+  '辛': { name:'辛金', el:'金', desc:'珠宝之金，精致讲究，追求完美', tags:['精致','完美','品味'] },
+  '壬': { name:'壬水', el:'水', desc:'江河之水，智慧通达，包容万象', tags:['智慧','通达','包容'] },
+  '癸': { name:'癸水', el:'水', desc:'雨露之水，细腻敏感，直觉敏锐', tags:['敏感','直觉','灵性'] },
+};
+
+// 星座性格
+const SIGN_TRAITS = {
+  '白羊座': { desc:'热情冲动，勇往直前，充满活力', tags:['勇敢','直接','热情'] },
+  '金牛座': { desc:'稳重踏实，重视物质，品味出众', tags:['稳重','务实','耐心'] },
+  '双子座': { desc:'聪明灵活，好奇心强，善于沟通', tags:['聪明','好奇','善谈'] },
+  '巨蟹座': { desc:'温柔细腻，重视家庭，情感丰富', tags:['温柔','顾家','敏感'] },
+  '狮子座': { desc:'自信大方，领导力强，慷慨热情', tags:['自信','慷慨','领导力'] },
+  '处女座': { desc:'细致认真，追求完美，逻辑清晰', tags:['细致','完美','理性'] },
+  '天秤座': { desc:'优雅平衡，善于社交，追求和谐', tags:['优雅','社交','公正'] },
+  '天蝎座': { desc:'深沉敏锐，意志坚定，洞察力强', tags:['深沉','意志','洞察'] },
+  '射手座': { desc:'乐观自由，热爱探索，心胸开阔', tags:['乐观','自由','探索'] },
+  '摩羯座': { desc:'沉稳务实，目标明确，坚韧不拔', tags:['沉稳','务实','坚韧'] },
+  '水瓶座': { desc:'独立创新，思维超前，特立独行', tags:['独立','创新','理性'] },
+  '双鱼座': { desc:'浪漫感性，富有同理心，想象力丰富', tags:['浪漫','同理心','想象'] },
+};
+
+// ===================== 🛠 工具函数 =====================
+
+// 日期转天数 (从 2000-01-01 起)
+function daysSince2000(y, m, d) {
+  const date = new Date(y, m - 1, d);
+  const ref = new Date(2000, 0, 1);
+  return Math.floor((date - ref) / (1000 * 60 * 60 * 24));
+}
+
+// 哈希函数——根据种子生成 0-99 的伪随机数
+function hashDay(seed, offset = 0) {
+  let h = seed + offset * 137;
+  h = ((h >> 16) ^ h) * 0x45d9f3b;
+  h = ((h >> 16) ^ h) * 0x45d9f3b;
+  h = (h >> 16) ^ h;
+  return Math.abs(h) % 100;
+}
+
+// ===================== 星座引擎 =====================
+
+function getStarSign(month, day) {
+  const mmdd = `${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+  for (const s of STAR_SIGNS) {
+    if (mmdd >= s.start && mmdd <= s.end) return s;
+  }
+  return STAR_SIGNS[0]; // 摩羯座 1月1日
+}
+
+function calcHoroscopeFortunes(sign, daySeed) {
+  // 基于星座元素 + 日种子计算四维度运势
+  const elementMod = { '火':1.1, '土':1.0, '风':0.95, '水':1.05 };
+  const base = elementMod[sign.el] || 1.0;
+
+  const dims = [
+    { key:'career', name:'💼 事业运', seed:1 },
+    { key:'wealth', name:'💰 财运', seed:2 },
+    { key:'love', name:'❤️ 感情运', seed:3 },
+    { key:'health', name:'🏥 健康运', seed:4 },
+  ];
+
+  return dims.map(d => {
+    let score = Math.round(hashDay(daySeed, d.seed) * base);
+    score = Math.max(25, Math.min(98, score));
+    const level = score >= 80 ? '吉' : score >= 60 ? '平' : '低';
+    return { ...d, score, level };
+  });
+}
+
+// ===================== 生肖引擎 =====================
+
+function getZodiacAnimal(year) {
+  return ZODIAC_ANIMALS[(year - 4) % 12]; // 参考: 2020=鼠=(2020-4)%12=0
+}
+
+function calcZodiacFortune(animal, daySeed) {
+  const idx = ZODIAC_ANIMALS.indexOf(animal);
+  const score = Math.round(35 + hashDay(daySeed, 10 + idx) * 0.6);
+  return Math.max(20, Math.min(95, score));
+}
+
+// ===================== 八字引擎 =====================
+
+function calcBaZi(year, month, day, hour, hasTime) {
+  // 年柱
+  const yearStemIdx = (year - 4) % 10;
+  const yearBranchIdx = (year - 4) % 12;
+
+  // 月柱: 节气判定
+  let monthBranchIdx = 11; // 默认丑月(1月)
+  const mmdd = month * 100 + day;
+  for (let i = 0; i < SOLAR_TERMS.length; i++) {
+    const t = SOLAR_TERMS[i];
+    const tmmdd = t.m * 100 + t.d;
+    // 处理跨年 (12月~1月)
+    if (i === 11) { // 小寒(1月6日)
+      if (mmdd >= 106) { monthBranchIdx = t.branch; break; }
+    } else if (i === 10) { // 大雪(12月7日)
+      if (mmdd >= 1207 || mmdd < 106) { monthBranchIdx = t.branch; break; }
+    } else {
+      const next = SOLAR_TERMS[(i + 1) % 12];
+      const nextMMDD = next.m * 100 + next.d;
+      if (mmdd >= tmmdd && mmdd < nextMMDD) { monthBranchIdx = t.branch; break; }
+    }
+  }
+  // 五虎遁: 月干
+  const groupIdx = yearStemIdx % 5; // 0=甲己,1=乙庚,2=丙辛,3=丁壬,4=戊癸
+  const monthStemIdx = (MONTH_STEM_START[groupIdx] + monthBranchIdx) % 10;
+
+  // 日柱
+  const dayDiff = daysSince2000(year, month, day);
+  const refStem = 4; // 2000-01-01 = 戊(4)
+  const refBranch = 6; // 2000-01-01 = 午(6)
+  const dayStemIdx = ((refStem + dayDiff) % 10 + 10) % 10;
+  const dayBranchIdx = ((refBranch + dayDiff) % 12 + 12) % 12;
+  const dayMaster = STEMS[dayStemIdx];
+
+  // 时柱
+  let hourStemIdx = 0, hourBranchIdx = 0;
+  if (hasTime && hour !== undefined) {
+    // 时辰: 23-0→子(0), 1-2→丑(1), ...
+    if (hour === 23 || hour === 0) hourBranchIdx = 0;
+    else if (hour >= 1 && hour <= 2) hourBranchIdx = 1;
+    else hourBranchIdx = Math.floor((hour - 1) / 2) + 1;
+    // 五鼠遁: 时干
+    const hGroup = dayStemIdx % 5;
+    const HOUR_STEM_START = [0,2,4,6,8]; // 甲=0,丙=2,戊=4,庚=6,壬=8
+    hourStemIdx = (HOUR_STEM_START[hGroup] + hourBranchIdx) % 10;
+  }
+
+  return {
+    yearPillar: STEMS[yearStemIdx] + BRANCHES[yearBranchIdx],
+    monthPillar: STEMS[monthStemIdx] + BRANCHES[monthBranchIdx],
+    dayPillar: STEMS[dayStemIdx] + BRANCHES[dayBranchIdx],
+    hourPillar: hasTime ? STEMS[hourStemIdx] + BRANCHES[hourBranchIdx] : '—',
+    dayMaster,
+    dayStemIdx,
+    dayBranchIdx,
+    yearStemIdx,
+    monthStemIdx,
+    hourBranchIdx: hasTime ? hourBranchIdx : -1,
+    hasTime,
+  };
+}
+
+function calcBaZiFortune(bazi, today) {
+  const todayStemIdx = (today.getFullYear() - 4 + Math.floor((today.getMonth() + 1) * 0.3)) % 10;
+  const relation = (bazi.dayStemIdx - todayStemIdx + 10) % 10;
+  // 今日生克关系影响运势
+  const relations = [0,1,2,3,4,5,6,7,8,9]; // 比肩,劫财,食神,伤官,偏财,正财,偏官,正官,偏印,正印
+  const goodRelations = [2,4,5,7,9]; // 食神 偏财 正财 正官 正印
+  const baseScore = goodRelations.includes(relation) ? 65 : 45;
+  const noise = hashDay(daysSince2000(today.getFullYear(), today.getMonth()+1, today.getDate()), bazi.dayStemIdx);
+  return Math.round(baseScore + noise * 0.25);
+}
+
+// ===================== 融合引擎 =====================
+
+function calcCompositeScore(horoscopeScores, zodiacScore, baziScore, hasTime) {
+  let weighted;
+  if (hasTime) {
+    const avgHoroscope = horoscopeScores.reduce((s,d) => s + d.score, 0) / 4;
+    weighted = Math.round(avgHoroscope * 0.40 + baziScore * 0.40 + zodiacScore * 0.20);
+  } else {
+    const avgHoroscope = horoscopeScores.reduce((s,d) => s + d.score, 0) / 4;
+    weighted = Math.round(avgHoroscope * 0.60 + zodiacScore * 0.40);
+  }
+  return Math.max(5, Math.min(98, weighted));
+}
+
+function getScoreLevel(score) {
+  if (score >= 90) return '极佳';
+  if (score >= 75) return '良好';
+  if (score >= 60) return '平稳';
+  if (score >= 40) return '稍低';
+  return '低迷';
+}
+
+function getScoreLabelEn(level) {
+  const map = { '极佳':'EXCELLENT', '良好':'GOOD', '平稳':'STABLE', '稍低':'LOW', '低迷':'CAUTION' };
+  return map[level] || 'STABLE';
+}
+
+// ===================== 内容生成器 =====================
+
+function generateSummary(scores, hasTime) {
+  // 找最高/最低维度
+  const sorted = [...scores].sort((a,b) => b.score - a.score);
+  const best = sorted[0];
+  const worst = sorted[sorted.length - 1];
+
+  const templates = {
+    career: ['今日适合主动出击', '职场上贵人运在线', '工作汇报容易获得认可', '团队协作效率高涨'],
+    wealth: ['正财运稳健', '适合做财务规划', '偏财勿碰，守住底线', '小额支出无需纠结'],
+    love: ['桃花运不错', '适合表达心意', '感情上顺其自然就好', '有伴者相处融洽'],
+    health: ['精力充沛', '适合开始新运动计划', '注意作息规律', '身体状态良好'],
+  };
+
+  const tips = {
+    career: ['重要会议安排在上午', '避免与同事争执', '多听少说，观察为先'],
+    wealth: ['不宜大额支出', '控制冲动消费', '适合记账复盘'],
+    love: ['给对方一些空间', '不要翻旧账', '多表达感激之情'],
+    health: ['避免熬夜', '多喝水', '适当活动颈部'],
+  };
+
+  const bestTip = templates[best.key] ? templates[best.key][Math.floor(hashDay(0, best.score) / 25)] : '运势不错';
+  const worstKey = worst.key;
+  const cautionTip = tips[worstKey] ? tips[worstKey][Math.floor(hashDay(0, worst.score) / 33)] : '保持谨慎';
+
+  if (best.score >= 75) {
+    return `"${bestTip}；${cautionTip}。"`;
+  } else if (best.score < 50) {
+    return `"今日整体运势偏低，${cautionTip}，不必焦虑，明天会好起来。"`;
+  }
+  return `"运势平稳的一天，${bestTip}；${cautionTip}。"`;
+}
+
+function generateCategoryText(key, score, signName) {
+  const highTexts = {
+    career: ['适合主动汇报工作，领导认可度高', '下午适合谈判签约', '团队协作顺畅高效'],
+    wealth: ['正财运稳定，适合做财务规划', '偏财运一般，不宜大额投资', '小额理财可考虑'],
+    love: ['桃花运在线，适合出门社交', '有伴者感情升温', '单身者有机会遇见有趣的人'],
+    health: ['精力充沛，适合运动', '身体状态良好', '保持当前作息即可'],
+  };
+  const midTexts = {
+    career: ['按部就班即可，不必急于表现', '注意细节，避免小失误'],
+    wealth: ['收支平衡，不宜冒险', '保守理财为上策'],
+    love: ['桃花运一般，顺其自然', '有伴者注意沟通方式，小事莫计较'],
+    health: ['注意颈椎和用眼疲劳', '建议每小时起身活动5分钟'],
+  };
+  const lowTexts = {
+    career: ['宜低调行事，避免正面冲突', '重要决策推迟到明天'],
+    wealth: ['谨慎支出，避免冲动消费', '今天不宜做投资决定'],
+    love: ['不宜表白或重大感情决定', '给自己一些独处的时间'],
+    health: ['容易疲劳，注意休息', '避免高强度运动'],
+  };
+
+  let pool;
+  if (score >= 75) pool = highTexts[key];
+  else if (score >= 55) pool = midTexts[key];
+  else pool = lowTexts[key];
+
+  if (!pool) return '运势平稳，保持平常心。';
+  return pool[Math.floor(hashDay(0, score * 7) / (100 / pool.length)) % pool.length];
+}
+
+function generatePersonality(sign, bazi) {
+  const signInfo = SIGN_TRAITS[sign.name] || { desc:'', tags:[] };
+  const dmInfo = DAY_MASTER_TRAITS[bazi.dayMaster] || { name:'', el:'', desc:'', tags:[] };
+
+  // 交叉分析
+  const sameElement = sign.el === dmInfo.el;
+  let crossDesc = '';
+  if (sameElement) {
+    crossDesc = `${sign.name}与${dmInfo.name}同属${sign.el}象，双重叠加让你在人群中格外耀眼。`;
+  } else {
+    crossDesc = `${sign.name}（${sign.el}象）与${dmInfo.name}（${dmInfo.el}象）互为补充，内外兼修。`;
+  }
+
+  const fullDesc = `${crossDesc}${signInfo.desc}。${dmInfo.desc}。`;
+  const allTags = [...new Set([...signInfo.tags, ...dmInfo.tags, sameElement ? '双重特质' : '刚柔并济'])];
+
+  return {
+    signCard: { emoji: sign.emoji, name: sign.name },
+    dmCard: { emoji: dmInfo.el==='木'?'🌳':dmInfo.el==='火'?'☀️':dmInfo.el==='土'?'⛰':dmInfo.el==='金'?'⚙':'💧', name: dmInfo.name },
+    desc: fullDesc,
+    tags: allTags.slice(0, 6),
+  };
+}
+
+function generateInterpersonal(bazi, daySeed) {
+  const allTypes = ['沉稳务实型','理性分析型','幽默风趣型','温和包容型','果断利落型','热情开朗型','细腻敏感型','独立创新型'];
+  // 根据日主五行选择宜近/宜远
+  const elOrder = ['木','火','土','金','水'];
+  const dmEl = DAY_MASTER_TRAITS[bazi.dayMaster]?.el || '火';
+  const elIdx = elOrder.indexOf(dmEl);
+
+  const goodEl = elOrder[(elIdx + 1) % 5]; // 相生
+  const badEl = elOrder[(elIdx + 3) % 5]; // 相克
+
+  const goodTypes = allTypes.filter(t => hashDay(daySeed, allTypes.indexOf(t) * 3) > 40).slice(0, 3);
+  const badTypes = allTypes.filter(t => hashDay(daySeed, allTypes.indexOf(t) * 7 + 50) > 55).slice(0, 2);
+
+  return {
+    good: goodTypes.length ? goodTypes : ['沉稳务实型','理性分析型','温和包容型'],
+    bad: badTypes.length ? badTypes : ['急躁冲动型','情绪多变型'],
+    goodReason: `今日与${elOrder[goodEl] || '土'}象特质的人相处更合拍`,
+    badReason: '火星逆行期间，注意情绪管理',
+    goodEl, badEl,
+  };
+}
+
+function generateLuckyItems(bazi, daySeed) {
+  const dmEl = DAY_MASTER_TRAITS[bazi.dayMaster]?.el || '火';
+  const colors = { '木':{name:'森林绿',hex:'#4a9'}, '火':{name:'海洋蓝',hex:'#4A90D9'}, '土':{name:'琥珀金',hex:'#d4a853'}, '金':{name:'赭石棕',hex:'#b87351'}, '水':{name:'珊瑚橙',hex:'#e8755a'} };
+  const dirs = ['东','南','西','北','东南','西南','东北','西北'];
+  const nums = [3,7,11,23,28,32,47,55];
+  const color = colors[dmEl] || { name:'深空灰', hex:'#666' };
+  const num = nums[hashDay(daySeed, 99) % nums.length];
+  const dir = dirs[hashDay(daySeed, 77) % dirs.length];
+
+  return { color, num, dir };
+}
+
+function generateWuxing(dayMaster, daySeed) {
+  const dmEl = DAY_MASTER_TRAITS[dayMaster]?.el || '火';
+  const els = ['木','火','土','金','水'];
+  const elEmoji = { '木':'🌳', '火':'🔥', '土':'⛰', '金':'⚙', '水':'💧' };
+  const dmIdx = els.indexOf(dmEl);
+
+  // 生成五行强弱
+  const strengths = els.map((el, i) => {
+    const dist = (i - dmIdx + 5) % 5;
+    let base;
+    if (dist === 0) base = 75; // 日主
+    else if (dist === 1) base = 55; // 相生
+    else if (dist === 4) base = 50; // 生我
+    else base = 35;
+    const noise = hashDay(daySeed, i * 13) * 0.3;
+    return Math.round(base + noise);
+  });
+
+  const maxIdx = strengths.indexOf(Math.max(...strengths));
+  const minIdx = strengths.indexOf(Math.min(...strengths));
+
+  return {
+    items: els.map((el, i) => ({
+      el, emoji: elEmoji[el],
+      level: strengths[i] >= 65 ? '旺' : strengths[i] >= 45 ? '平' : '弱',
+      strong: strengths[i] >= 65,
+      weak: strengths[i] < 45,
+    })),
+    tip: `${els[maxIdx]}旺${els[minIdx]}弱，今日宜多补${els[minIdx]}元素`,
+  };
+}
+
+// ===================== UI 控制器 =====================
+
+let currentResult = null;
+
+function showView(view) {
+  document.getElementById('inputView').classList.add('hidden');
+  document.getElementById('loadingView').classList.add('hidden');
+  document.getElementById('resultView').classList.add('hidden');
+  document.getElementById(view).classList.remove('hidden');
+}
+
+function backToInput() {
+  showView('inputView');
+  window.scrollTo(0, 0);
+}
+
+async function handleSubmit(event) {
+  event.preventDefault();
+  const birthday = document.getElementById('birthday').value;
+  if (!birthday) return;
+  const birthtime = document.getElementById('birthtime').value;
+  const hasTime = !!birthtime;
+
+  // 切换到加载态
+  showView('loadingView');
+  const steps = ['星座运势分析中', '八字命理推算中', '综合运势生成中'];
+  const stepEl = document.getElementById('loadingStep');
+  for (let i = 0; i < steps.length; i++) {
+    stepEl.textContent = steps[i];
+    await sleep(400);
+  }
+  await sleep(300);
+
+  // 解析输入
+  const [by, bm, bd] = birthday.split('-').map(Number);
+  let bh = 12; // 默认中午
+  if (hasTime) {
+    const [hh] = birthtime.split(':').map(Number);
+    bh = hh;
+  }
+
+  const today = new Date();
+  const daySeed = daysSince2000(today.getFullYear(), today.getMonth() + 1, today.getDate());
+
+  // F-02 星座
+  const sign = getStarSign(bm, bd);
+  const horoscopeScores = calcHoroscopeFortunes(sign, daySeed);
+
+  // F-03 生肖
+  const animal = getZodiacAnimal(by);
+  const zodiacScore = calcZodiacFortune(animal, daySeed);
+
+  // F-04 八字
+  const bazi = calcBaZi(by, bm, bd, bh, hasTime);
+  const baziScore = hasTime ? calcBaZiFortune(bazi, today) : 0;
+
+  // F-05 综合评分
+  const compositeScore = calcCompositeScore(horoscopeScores, zodiacScore, baziScore, hasTime);
+  const level = getScoreLevel(compositeScore);
+  const levelEn = getScoreLabelEn(level);
+  const summary = generateSummary(horoscopeScores, hasTime);
+
+  // F-07 性格
+  const personality = generatePersonality(sign, bazi);
+
+  // F-08 人际
+  const interpersonal = generateInterpersonal(bazi, daySeed);
+
+  // F-09 幸运物
+  const lucky = generateLuckyItems(bazi, daySeed);
+
+  // 五行
+  const wuxing = generateWuxing(bazi.dayMaster, daySeed);
+
+  currentResult = { compositeScore, level, levelEn, summary, sign, animal: ZODIAC_EMOJI[ZODIAC_ANIMALS.indexOf(animal)] + ' ' + animal,
+    bazi, horoscopeScores, personality, interpersonal, lucky, wuxing, hasTime };
+
+  // 渲染结果页
+  renderResult(currentResult, today);
+  showView('resultView');
+  window.scrollTo(0, 0);
+
+  // 进度条动画
+  setTimeout(() => {
+    document.querySelectorAll('.bar-fill').forEach(b => {
+      const w = b.style.width;
+      b.style.width = '0%';
+      setTimeout(() => { b.style.width = w; }, 50);
+    });
+  }, 100);
+}
+
+function renderResult(r, today) {
+  // 日期
+  const y = today.getFullYear(), m = today.getMonth() + 1, d = today.getDate();
+  const weekdays = ['日','一','二','三','四','五','六'];
+  const wd = weekdays[today.getDay()];
+  document.getElementById('reportDate').textContent = `${y} / ${m.toString().padStart(2,'0')} / ${d.toString().padStart(2,'0')} · 星期${wd}`;
+
+  // 评分
+  document.getElementById('scoreNum').textContent = r.compositeScore;
+  document.getElementById('scoreLabel').textContent = r.levelEn;
+  const circle = document.getElementById('scoreCircle');
+  const circumference = 2 * Math.PI * 67;
+  const offset = circumference - (r.compositeScore / 100) * circumference;
+  circle.setAttribute('stroke-dasharray', circumference);
+  circle.setAttribute('stroke-dashoffset', offset);
+
+  // 总结
+  document.getElementById('summaryText').textContent = r.summary;
+  const sourceParts = [r.sign.emoji + ' ' + r.sign.name];
+  if (r.hasTime) sourceParts.push(r.bazi.dayMaster + '火日主'[0] + '日主');
+  sourceParts.push(r.animal);
+  document.getElementById('sourceText').textContent = sourceParts.join(' · ');
+
+  // 分类运势
+  const catColors = { career:'white', wealth:'#ccc', love:'#888', health:'#888' };
+  const catIcons = { career:'💼', wealth:'💰', love:'❤️', health:'🏥' };
+  const catNames = { career:'事业运', wealth:'财运', love:'感情运', health:'健康运' };
+  document.getElementById('categoryFortunes').innerHTML = r.horoscopeScores.map(s => `
+    <div>
+      <div class="flex justify-between text-sm mb-2">
+        <span class="text-neutral-300">${catIcons[s.key]} ${catNames[s.key]}</span>
+        <span class="text-neutral-200 font-medium">${s.score}</span>
+      </div>
+      <div class="bar-track"><div class="bar-fill" style="width:${s.score}%; background:${catColors[s.key]};"></div></div>
+      <p class="text-neutral-600 text-xs mt-1.5">${generateCategoryText(s.key, s.score, r.sign.name)}</p>
+    </div>
+  `).join('');
+
+  // 性格
+  const p = r.personality;
+  document.getElementById('personaCards').innerHTML = `
+    <div class="flex-1 text-center py-3 rounded-lg" style="background:#0a0a0a; border:1px solid #141414;">
+      <p class="text-2xl mb-1">${p.signCard.emoji}</p>
+      <p class="text-xs text-neutral-400">${p.signCard.name}</p>
+    </div>
+    <div class="flex items-center text-neutral-700 text-sm">+</div>
+    <div class="flex-1 text-center py-3 rounded-lg" style="background:#0a0a0a; border:1px solid #141414;">
+      <p class="text-2xl mb-1">${p.dmCard.emoji}</p>
+      <p class="text-xs text-neutral-400">${p.dmCard.name}</p>
+    </div>`;
+  document.getElementById('personaDesc').textContent = p.desc;
+  document.getElementById('personaTags').innerHTML = p.tags.map(t =>
+    `<span class="chip text-xs px-2.5 py-1 rounded-full">${t}</span>`).join('');
+
+  // 人际
+  const ip = r.interpersonal;
+  document.getElementById('interpersonalContent').innerHTML = `
+    <div class="mb-4 p-4 rounded-lg" style="background:#080f08; border:1px solid #0f1f0f;">
+      <p class="text-xs text-neutral-500 mb-2 tracking-wider">宜近</p>
+      <div class="flex flex-wrap gap-1.5">
+        ${ip.good.map(t => `<span class="chip-green text-xs px-2.5 py-1 rounded-full">${t}</span>`).join('')}
+      </div>
+      <p class="text-neutral-600 text-xs mt-2">${ip.goodReason}</p>
+    </div>
+    <div class="p-4 rounded-lg" style="background:#0f0c08; border:1px solid #1f180f;">
+      <p class="text-xs text-neutral-500 mb-2 tracking-wider">宜远</p>
+      <div class="flex flex-wrap gap-1.5">
+        ${ip.bad.map(t => `<span class="chip-amber text-xs px-2.5 py-1 rounded-full">${t}</span>`).join('')}
+      </div>
+      <p class="text-neutral-600 text-xs mt-2">${ip.badReason}</p>
+    </div>`;
+
+  // 幸运物
+  document.getElementById('luckyItems').innerHTML = `
+    <div class="py-3 rounded-lg" style="background:#0a0a0a; border:1px solid #141414;">
+      <div class="w-8 h-8 rounded-full mx-auto mb-2" style="background:${r.lucky.color.hex};"></div>
+      <p class="text-xs text-neutral-400">${r.lucky.color.name}</p>
+    </div>
+    <div class="py-3 rounded-lg" style="background:#0a0a0a; border:1px solid #141414;">
+      <p class="text-xl text-neutral-200 font-light">${r.lucky.num}</p>
+      <p class="text-xs text-neutral-600">数字</p>
+    </div>
+    <div class="py-3 rounded-lg" style="background:#0a0a0a; border:1px solid #141414;">
+      <p class="text-xl text-neutral-200 font-light">${r.lucky.dir}</p>
+      <p class="text-xs text-neutral-600">方位</p>
+    </div>`;
+
+  // 五行
+  document.getElementById('wuxingBars').innerHTML = r.wuxing.items.map(w => `
+    <div class="flex-1 py-2 rounded" style="background:${w.strong ? '#0f0a0a' : w.weak ? '#080808' : '#0a0a0a'}; ${w.weak ? 'border:1px solid #111;' : ''}">
+      ${w.emoji}<br><span class="${w.strong ? 'text-neutral-400' : w.weak ? 'text-neutral-700' : 'text-neutral-600'}">${w.level}</span>
+    </div>`).join('');
+  document.getElementById('wuxingTip').textContent = r.wuxing.tip;
+
+  // 分享数据
+  document.getElementById('shareDate').textContent = document.getElementById('reportDate').textContent;
+  document.getElementById('shareScore').textContent = r.compositeScore;
+  document.getElementById('shareLabel').textContent = r.level;
+  document.getElementById('shareSummary').textContent = r.summary.replace(/"/g, '');
+}
+
+function shareCard() {
+  document.getElementById('shareModal').classList.remove('hidden');
+}
+function closeShare() {
+  document.getElementById('shareModal').classList.add('hidden');
+}
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+// ===================== 初始化 =====================
+
+document.getElementById('fortuneForm').addEventListener('submit', handleSubmit);
+
+document.getElementById('randomBtn').addEventListener('click', () => {
+  const year = 1980 + Math.floor(Math.random() * 25);
+  const month = String(1 + Math.floor(Math.random() * 12)).padStart(2, '0');
+  const day = String(1 + Math.floor(Math.random() * 28)).padStart(2, '0');
+  document.getElementById('birthday').value = `${year}-${month}-${day}`;
+  document.getElementById('birthtime').value = `${String(6 + Math.floor(Math.random() * 16)).padStart(2, '0')}:${String(Math.floor(Math.random() * 60)).padStart(2, '0')}`;
+  const btn = document.getElementById('randomBtn');
+  btn.textContent = '已生成'; btn.style.borderColor = '#444'; btn.style.color = '#fff';
+  setTimeout(() => { btn.textContent = '随机体验'; btn.style.borderColor = '#1a1a1a'; btn.style.color = '#999'; }, 1500);
+});
+
+document.getElementById('shareModal').addEventListener('click', function(e) {
+  if (e.target === this) closeShare();
+});
+
+// 默认预填
+document.getElementById('birthday').value = '1995-06-20';
+
+// 星空背景
+(function initStars() {
+  const emojis = ['♈','♉','♊','♋','♌','♍','♎','♏','♐','♑','♒','♓','✨','⭐','🌟','💫','☀️','🌙','🪐','☄️','🌌','✧','◈','◇'];
+  const container = document.getElementById('stars');
+  for (let i = 0; i < 40; i++) {
+    const el = document.createElement('span');
+    el.className = 'star';
+    el.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+    el.style.left = Math.random() * 100 + '%';
+    el.style.fontSize = (10 + Math.random() * 24) + 'px';
+    el.style.animationDuration = (18 + Math.random() * 35) + 's';
+    el.style.animationDelay = Math.random() * 25 + 's';
+    container.appendChild(el);
+  }
+})();
+</script>
 </body>
 </html>
