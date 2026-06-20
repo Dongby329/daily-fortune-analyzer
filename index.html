@@ -282,9 +282,13 @@
       <div class="space-y-4 flex-1">
         <!-- 头像区 -->
         <div class="flex flex-col items-center mb-2">
-          <div id="avatarPreview" class="w-16 h-16 rounded-full flex items-center justify-center text-2xl cursor-pointer hover:ring-2 hover:ring-neutral-600 transition mb-2" style="background:#0d0d0d; border:1px solid #1a1a1a;" onclick="toggleAvatarPicker()" title="点击更换头像">👤</div>
+          <div id="avatarPreview" class="w-16 h-16 rounded-full flex items-center justify-center text-2xl cursor-pointer hover:ring-2 hover:ring-neutral-600 transition mb-2 bg-cover bg-center" style="background-color:#0d0d0d; border:1px solid #1a1a1a;" onclick="toggleAvatarPicker()" title="点击更换头像">👤</div>
           <p class="text-xs text-neutral-400" id="displayUsername"></p>
-          <button onclick="toggleAvatarPicker()" class="text-xs text-neutral-600 hover:text-white transition mt-1">更换头像</button>
+          <div class="flex gap-3 mt-1">
+            <button onclick="toggleAvatarPicker()" class="text-xs text-neutral-600 hover:text-white transition">选头像</button>
+            <button onclick="document.getElementById('avatarUpload').click()" class="text-xs text-neutral-600 hover:text-white transition">上传图片</button>
+            <input type="file" id="avatarUpload" accept="image/*" onchange="uploadAvatar(event)" class="hidden">
+          </div>
         </div>
         <!-- 头像选择器 -->
         <div id="avatarPicker" class="hidden grid grid-cols-6 gap-2 p-3 rounded-lg mb-3" style="background:#080808; border:1px solid #141414;">
@@ -1581,14 +1585,36 @@ function toggleAvatarPicker() {
 }
 
 function selectAvatar(emoji) {
-  document.getElementById('avatarPreview').textContent = emoji;
+  setAvatar(emoji);
+}
+
+function uploadAvatar(event) {
+  var file = event.target.files[0];
+  if (!file) return;
+  if (file.size > 200 * 1024) { alert('图片请小于 200KB'); return; }
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    setAvatar('img:' + e.target.result);
+  };
+  reader.readAsDataURL(file);
+  event.target.value = '';
+}
+
+function setAvatar(value) {
+  var preview = document.getElementById('avatarPreview');
+  if (value.startsWith('img:')) {
+    preview.textContent = '';
+    preview.style.backgroundImage = 'url(' + value.slice(4) + ')';
+  } else {
+    preview.style.backgroundImage = '';
+    preview.textContent = value;
+  }
   document.getElementById('avatarPicker').classList.add('hidden');
-  // 即时保存
   var cur = getCurrentUser();
   if (!cur) return;
   var users = loadUsers();
   if (users[cur.key]) {
-    users[cur.key].avatar = emoji;
+    users[cur.key].avatar = value;
     saveUsers(users);
   }
 }
@@ -1625,7 +1651,15 @@ function loadProfile() {
   if (!user) return;
 
   document.getElementById('profileUserId').textContent = user.id;
-  document.getElementById('avatarPreview').textContent = user.avatar || '👤';
+  var av = user.avatar || '👤';
+  var preview = document.getElementById('avatarPreview');
+  if (av.startsWith('img:')) {
+    preview.textContent = '';
+    preview.style.backgroundImage = 'url(' + av.slice(4) + ')';
+  } else {
+    preview.style.backgroundImage = '';
+    preview.textContent = av;
+  }
   document.getElementById('displayUsername').textContent = user.username;
   document.getElementById('editBirthday').value = user.birthday || '';
   document.getElementById('editBirthtime').value = user.birthtime || '';
