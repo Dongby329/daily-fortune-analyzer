@@ -362,13 +362,76 @@ function enterApp(username, id) {
   // 回填之前保存的出生信息
   const users = loadUsers();
   const current = getCurrentUser();
+  let hasBirthInfo = false;
   if (current && users[current.key]) {
     const u = users[current.key];
-    if (u.birthday) document.getElementById('birthday').value = u.birthday;
+    if (u.birthday) { document.getElementById('birthday').value = u.birthday; hasBirthInfo = true; }
     if (u.birthtime) document.getElementById('birthtime').value = u.birthtime;
   }
 
-  showView('inputView');
+  if (hasBirthInfo) {
+    // 已有出生信息 → 直接生成今日运势
+    showView('loadingView');
+    autoGenerate();
+  } else {
+    // 首次使用 → 显示输入页
+    showView('inputView');
+  }
+}
+
+// 自动生成运势（跳过输入页）
+async function autoGenerate() {
+  const birthday = document.getElementById('birthday').value;
+  const birthtime = document.getElementById('birthtime').value;
+  const hasTime = !!birthtime;
+
+  const steps = ['星座运势分析中', '八字命理推算中', '综合运势生成中'];
+  const stepEl = document.getElementById('loadingStep');
+  for (let i = 0; i < steps.length; i++) {
+    stepEl.textContent = steps[i];
+    await sleep(400);
+  }
+  await sleep(300);
+
+  const [by, bm, bd] = birthday.split('-').map(Number);
+  let bh = 12;
+  if (hasTime) {
+    const [hh] = birthtime.split(':').map(Number);
+    bh = hh;
+  }
+
+  const today = new Date();
+  const daySeed = daysSince2000(today.getFullYear(), today.getMonth() + 1, today.getDate());
+  const sign = getStarSign(bm, bd);
+  const horoscopeScores = calcHoroscopeFortunes(sign, daySeed);
+  const animal = getZodiacAnimal(by);
+  const zodiacScore = calcZodiacFortune(animal, daySeed);
+  const bazi = calcBaZi(by, bm, bd, bh, hasTime);
+  const baziScore = hasTime ? calcBaZiFortune(bazi, today) : 0;
+  const compositeScore = calcCompositeScore(horoscopeScores, zodiacScore, baziScore, hasTime);
+  const level = getScoreLevel(compositeScore);
+  const levelEn = getScoreLabelEn(level);
+  const summary = generateSummary(horoscopeScores, hasTime);
+  const personality = generatePersonality(sign, bazi);
+  const interpersonal = generateInterpersonal(bazi, daySeed);
+  const lucky = generateLuckyItems(bazi, daySeed);
+  const wuxing = generateWuxing(bazi.dayMaster, daySeed);
+
+  currentResult = { compositeScore, level, levelEn, summary, sign, animal: ZODIAC_EMOJI[ZODIAC_ANIMALS.indexOf(animal)] + ' ' + animal,
+    bazi, horoscopeScores, personality, interpersonal, lucky, wuxing, hasTime };
+
+  saveBirthInfo(birthday, birthtime);
+  renderResult(currentResult, today);
+  showView('resultView');
+  window.scrollTo(0, 0);
+
+  setTimeout(() => {
+    document.querySelectorAll('.bar-fill').forEach(b => {
+      const w = b.style.width;
+      b.style.width = '0%';
+      setTimeout(() => { b.style.width = w; }, 50);
+    });
+  }, 100);
 }
 
 // 退出
@@ -1071,9 +1134,17 @@ function quickLoginFill(username) {
       document.getElementById('inputUserId').textContent = user.id;
       document.getElementById('resultUsername').textContent = user.username;
       document.getElementById('resultUserId').textContent = user.id;
-      if (user.birthday) document.getElementById('birthday').value = user.birthday;
-      if (user.birthtime) document.getElementById('birthtime').value = user.birthtime;
-      showView('inputView');
+
+      if (user.birthday) {
+        // 有出生信息 → 回填后直接生成今日运势
+        document.getElementById('birthday').value = user.birthday;
+        if (user.birthtime) document.getElementById('birthtime').value = user.birthtime;
+        showView('loadingView');
+        autoGenerate();
+      } else {
+        // 无出生信息 → 显示输入页
+        showView('inputView');
+      }
       return;
     }
   }
