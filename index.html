@@ -1106,16 +1106,19 @@ function renderOutfitsFromShared(targetId) {
 function renderOutfitsWithLinks(outfits, targetId) {
   var grid = document.getElementById(targetId);
   if (!grid) return;
-  // iOS 用 _self 触发 Universal Links 唤起APP；桌面/Android 用 _blank
-  var isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+  var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
   grid.innerHTML = outfits.map(function(o, i) {
-    var linkUrl = (o.platforms && o.platforms[0] && o.platforms[0].webUrl) || (o.platforms && o.platforms[0] && o.platforms[0].url) || '#';
-    if (!linkUrl.startsWith('http')) linkUrl = '#';
-    var safeUrl = escHtml(linkUrl);
+    var webUrl = (o.platforms && o.platforms[0] && o.platforms[0].webUrl) || (o.platforms && o.platforms[0] && o.platforms[0].url) || '#';
+    if (!webUrl.startsWith('http')) webUrl = '#';
+    var safeUrl = escHtml(webUrl);
     var platNames = (o.platforms || []).map(function(p){ return escHtml(p.name); }).join(' · ');
-    var targetAttr = isIOS ? '' : ' target="_blank" rel="noopener"';
 
-    var html = '<a href="' + safeUrl + '"' + targetAttr + ' class="block rounded-xl overflow-hidden transition group cursor-pointer hover:ring-1 hover:ring-neutral-600" style="background:#0a0a0a; border:1px solid #141414; animation:fadeIn 0.4s ease ' + (i*0.06) + 's both; text-decoration:none;">';
+    // 移动端用 onclick 先尝试唤起APP
+    if (isMobile) {
+      var html = '<div onclick="window._tryOpenApp(\'' + safeUrl.replace(/'/g, "\\'") + '\')" class="rounded-xl overflow-hidden transition group cursor-pointer hover:ring-1 hover:ring-neutral-600" style="background:#0a0a0a; border:1px solid #141414; animation:fadeIn 0.4s ease ' + (i*0.06) + 's both;">';
+    } else {
+      var html = '<a href="' + safeUrl + '" target="_blank" rel="noopener" class="block rounded-xl overflow-hidden transition group cursor-pointer hover:ring-1 hover:ring-neutral-600" style="background:#0a0a0a; border:1px solid #141414; animation:fadeIn 0.4s ease ' + (i*0.06) + 's both; text-decoration:none;">';
+    }
     if (o.isAi) {
       html += '<div class="p-3">';
       html += '<div class="flex items-center justify-between mb-2"><span class="text-xs text-neutral-400 font-medium">' + escHtml(o.style || '时尚搭配') + '</span><span class="text-xs text-neutral-600">❤ ' + (o.likes || 200) + '</span></div>';
@@ -1133,7 +1136,7 @@ function renderOutfitsWithLinks(outfits, targetId) {
       html += '<div class="flex items-center justify-between mt-2 pt-2 border-t border-neutral-900"><span class="text-xs text-neutral-600">' + escHtml(o.season || '') + '季</span><span class="text-xs text-neutral-700">❤ ' + (o.likes || 0) + '</span></div>';
       html += '</div>';
     }
-    html += '</a>';
+    html += isMobile ? '</div>' : '</a>';
     return html;
   }).join('');
 }
@@ -1141,32 +1144,23 @@ function renderOutfitsWithLinks(outfits, targetId) {
 function renderOutfits(outfits, targetId = 'outfitGrid') {
   var grid = document.getElementById(targetId);
   if (!grid) return;
-  var isIOS2 = /iPhone|iPad|iPod/i.test(navigator.userAgent);
-  var targetBlank = isIOS2 ? '' : ' target="_blank" rel="noopener"';
-  grid.innerHTML = outfits.map((o, i) => {
+  var isMobile2 = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+  grid.innerHTML = outfits.map(function(o, i) {
     var kw = encodeURIComponent((o.style||'') + ' ' + (o.top||'') + ' 穿搭');
-    return `
-    <a href="https://www.xiaohongshu.com/search_result?keyword=${kw}"${targetBlank} class="block rounded-xl overflow-hidden cursor-pointer hover:ring-1 hover:ring-neutral-700 transition group" style="background:#0a0a0a; border:1px solid #141414; animation:fadeIn 0.4s ease ${i*0.06}s both; text-decoration:none;">
-      <!-- 配色条 -->
-      <div class="flex h-2">
-        <div class="flex-1" style="background:${o.mainColor};"></div>
-        <div class="flex-1" style="background:${o.subColor};"></div>
-        <div class="flex-[0.5]" style="background:${o.mainColor}66;"></div>
-      </div>
-      <div class="p-3">
-        <div class="flex items-center justify-between mb-2">
-          <span class="text-xs text-neutral-500">${o.style}</span>
-          <span class="text-xs text-neutral-700">${o.platform}</span>
-        </div>
-        <p class="text-sm text-white font-medium truncate">${o.top} × ${o.bottom}</p>
-        <p class="text-xs text-neutral-500 mt-0.5">${o.shoe} · ${o.acc}</p>
-        <div class="flex items-center justify-between mt-2 pt-2 border-t border-neutral-900">
-          <span class="text-xs text-neutral-600">${o.season}季</span>
-          <span class="text-xs text-neutral-700">❤ ${o.likes}</span>
-        </div>
-      </div>
-    </a>
-  `; }).join('');
+    var xhsUrl = 'https://www.xiaohongshu.com/search_result?keyword=' + kw;
+    var inner = '';
+    inner += '<div class="flex h-2"><div class="flex-1" style="background:' + (o.mainColor||'#333') + ';"></div><div class="flex-1" style="background:' + (o.subColor||'#444') + ';"></div><div class="flex-[0.5]" style="background:' + (o.mainColor||'#333') + '66;"></div></div>';
+    inner += '<div class="p-3">';
+    inner += '<div class="flex items-center justify-between mb-2"><span class="text-xs text-neutral-500">' + escHtml(o.style||'') + '</span><span class="text-xs text-neutral-700">' + escHtml(o.platform||'') + '</span></div>';
+    inner += '<p class="text-sm text-white font-medium truncate">' + escHtml(o.top||'') + ' × ' + escHtml(o.bottom||'') + '</p>';
+    inner += '<p class="text-xs text-neutral-500 mt-0.5">' + escHtml(o.shoe||'') + ' · ' + escHtml(o.acc||'') + '</p>';
+    inner += '<div class="flex items-center justify-between mt-2 pt-2 border-t border-neutral-900"><span class="text-xs text-neutral-600">' + escHtml(o.season||'') + '季</span><span class="text-xs text-neutral-700">❤ ' + (o.likes||0) + '</span></div>';
+    inner += '</div>';
+    if (isMobile2) {
+      return '<div onclick="window._tryOpenApp(\'' + xhsUrl.replace(/'/g, "\\'") + '\')" class="rounded-xl overflow-hidden cursor-pointer hover:ring-1 hover:ring-neutral-700 transition group" style="background:#0a0a0a; border:1px solid #141414; animation:fadeIn 0.4s ease ' + (i*0.06) + 's both;">' + inner + '</div>';
+    }
+    return '<a href="' + xhsUrl + '" target="_blank" rel="noopener" class="block rounded-xl overflow-hidden cursor-pointer hover:ring-1 hover:ring-neutral-700 transition group" style="background:#0a0a0a; border:1px solid #141414; animation:fadeIn 0.4s ease ' + (i*0.06) + 's both; text-decoration:none;">' + inner + '</a>';
+  }).join('');
 }
 
 // ===================== 超时空对话——LLM 动态匹配引擎 =====================
@@ -2560,6 +2554,12 @@ function closeShare() {
   document.getElementById('shareModal').classList.add('hidden');
 }
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+// 移动端尝试唤起APP——用 location.href 触发 Universal Links
+window._tryOpenApp = function(url) {
+  if (!url || url === '#') return;
+  // 直接用 location.href 导航，已装APP则自动打开，未装则显示网页
+  window.location.href = url;
+};
 function showToast(msg) {
   var t = document.createElement('div'); t.className = 'toast'; t.textContent = msg;
   document.body.appendChild(t); setTimeout(function(){ t.remove(); }, 3000);
