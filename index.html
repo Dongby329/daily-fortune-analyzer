@@ -234,22 +234,23 @@
   <button onclick="navTo('input')" id="navInput" class="nav-item flex flex-col items-center gap-0.5 text-xs px-4 py-1">
     <span class="text-lg">🔮</span><span>运势</span>
   </button>
-  <button onclick="navTo('profile')" id="navProfile" class="nav-item flex flex-col items-center gap-0.5 text-xs px-4 py-1">
-    <span class="text-lg">👤</span><span>我的</span>
-  </button>
   <button onclick="navTo('dialogue')" id="navDialogue" class="nav-item flex flex-col items-center gap-0.5 text-xs px-4 py-1">
     <span class="text-lg">🌌</span><span>超时空对话</span>
+  </button>
+  <button onclick="navTo('profile')" id="navProfile" class="nav-item flex flex-col items-center gap-0.5 text-xs px-4 py-1">
+    <span class="text-lg">👤</span><span>我的</span>
   </button>
 </nav>
 
 <!-- ═══════════ 「我的」页面 ═══════════ -->
-<div id="profileView" class="hidden relative z-10 mx-auto max-w-lg px-4 md:px-8 pb-20">
+<div id="profileView" class="hidden relative z-10 mx-auto max-w-lg md:max-w-2xl px-4 md:px-8 pb-20 md:pb-24">
   <header class="flex items-center justify-between py-5 text-xs">
     <span class="text-neutral-400 tracking-wider">我的</span>
     <span class="text-neutral-700" id="profileUserId"></span>
   </header>
 
-  <div class="card rounded-xl p-6 mb-4 fade-in">
+  <div class="md:grid md:grid-cols-2 md:gap-4">
+  <div class="card rounded-xl p-6 mb-4 md:mb-0 fade-in">
     <h3 class="text-xs text-neutral-500 tracking-widest mb-5">个人信息</h3>
     <div class="space-y-4">
       <div>
@@ -300,12 +301,13 @@
       <button onclick="saveLLMConfig()" class="btn-ghost w-full py-2.5 rounded-lg text-xs">保存 LLM 配置</button>
     </div>
   </div>
+  </div>
 
   <button onclick="logout()" class="w-full py-3 rounded-lg text-sm text-neutral-600 hover:text-red-400 transition tracking-wider">退出登录</button>
 </div>
 
 <!-- ═══════════ 超时空对话——匹配列表 ═══════════ -->
-<div id="dialogueView" class="hidden relative z-10 mx-auto max-w-lg px-4 md:px-8 pb-20">
+<div id="dialogueView" class="hidden relative z-10 mx-auto max-w-lg md:max-w-2xl px-4 md:px-8 pb-20 md:pb-24">
   <header class="flex items-center justify-between py-5 text-xs">
     <span class="text-neutral-400 tracking-wider">超时空对话</span>
     <span class="text-neutral-700" id="dialogueUserId"></span>
@@ -317,12 +319,12 @@
     <p class="text-sm text-neutral-400 font-light">匹配与你灵魂相似的历史人物</p>
   </div>
 
-  <div id="figureList" class="space-y-3 mt-4"></div>
+  <div id="figureList" class="grid md:grid-cols-2 gap-3 mt-4"></div>
   <button id="refreshFigures" onclick="matchFigures()" class="btn-ghost w-full py-3 rounded-lg text-xs mt-4">🔄 重新匹配</button>
 </div>
 
 <!-- ═══════════ 超时空对话——聊天 ═══════════ -->
-<div id="chatView" class="hidden relative z-10 mx-auto max-w-lg px-4 md:px-8" style="height:100vh;">
+<div id="chatView" class="hidden relative z-10 mx-auto max-w-lg md:max-w-2xl px-4 md:px-8" style="height:100vh;">
   <header class="flex items-center justify-between py-4 text-xs border-b border-neutral-900" style="background:#000;">
     <button onclick="closeChat()" class="text-neutral-500 hover:text-neutral-300 tracking-wider">← 返回列表</button>
     <span class="text-neutral-300"><span id="chatFigureName"></span> · <span id="chatFigureEra" class="text-neutral-600"></span></span>
