@@ -23,7 +23,7 @@
   input[type="date"]::-webkit-calendar-picker-indicator,
   input[type="time"]::-webkit-calendar-picker-indicator { filter: invert(1); }
   .stars-container { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
-  .star { position: absolute; color: #111; user-select: none; animation: drift linear infinite; }
+  .star { position: absolute; color: #111; user-select: none; opacity: 0; animation: drift linear infinite; animation-fill-mode: backwards; }
   @keyframes drift {
     0%   { transform: translateY(105vh) rotate(0deg); opacity:0; }
     10%  { opacity:0.5; }
@@ -787,7 +787,7 @@ document.getElementById('birthday').value = '1995-06-20';
 (function initStars() {
   const emojis = ['♈','♉','♊','♋','♌','♍','♎','♏','♐','♑','♒','♓','✨','⭐','🌟','💫','☀️','🌙','🪐','☄️','🌌','✧','◈','◇'];
   const container = document.getElementById('stars');
-  for (let i = 0; i < 40; i++) {
+  for (let i = 0; i < 25; i++) {
     const el = document.createElement('span');
     el.className = 'star';
     el.textContent = emojis[Math.floor(Math.random() * emojis.length)];
