@@ -81,6 +81,9 @@
   /* SplitText 逐字动画 */
   .split-char { display:inline-block; opacity:0; transform:translateY(30px); animation: charIn 0.5s cubic-bezier(0.16,1,0.3,1) forwards; will-change:transform,opacity; }
   @keyframes charIn { to { opacity:1; transform:translateY(0); } }
+  .toast { position:fixed; top:20px; left:50%; transform:translateX(-50%); z-index:100; background:#1a1a1a; color:#ddd; padding:10px 24px; border-radius:10px; font-size:13px; border:1px solid #2a2a2a; animation:toastIn 0.3s ease, toastOut 0.3s ease 2.5s forwards; pointer-events:none; white-space:nowrap; }
+  @keyframes toastIn { from { opacity:0; transform:translateX(-50%) translateY(-10px); } to { opacity:1; transform:translateX(-50%) translateY(0); } }
+  @keyframes toastOut { from { opacity:1; } to { opacity:0; } }
 </style>
 </head>
 <body class="min-h-screen text-white">
@@ -758,7 +761,7 @@ function resetAllData() {
     document.getElementById('regUser').value = '';
     document.getElementById('regPass').value = '';
     document.getElementById('loginError').classList.add('hidden');
-    alert('数据已清除。请重新注册。');
+    showToast('数据已清除，请重新注册');
   }
 }
 
@@ -915,8 +918,12 @@ function generateStandaloneOutfits() {
     return;
   }
 
-  // 无结果 → 显示搜索按钮
-  document.getElementById('outfitGridStandalone').innerHTML = '';
+  // 无结果 → 自动生成本地搭配，同时显示搜索按钮
+  var localOutfits = generateOutfits(ctx.lucky, ctx.wuxing, ctx.gender, ctx.daySeed);
+  var withLinks = localOutfits.map(o => ({ ...o, isAi: false }));
+  window._currentOutfits = withLinks;
+  renderOutfitsWithLinks(withLinks, 'outfitGridStandalone');
+  document.getElementById('outfitRefresh').classList.remove('hidden');
   document.getElementById('outfitControls').classList.remove('hidden');
   document.getElementById('outfitSearchStatus').classList.add('hidden');
   document.getElementById('searchOutfitBtn').classList.remove('hidden');
@@ -1635,10 +1642,10 @@ function selectAvatar(emoji) {
 function uploadAvatar(event) {
   var file = event.target.files[0];
   if (!file) return;
-  if (file.size > 100 * 1024) { alert('图片请小于 100KB'); return; }
+  if (file.size > 100 * 1024) { showToast('图片请小于 100KB'); return; }
   // 检查 localStorage 余量
   var used = JSON.stringify(localStorage).length;
-  if (used > 4 * 1024 * 1024) { alert('存储空间不足，请先清理历史对话'); return; }
+  if (used > 4 * 1024 * 1024) { showToast('存储空间不足，请先清理历史对话'); return; }
   var reader = new FileReader();
   reader.onload = function(e) {
     setAvatar('img:' + e.target.result);
@@ -2500,6 +2507,10 @@ function closeShare() {
   document.getElementById('shareModal').classList.add('hidden');
 }
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+function showToast(msg) {
+  var t = document.createElement('div'); t.className = 'toast'; t.textContent = msg;
+  document.body.appendChild(t); setTimeout(function(){ t.remove(); }, 3000);
+}
 
 // ===================== SplitText 引擎 =====================
 function splitTextAnimate(el, text, delayMs, className) {
