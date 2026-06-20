@@ -1,171 +1,133 @@
-# 🏗 系统模块关系图 — 今日运势分析器
+# 🏗 系统模块关系图 — 今日运势分析器 v2.0
 
-> 前端单页应用，纯客户端计算，无需后端服务器
+> 单页应用，纯客户端计算，零后端服务器
 
 ---
 
-## 第一层：前端与用户交互流
+## 第一层：用户交互流
 
 ```mermaid
 sequenceDiagram
     participant U as 👤 用户
     participant UI as 🖥 前端界面
+    participant Auth as 🔐 账号引擎
     participant Engine as ⚙️ 计算引擎
-    participant Data as 📦 数据层
+    participant LLM as 🤖 LLM API
+    participant Data as 💾 localStorage
 
     U->>UI: 打开页面
-    UI->>UI: 渲染表单 + 样式
-    U->>UI: 填写出生日期 + 时间
-    U->>UI: 点击「查看今日运势」
+    UI->>Auth: 检查登录态
+    Auth->>Data: 读取 fortune_current
+    Data-->>Auth: 已记住→自动登录
 
+    U->>UI: 填写出生信息
+    U->>UI: 点击「查看运势」
     UI->>Engine: 传入 {birthday, birthtime}
-    Engine->>Data: 查询星座对照表
-    Data-->>Engine: 返回星座类型
-    Engine->>Data: 查询今日星象数据
-    Data-->>Engine: 返回星象位置
-    Engine->>Engine: 计算星座运势分
+    Engine->>Engine: 星座+八字+生肖+融合
+    Engine-->>UI: 运势报告
+    UI->>Data: 保存出生信息
 
-    Engine->>Data: 查询生肖对照表
-    Data-->>Engine: 返回生肖类型
+    U->>UI: 点击「超时空对话」
+    UI->>Engine: 获取命理特征
+    Engine->>LLM: 发送匹配请求
+    LLM-->>UI: 6位人物
+    U->>UI: 选择人物聊天
+    UI->>LLM: 系统提示词+用户消息
+    LLM-->>UI: 角色扮演回复
+    UI->>Data: 保存对话记录
 
-    alt 有出生时间
-        Engine->>Engine: 排四柱八字 + 十神分析
-        Engine->>Engine: 计算八字运势分
-    else 无出生时间
-        Engine->>Engine: 跳过八字，仅生肖
-    end
-
-    Engine->>Engine: 融合评分 + 性格解析 + 人际契合
-    Engine-->>UI: 返回完整运势报告
-    UI->>UI: 渲染报告（逐屏展示）
-    UI-->>U: 展示综合评分 + 详细报告
-
-    opt 用户点击分享
-        U->>UI: 点击分享
-        UI->>UI: 生成运势卡片图
-        UI-->>U: 展示分享选项
-    end
+    U->>UI: 点击「穿搭」
+    UI->>LLM: AI搜索搭配
+    LLM-->>UI: 6套搭配+搜索链接
 ```
 
----
-
-## 第二层：模块架构图
+## 第二层：模块架构
 
 ```mermaid
 flowchart TD
-    subgraph 前端界面层
-        A[📱 首页表单\n出生日期+时间输入]
-        B[📊 结果展示页\n综合评分+分类运势]
-        C[📤 分享模块\n运势卡片生成]
+    subgraph 界面层
+        A[📱 底部导航]
+        B1[🔐 登录/注册页]
+        B2[🔮 运势页\n输入+结果]
+        B3[👕 穿搭页\nAI搜索+链接]
+        B4[🌌 超时空对话页\n匹配+聊天]
+        B5[👤 我的页\n信息+LLM配置+历史]
     end
 
-    subgraph 计算引擎层
-        D[♈ 星座引擎\n星座判定+星象计算]
-        E[☯️ 八字引擎\n四柱排盘+十神分析]
-        F[🐉 生肖引擎\n生肖判定+运程计算]
-        G[🔀 融合引擎\n加权评分+交叉分析]
+    subgraph 引擎层
+        C1[🔐 账号引擎\n注册/登录/记住/ID]
+        C2[♈ 星座引擎\n12星座+星象]
+        C3[☯️ 八字引擎\n四柱+日主+十神]
+        C4[🐉 生肖引擎\n生肖+运程]
+        C5[🔀 融合引擎\n加权评分]
+        C6[📝 内容引擎\n性格/人际/幸运/文案]
+        C7[🤖 LLM 桥接\nOpenAI兼容API]
     end
 
     subgraph 数据层
-        H[🗓 星座对照表\n12星座日期范围]
-        I[🌟 星象数据\n日月行星位置]
-        J[📖 八字排盘表\n万年历+干支映射]
-        K[🐲 生肖对照表\n年份→生肖]
-        L[📝 文案模板库\n运势描述+性格文案]
+        D1[(fortune_users\n用户账号+配置)]
+        D2[(fortune_current\n当前会话)]
+        D3[(fortune_remembered\n记住列表)]
+        D4[(fortune_chat_history\n对话记录)]
     end
 
-    A --> D
-    A --> E
-    A --> F
-    D --> G
-    E --> G
-    F --> G
-    D --> H
-    D --> I
-    E --> J
-    F --> K
-    G --> L
-    G --> B
-    B --> C
+    A --> B1 & B2 & B3 & B4 & B5
+    B1 --> C1
+    B2 --> C2 & C3 & C4 & C5 & C6
+    B3 --> C2 & C3 & C7
+    B4 --> C2 & C3 & C7
+    B5 --> C1
+
+    C1 --> D1 & D2 & D3
+    B4 --> D4
 ```
 
----
-
-## 第三层：数据依赖关系
+## 第三层：数据存储结构
 
 ```mermaid
 flowchart LR
-    subgraph 输入
-        I1[出生年]
-        I2[出生月]
-        I3[出生日]
-        I4[出生时]
+    subgraph localStorage
+        U[(fortune_users)]
+        C[(fortune_current)]
+        R[(fortune_remembered)]
+        H[(fortune_chat_history)]
+        V[(fortune_data_version)]
     end
 
-    subgraph 静态数据
-        S1[(星座日期表)]
-        S2[(生肖对照表)]
-        S3[(万年历干支表)]
-        S4[(文案模板库)]
-    end
-
-    subgraph 动态数据
-        D1[(今日星象位置)]
-        D2[(今日日柱干支)]
-    end
-
-    subgraph 计算输出
-        O1[星座类型]
-        O2[生肖类型]
-        O3[四柱八字]
-        O4[星座运势分]
-        O5[八字运势分]
-        O6[生肖运势分]
-        O7[综合评分]
-        O8[性格画像]
-        O9[人际契合]
-        O10[幸运物推荐]
-    end
-
-    I2 & I3 --> S1 --> O1
-    I1 --> S2 --> O2
-    I1 & I2 & I3 & I4 --> S3 --> O3
-    O1 & D1 --> O4
-    O3 & D2 --> O5
-    O2 & D2 --> O6
-    O4 & O5 & O6 --> O7
-    O1 & O3 --> S4 --> O8
-    D1 & D2 --> O9
-    O2 & O3 & D2 --> O10
+    U --> |"userKey"| U1[username / password / id]
+    U --> |"userKey"| U2[birthday / birthtime / gender]
+    U --> |"userKey"| U3[avatar / llmEndpoint / llmKey / llmModel]
+    C --> |"session"| C1[key / username / id / remember]
+    R --> |"list"| R1[username1 / username2 / ...]
+    H --> |"list"| H1[id / figureName / messages / date]
 ```
 
----
+## 技术栈
 
-## 技术选型说明
-
-| 层 | 技术 | 原因 |
+| 层 | 技术 | 说明 |
 |----|------|------|
-| **界面** | HTML + CSS + Vanilla JS | 零依赖，打开即用 |
-| **计算** | 纯客户端 JavaScript | 无需服务器，隐私安全 |
-| **八字算法** | tyme4ts（参考）或自研 | 开源库成熟，可自实现 |
-| **星象数据** | 静态内置（简化模型） | MVP 用简化算法，V2 可接 API |
-| **分享卡片** | Canvas API | 浏览器原生支持，无需第三方 |
-| **数据存储** | 不存储任何用户数据 | 出生信息敏感，完全本地计算 |
+| 界面 | HTML + Tailwind CSS CDN | 黑底极简，响应式移动+桌面 |
+| 动效 | CSS @keyframes + JS SplitText | 逐字入场/淡入/缩放/滑入 |
+| 星座 | 纯 JS 算法 | 12星座日期判定+元素属性 |
+| 八字 | 纯 JS 算法 | 五虎遁/五鼠遁/节气/万年历 |
+| 融合 | 加权评分 | 有/无出生时间双权重 |
+| LLM | fetch API | OpenAI 兼容，支持5家服务商 |
+| 存储 | localStorage | 4组key，带版本号+容量保护 |
+| 隐私 | 纯本地 | 无服务器/无数据库/无追踪 |
+
+## 技术边界
+
+```
+✅ 纯 HTML/CSS/JS 单页应用
+✅ Tailwind CSS CDN
+✅ 客户端计算，零后端
+✅ 5家 LLM 服务商预设
+✅ 本地账号系统（localStorage）
+❌ 无服务器 / API / 数据库
+❌ 无第三方追踪 / 分析
+❌ 敏感数据不上传
+```
 
 ---
 
-## MVP 技术边界
-
-```
-✅ 做：纯浏览器端计算，不收集/存储用户数据
-✅ 做：静态数据内置（星座表、生肖表、干支表、文案模板）
-✅ 做：简化星象模型（基于当前日期的数学推算）
-❌ 不做：后端服务器 / API / 数据库
-❌ 不做：实时星象 API 调用
-❌ 不做：用户账号/登录系统
-❌ 不做：付费/订阅系统
-```
-
----
-
-*系统架构图 · 所有流程图已完成*
+*系统架构图 v2.0 · 含LLM集成 + 账号系统*
