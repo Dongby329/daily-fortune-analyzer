@@ -469,6 +469,13 @@ const STORAGE_KEY = 'fortune_users';
 const CURRENT_KEY = 'fortune_current';
 const REMEMBERED_KEY = 'fortune_remembered';
 const CHAT_HISTORY_KEY = 'fortune_chat_history';
+const DATA_VERSION = 1;
+
+// 数据版本迁移（预留）
+(function migrateData() {
+  var ver = localStorage.getItem('fortune_data_version');
+  if (!ver) { localStorage.setItem('fortune_data_version', String(DATA_VERSION)); }
+})();
 
 function loadUsers() {
   try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; }
@@ -1179,24 +1186,29 @@ function fallbackMatch(user, signEl, dmEl) {
 }
 
 function renderFigureList(figures) {
-  document.getElementById('figureList').innerHTML = figures.map((f, i) => `
-    <div onclick="startChat('${f.name.replace(/'/g, "\\'")}')" class="card rounded-xl p-4 cursor-pointer hover:border-neutral-700 transition fade-in group" style="animation-delay:${i*0.08}s">
+  document.getElementById('figureList').innerHTML = figures.map((f, i) => {
+    var safeName = escHtml(f.name || '');
+    var safeEra = escHtml(f.era || '');
+    var safeTraits = escHtml((f.traits || []).join(' · '));
+    var safeEmoji = escHtml(f.emoji || '👤');
+    return `
+    <div onclick="startChat('${safeName.replace(/'/g, "\\'")}')" class="card rounded-xl p-4 cursor-pointer hover:border-neutral-700 transition fade-in group" style="animation-delay:${i*0.08}s">
       <div class="flex items-center gap-3">
-        <span class="text-2xl shrink-0">${f.emoji || '👤'}</span>
+        <span class="text-2xl shrink-0">${safeEmoji}</span>
         <div class="flex-1 min-w-0">
           <div class="flex items-center justify-between">
-            <span class="text-sm text-white font-semibold">${f.name}</span>
-            <span class="text-xs text-neutral-400">${f.era || ''}</span>
+            <span class="text-sm text-white font-semibold">${safeName}</span>
+            <span class="text-xs text-neutral-400">${safeEra}</span>
           </div>
-          <p class="text-xs text-neutral-500 mt-1 truncate">${(f.traits || []).join(' · ')}</p>
+          <p class="text-xs text-neutral-500 mt-1 truncate">${safeTraits}</p>
         </div>
         <div class="shrink-0 text-right">
-          <span class="text-lg font-light ${f.score>=80?'text-white':f.score>=65?'text-neutral-300':'text-neutral-500'}">${f.score}%</span>
+          <span class="text-lg font-light ${(f.score||0)>=80?'text-white':(f.score||0)>=65?'text-neutral-300':'text-neutral-500'}">${f.score||0}%</span>
           <p class="text-xs text-neutral-700">相似度</p>
         </div>
       </div>
     </div>
-  `).join('');
+  `}).join('');
 }
 
 // ===================== 超时空对话——LLM 动态匹配引擎（旧库已移除） =====================
@@ -1323,11 +1335,11 @@ function scrollChatBottom() {
   if (msgs) setTimeout(() => { msgs.scrollTop = msgs.scrollHeight; }, 50);
 }
 
-function escapeHtml(str) {
-  const div = document.createElement('div');
-  div.textContent = str;
-  return div.innerHTML.replace(/\n/g, '<br>');
+function escHtml(str) {
+  if (!str) return '';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
+function escapeHtml(str) { return escHtml(str); }
 
 // 预设端点
 const API_PRESETS = {
@@ -1456,15 +1468,16 @@ function saveChatHistories(list) {
 
 function saveCurrentChat() {
   if (!currentFigure || chatHistory.length <= 2) return;
-  if (window._isHistoryView) return; // 不重复保存历史回放
+  if (window._isHistoryView) return;
   const histories = loadChatHistories();
 
-  // 生成对话ID
   let maxN = 0;
   histories.forEach(h => { const n = parseInt((h.id || 'CH-0000').replace('CH-',''),10); if (n > maxN) maxN = n; });
   const id = 'CH-' + String(maxN + 1).padStart(4, '0');
 
   const userMsgs = chatHistory.filter(m => m.role === 'user' || m.role === 'assistant');
+  // 截断单条消息到 500 字，防止存储溢出
+  const trimmed = chatHistory.map(m => ({ ...m, content: m.content.slice(0, 500) }));
   const preview = userMsgs.slice(0, 3).map(m => (m.role==='user'?'你：':'') + m.content.slice(0, 50)).join(' | ');
 
   histories.unshift({
@@ -1474,7 +1487,7 @@ function saveCurrentChat() {
     date: new Date().toISOString().slice(0, 10),
     messageCount: userMsgs.length,
     preview,
-    messages: chatHistory,
+    messages: trimmed,
   });
   saveChatHistories(histories);
 }
@@ -1591,7 +1604,10 @@ function selectAvatar(emoji) {
 function uploadAvatar(event) {
   var file = event.target.files[0];
   if (!file) return;
-  if (file.size > 200 * 1024) { alert('图片请小于 200KB'); return; }
+  if (file.size > 100 * 1024) { alert('图片请小于 100KB'); return; }
+  // 检查 localStorage 余量
+  var used = JSON.stringify(localStorage).length;
+  if (used > 4 * 1024 * 1024) { alert('存储空间不足，请先清理历史对话'); return; }
   var reader = new FileReader();
   reader.onload = function(e) {
     setAvatar('img:' + e.target.result);
@@ -2453,6 +2469,18 @@ function closeShare() {
   document.getElementById('shareModal').classList.add('hidden');
 }
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+// 全局错误边界——防白屏
+window.onerror = function(msg, src, line) {
+  console.error('App Error:', msg, 'at', src, 'line', line);
+  // 尝试恢复：回到输入页
+  try {
+    var cur = getCurrentUser();
+    if (cur) { showView('inputView'); }
+    else { showView('loginView'); }
+  } catch(e) {}
+  return true;
+};
 
 // ===================== 初始化 =====================
 
