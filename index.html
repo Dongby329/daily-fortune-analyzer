@@ -780,8 +780,12 @@ function generateStandaloneOutfits() {
 }
 
 async function searchOutfitsOnline() {
+  // 防止并发搜索
+  if (window._outfitSearching) return;
+  window._outfitSearching = true;
+
   const ctx = getUserFortuneContext();
-  if (!ctx) return;
+  if (!ctx) { window._outfitSearching = false; return; }
 
   const btn = document.getElementById('searchOutfitBtn');
   const status = document.getElementById('outfitSearchStatus');
@@ -791,16 +795,20 @@ async function searchOutfitsOnline() {
   btn.classList.add('hidden');
   status.classList.remove('hidden');
   grid.innerHTML = '';
+  // 清除之前可能残留的 interval
+  if (window._outfitInterval) clearInterval(window._outfitInterval);
 
   const platforms = ['小红书', 'Pinterest', 'Instagram', '微博', 'TikTok'];
   let pi = 0;
-  const statusInterval = setInterval(() => {
+  detail.textContent = '正在检索：' + platforms[0];
+  window._outfitInterval = setInterval(() => {
     if (pi < platforms.length) { detail.textContent = '正在检索：' + platforms.slice(0, pi + 1).join(' · '); pi++; }
-    else clearInterval(statusInterval);
+    else { clearInterval(window._outfitInterval); window._outfitInterval = null; }
   }, 400);
 
-  // 构造搜索提示词
+  // 构造搜索提示词（每次带时间戳确保不缓存）
   const genderText = ctx.gender === 'male' ? '男性' : '女性';
+  const ts = Date.now();
   const prompt = `你是一位顶级时尚搭配师。请根据以下信息，为用户推荐 6 套今日穿搭：
 
 - 性别：${genderText}
@@ -818,19 +826,15 @@ async function searchOutfitsOnline() {
 1. 6 套搭配，每套风格不同
 2. 结合幸运色和季节
 3. 适合${genderText}
-4. search 字段：适合在社交媒体搜索该套搭配的中文关键词
+4. search 字段：适合在社交媒体搜索该套搭配的中文关键词（中文短语）
 5. 时尚、具体、可操作`;
 
   try {
-    const reply = await callLLM([{ role: 'user', content: prompt }]);
-    clearInterval(statusInterval);
-    status.classList.add('hidden');
+    const reply = await callLLM([{ role: 'user', content: prompt }], 1000);
+    clearSearchStatus();
 
     if (!reply) {
-      // LLM 不可用 → 本地生成
-      detail.textContent = 'AI 不可用，使用本地搭配引擎';
-      const outfits = generateOutfits(ctx.lucky, ctx.wuxing, ctx.gender, ctx.daySeed);
-      renderOutfitsWithLinks(outfits, 'outfitGridStandalone');
+      fallbackToLocalOutfits(ctx, 'AI 不可用，使用本地搭配引擎');
       return;
     }
 
@@ -838,28 +842,39 @@ async function searchOutfitsOnline() {
     const jsonStr = reply.replace(/```json|```/g, '').trim();
     const aiOutfits = JSON.parse(jsonStr);
 
-    // 为每套搭配生成搜索链接
+    // 为每套搭配生成搜索链接（加时间戳防浏览器缓存）
+    const cacheBuster = '&t=' + ts;
     const outfitsWithLinks = aiOutfits.map((o, i) => ({
       ...o,
       id: i,
       likes: 100 + Math.floor(Math.random() * 400),
       platforms: [
-        { name:'小红书', url:`https://www.xiaohongshu.com/search_result?keyword=${encodeURIComponent(o.search)}` },
-        { name:'Pinterest', url:`https://www.pinterest.com/search/pins/?q=${encodeURIComponent(o.search)}` },
-        { name:'微博', url:`https://s.weibo.com/weibo?q=${encodeURIComponent(o.search)}` },
+        { name:'小红书', url:`https://www.xiaohongshu.com/search_result?keyword=${encodeURIComponent(o.search || o.style + '穿搭')}${cacheBuster}` },
+        { name:'Pinterest', url:`https://www.pinterest.com/search/pins/?q=${encodeURIComponent(o.search || o.style + ' outfit')}${cacheBuster}` },
+        { name:'微博', url:`https://s.weibo.com/weibo?q=${encodeURIComponent(o.search || o.style + '穿搭')}${cacheBuster}` },
       ],
       isAi: true,
     }));
     renderOutfitsWithLinks(outfitsWithLinks, 'outfitGridStandalone');
 
   } catch (e) {
-    clearInterval(statusInterval);
-    status.classList.add('hidden');
-    btn.classList.remove('hidden');
-    detail.textContent = '搜索失败：' + (e.message || '未知错误') + '——使用本地搭配引擎';
-    const outfits = generateOutfits(ctx.lucky, ctx.wuxing, ctx.gender, ctx.daySeed);
-    renderOutfitsWithLinks(outfits, 'outfitGridStandalone');
+    clearSearchStatus();
+    fallbackToLocalOutfits(ctx, '搜索失败：' + (e.message || '') + ' 使用本地搭配引擎');
   }
+  window._outfitSearching = false;
+}
+
+function clearSearchStatus() {
+  if (window._outfitInterval) { clearInterval(window._outfitInterval); window._outfitInterval = null; }
+  document.getElementById('outfitSearchStatus').classList.add('hidden');
+}
+
+function fallbackToLocalOutfits(ctx, msg) {
+  document.getElementById('outfitSearchDetail').textContent = msg;
+  document.getElementById('searchOutfitBtn').classList.remove('hidden');
+  const outfits = generateOutfits(ctx.lucky, ctx.wuxing, ctx.gender, ctx.daySeed);
+  renderOutfitsWithLinks(outfits, 'outfitGridStandalone');
+  window._outfitSearching = false;
 }
 
 function renderOutfitsWithLinks(outfits, targetId) {
@@ -977,7 +992,7 @@ function matchFigures() {
 严格返回 JSON 数组（只返回 JSON）：
 [{"name":"诸葛亮","era":"三国","el":"木","traits":["智慧","谋略"],"emoji":"🎯","score":89,"soul":"你是诸葛亮，蜀汉丞相。神机妙算。自称亮。"}]`;
 
-  callLLM([{ role: 'user', content: prompt }]).then(reply => {
+  callLLM([{ role: 'user', content: prompt }], 1000).then(reply => {
     try {
       const json = reply.replace(/```json|```/g, '').trim();
       const figures = JSON.parse(json);
@@ -1210,7 +1225,7 @@ function applyPreset() {
   saveLLMConfigSilent();
 }
 
-async function callLLM(messages) {
+async function callLLM(messages, maxTokens = 500) {
   const endpoint = localStorage.getItem('llm_endpoint') || '';
   const apiKey = localStorage.getItem('llm_key') || '';
   const model = localStorage.getItem('llm_model') || 'gpt-4o';
@@ -1235,7 +1250,7 @@ async function callLLM(messages) {
       body: JSON.stringify({
         model,
         messages: ctx,
-        max_tokens: 500,
+        max_tokens: maxTokens,
         temperature: 0.9,
       }),
     });
