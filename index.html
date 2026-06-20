@@ -719,12 +719,12 @@ function matchFigures() {
     return { ...f, score: Math.min(99, score) };
   });
 
-  // 排序取前5
+  // 排序取前6
   scored.sort((a,b) => b.score - a.score);
-  const top5 = scored.slice(0, 5);
+  const top6 = scored.slice(0, 6);
 
   // 渲染
-  document.getElementById('figureList').innerHTML = top5.map((f, i) => `
+  document.getElementById('figureList').innerHTML = top6.map((f, i) => `
     <div onclick="startChat('${f.name}')" class="card rounded-xl p-4 cursor-pointer hover:border-neutral-700 transition fade-in group" style="animation-delay:${i*0.08}s">
       <div class="flex items-center gap-3">
         <span class="text-2xl shrink-0">${f.emoji}</span>
@@ -744,7 +744,7 @@ function matchFigures() {
   `).join('');
 
   // 保存匹配结果供聊天使用
-  window._matchedFigures = top5;
+  window._matchedFigures = top6;
 }
 
 // ===================== 超时空对话——聊天引擎 =====================
