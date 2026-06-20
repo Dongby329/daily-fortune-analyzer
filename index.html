@@ -246,83 +246,69 @@
 <div id="profileView" class="hidden relative z-10 mx-auto max-w-lg md:max-w-2xl px-4 md:px-8 pb-20 md:pb-24">
   <header class="flex items-center justify-between py-5 text-xs">
     <span class="text-neutral-400 tracking-wider">我的</span>
-    <span class="text-neutral-700" id="profileUserId"></span>
+    <span class="text-neutral-700 font-mono" id="profileUserId"></span>
   </header>
 
   <div class="md:grid md:grid-cols-2 md:gap-4">
-  <div class="card rounded-xl p-6 mb-4 md:mb-0 fade-in h-full flex flex-col">
-    <h3 class="text-xs text-neutral-500 tracking-widest mb-5 shrink-0">个人信息</h3>
-    <div class="space-y-4 flex-1">
-      <div>
-        <label class="block text-xs text-neutral-600 mb-2">昵称</label>
-        <input type="text" id="editNickname" class="input-field w-full px-4 py-2.5 rounded-lg text-sm" placeholder="设置昵称">
+    <div class="card rounded-xl p-5 md:p-6 mb-4 md:mb-0 fade-in h-full flex flex-col">
+      <h3 class="text-xs text-neutral-500 tracking-widest mb-5 shrink-0">个人信息</h3>
+      <div class="space-y-4 flex-1">
+        <div>
+          <input type="text" id="editNickname" class="input-field w-full px-0 py-2 border-0 border-b border-neutral-900 rounded-none text-base bg-transparent focus:border-neutral-600 transition" placeholder="昵称">
+        </div>
+        <div>
+          <label class="block text-xs text-neutral-600 mb-1">出生日期</label>
+          <input type="date" id="editBirthday" class="input-field w-full px-4 py-2.5 rounded-lg text-sm">
+        </div>
+        <div>
+          <label class="block text-xs text-neutral-600 mb-1">出生时间</label>
+          <input type="time" id="editBirthtime" class="input-field w-full px-4 py-2.5 rounded-lg text-sm">
+        </div>
+        <button onclick="saveProfile()" class="btn-main w-full py-3 rounded-lg text-sm font-semibold tracking-wider mt-auto">保存</button>
       </div>
-      <div>
-        <label class="block text-xs text-neutral-600 mb-2">出生年月日</label>
-        <input type="date" id="editBirthday" class="input-field w-full px-4 py-2.5 rounded-lg text-sm">
-      </div>
-      <div>
-        <label class="block text-xs text-neutral-600 mb-2">出生时间</label>
-        <input type="time" id="editBirthtime" class="input-field w-full px-4 py-2.5 rounded-lg text-sm">
-        <p class="text-neutral-700 text-xs mt-1">精确时间可获得更精准的八字分析</p>
-      </div>
-      <button onclick="saveProfile()" class="btn-main w-full py-3 rounded-lg text-sm font-semibold tracking-wider mt-auto">保存修改</button>
+      <p id="profileSaved" class="hidden text-green-400 text-xs text-center mt-2 shrink-0">已保存</p>
     </div>
-    <p id="profileSaved" class="hidden text-green-500 text-xs text-center mt-2 shrink-0">✅ 已保存</p>
-  </div>
 
-  <!-- LLM 设置 -->
-  <div class="card rounded-xl p-6 mb-4 fade-in h-full flex flex-col">
-    <h3 class="text-xs text-neutral-500 tracking-widest mb-5 shrink-0">LLM 配置（超时空对话）</h3>
-    <div class="space-y-3 flex-1">
-      <div>
-        <label class="block text-xs text-neutral-600 mb-1">模型商</label>
-        <select id="apiPreset" onchange="applyPreset()" class="input-field w-full px-4 py-2.5 rounded-lg text-xs">
-          <option value="">自定义</option>
-          <option value="openai">OpenAI</option>
-          <option value="deepseek">DeepSeek</option>
-          <option value="tongyi">通义千问（阿里）</option>
-          <option value="zhipu">智谱 GLM</option>
-          <option value="moonshot">Moonshot（月之暗面）</option>
-        </select>
+    <div class="card rounded-xl p-5 md:p-6 mb-4 md:mb-0 fade-in h-full flex flex-col">
+      <h3 class="text-xs text-neutral-500 tracking-widest mb-5 shrink-0">模型配置</h3>
+      <input type="hidden" id="apiEndpoint">
+      <div class="space-y-3 flex-1">
+        <div>
+          <select id="apiPreset" onchange="applyPreset()" class="input-field w-full px-4 py-2.5 rounded-lg text-xs">
+            <option value="">选择模型商</option>
+            <option value="openai">OpenAI</option>
+            <option value="deepseek">DeepSeek</option>
+            <option value="tongyi">通义千问</option>
+            <option value="zhipu">智谱 GLM</option>
+            <option value="moonshot">Moonshot</option>
+          </select>
+        </div>
+        <div>
+          <select id="apiModel" onchange="saveLLMConfigSilent()" class="input-field w-full px-4 py-2.5 rounded-lg text-xs">
+            <option value="">选择模型</option>
+          </select>
+        </div>
+        <div>
+          <input type="password" id="apiKey" class="input-field w-full px-4 py-2.5 rounded-lg text-xs" placeholder="API Key">
+        </div>
+        <div class="flex gap-2 mt-auto">
+          <button onclick="testLLM()" id="testLLMBtn" class="btn-ghost flex-1 py-2.5 rounded-lg text-xs">检测</button>
+          <button onclick="saveLLMConfig()" class="btn-main flex-1 py-2.5 rounded-lg text-xs">保存</button>
+        </div>
+        <p id="testResult" class="hidden text-xs text-center mt-1 shrink-0"></p>
       </div>
-      <div>
-        <label class="block text-xs text-neutral-600 mb-1">模型名称</label>
-        <select id="apiModel" onchange="saveLLMConfigSilent()" class="input-field w-full px-4 py-2.5 rounded-lg text-xs">
-          <option value="">请先选择模型商</option>
-        </select>
-      </div>
-      <div>
-        <label class="block text-xs text-neutral-600 mb-1">API 地址（自动填入）</label>
-        <input type="text" id="apiEndpoint" class="input-field w-full px-4 py-2 rounded-lg text-xs" placeholder="选择模型商后自动填入" readonly>
-      </div>
-      <div>
-        <label class="block text-xs text-neutral-600 mb-1">API Key</label>
-        <input type="password" id="apiKey" class="input-field w-full px-4 py-2 rounded-lg text-xs" placeholder="sk-...">
-      </div>
-      <div class="flex gap-2 mt-auto">
-        <button onclick="saveLLMConfig()" class="btn-ghost flex-1 py-2.5 rounded-lg text-xs">保存配置</button>
-        <button onclick="testLLM()" id="testLLMBtn" class="btn-ghost px-4 py-2.5 rounded-lg text-xs shrink-0">🔍 检测连接</button>
-      </div>
-      <p id="testResult" class="hidden text-xs text-center mt-2 shrink-0"></p>
     </div>
-  </div>
   </div>
 
   <!-- 历史对话 -->
-  <div class="card rounded-xl p-5 md:p-6 mb-4 fade-in">
-    <div class="flex items-center justify-between cursor-pointer" onclick="toggleHistory()">
-      <div class="flex items-center gap-2">
-        <h3 class="text-xs text-neutral-500 tracking-widest">历史对话</h3>
-        <span id="historyCount" class="text-xs text-neutral-700"></span>
-      </div>
-      <div class="flex items-center gap-2">
-        <span id="historyToggleIcon" class="text-xs text-neutral-600 transition-transform inline-block">▼</span>
-      </div>
+  <div class="card rounded-xl p-5 md:p-6 mt-4 fade-in">
+    <div class="flex items-center justify-between cursor-pointer select-none" onclick="toggleHistory()">
+      <span class="text-xs text-neutral-500 tracking-wider">历史对话 <span id="historyCount" class="text-neutral-700"></span></span>
+      <span id="historyToggleIcon" class="text-xs text-neutral-600 transition-transform inline-block">▶</span>
     </div>
-    <div id="historyBody" class="mt-4">
+    <div id="historyBody" class="hidden mt-4">
       <div class="flex items-center gap-2 mb-3">
-        <input type="text" id="historySearchId" class="input-field flex-1 px-3 py-1.5 rounded-lg text-xs" placeholder="输入对话 ID 查询">
+        <input type="text" id="historySearchId" class="input-field flex-1 px-3 py-1.5 rounded-lg text-xs" placeholder="输入对话 ID">
         <button onclick="searchHistory()" class="text-xs text-neutral-500 hover:text-white transition shrink-0">查询</button>
       </div>
       <div id="historyList" class="divide-y divide-neutral-900"></div>
@@ -330,7 +316,7 @@
     </div>
   </div>
 
-  <button onclick="logout()" class="w-full py-3 rounded-lg text-sm text-neutral-600 hover:text-red-400 transition tracking-wider">退出登录</button>
+  <button onclick="logout()" class="w-full mt-4 py-3 rounded-lg text-xs text-neutral-700 hover:text-red-400 transition tracking-wider">退出登录</button>
 </div>
 
 <!-- ═══════════ 超时空对话——匹配列表 ═══════════ -->
@@ -1083,12 +1069,10 @@ function toggleHistory() {
   if (body.classList.contains('hidden')) {
     body.classList.remove('hidden');
     icon.textContent = '▼';
-    icon.style.transform = 'rotate(0deg)';
     renderHistoryList();
   } else {
     body.classList.add('hidden');
     icon.textContent = '▶';
-    icon.style.transform = 'rotate(0deg)';
   }
 }
 
