@@ -275,7 +275,18 @@
     <h3 class="text-xs text-neutral-500 tracking-widest mb-5">LLM 配置（超时空对话）</h3>
     <div class="space-y-3">
       <div>
-        <label class="block text-xs text-neutral-600 mb-1">API 地址</label>
+        <label class="block text-xs text-neutral-600 mb-1">服务商预设</label>
+        <select id="apiPreset" onchange="applyPreset()" class="input-field w-full px-4 py-2.5 rounded-lg text-xs">
+          <option value="">自定义</option>
+          <option value="openai">OpenAI</option>
+          <option value="deepseek">DeepSeek</option>
+          <option value="tongyi">通义千问（阿里）</option>
+          <option value="zhipu">智谱 GLM</option>
+          <option value="moonshot">Moonshot（月之暗面）</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-xs text-neutral-600 mb-1">API 完整地址</label>
         <input type="text" id="apiEndpoint" class="input-field w-full px-4 py-2 rounded-lg text-xs" placeholder="https://api.openai.com/v1/chat/completions">
       </div>
       <div>
@@ -800,7 +811,10 @@ async function sendMessage() {
     }
   } catch (e) {
     removeLoading(loadingId);
-    appendMessage('assistant', '连接失败：' + (e.message || '未知错误'));
+    const errDiv = document.createElement('div');
+    errDiv.className = 'flex justify-start';
+    errDiv.innerHTML = `<div class="chat-bubble-ai max-w-[85%] px-4 py-2.5 text-sm" style="color:#f87171; border-color:#3a1a1a;">${escapeHtml(e.message || '未知错误').replace(/\n/g, '<br>')}</div>`;
+    document.getElementById('chatMessages').appendChild(errDiv);
   }
 
   input.disabled = false;
@@ -843,12 +857,32 @@ function escapeHtml(str) {
   return div.innerHTML.replace(/\n/g, '<br>');
 }
 
+// 预设端点
+const API_PRESETS = {
+  openai:   { endpoint:'https://api.openai.com/v1/chat/completions', model:'gpt-4o' },
+  deepseek: { endpoint:'https://api.deepseek.com/v1/chat/completions', model:'deepseek-chat' },
+  tongyi:   { endpoint:'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions', model:'qwen-plus' },
+  zhipu:    { endpoint:'https://open.bigmodel.cn/api/paas/v4/chat/completions', model:'glm-4-flash' },
+  moonshot: { endpoint:'https://api.moonshot.cn/v1/chat/completions', model:'moonshot-v1-8k' },
+};
+
+function applyPreset() {
+  const key = document.getElementById('apiPreset').value;
+  if (!key) return;
+  const preset = API_PRESETS[key];
+  if (preset) {
+    document.getElementById('apiEndpoint').value = preset.endpoint;
+    document.getElementById('apiModel').value = preset.model;
+  }
+}
+
 async function callLLM(messages) {
-  const endpoint = localStorage.getItem('llm_endpoint') || 'https://api.openai.com/v1/chat/completions';
+  const endpoint = localStorage.getItem('llm_endpoint') || '';
   const apiKey = localStorage.getItem('llm_key') || '';
   const model = localStorage.getItem('llm_model') || 'gpt-4o';
 
-  if (!apiKey) return null;
+  if (!endpoint) throw new Error('请先在「我的」→ LLM 配置中设置 API 地址');
+  if (!apiKey) throw new Error('请先在「我的」→ LLM 配置中设置 API Key');
 
   // 限制上下文长度
   let ctx = messages;
@@ -856,27 +890,52 @@ async function callLLM(messages) {
     ctx = [messages[0], ...messages.slice(-7)];
   }
 
-  const res = await fetch(endpoint, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${apiKey}`,
-    },
-    body: JSON.stringify({
-      model,
-      messages: ctx,
-      max_tokens: 500,
-      temperature: 0.9,
-    }),
-  });
-
-  if (!res.ok) {
-    const err = await res.text();
-    throw new Error(`API ${res.status}: ${err.slice(0,100)}`);
+  let res;
+  try {
+    res = await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        model,
+        messages: ctx,
+        max_tokens: 500,
+        temperature: 0.9,
+      }),
+    });
+  } catch (e) {
+    throw new Error(`网络请求失败——请检查 API 地址是否正确（当前：${endpoint}）`);
   }
 
-  const data = await res.json();
-  return data.choices?.[0]?.message?.content || null;
+  const errBody = await res.text();
+
+  if (!res.ok) {
+    if (res.status === 404) {
+      throw new Error(`端点不存在 (404)\n当前地址：${endpoint}\n\n请检查：\n· 地址是否包含完整路径（如 /v1/chat/completions）\n· 或使用「服务商预设」下拉选择`);
+    }
+    if (res.status === 401 || res.status === 403) {
+      throw new Error(`认证失败 (${res.status})——API Key 无效或已过期`);
+    }
+    if (res.status === 429) {
+      throw new Error(`请求过于频繁 (429)——请稍后重试`);
+    }
+    // 尝试解析错误body
+    let detail = errBody.slice(0, 200);
+    try { const j = JSON.parse(errBody); detail = j.error?.message || j.message || detail; } catch(e) {}
+    throw new Error(`API 错误 (${res.status}): ${detail}`);
+  }
+
+  try {
+    const data = JSON.parse(errBody);
+    const content = data.choices?.[0]?.message?.content;
+    if (!content) throw new Error('API 返回为空——请检查模型名称是否正确');
+    return content;
+  } catch (e) {
+    if (e.message.includes('API 返回为空')) throw e;
+    throw new Error(`解析响应失败——返回内容：${errBody.slice(0, 100)}`);
+  }
 }
 
 // ===================== 个人资料管理 =====================
