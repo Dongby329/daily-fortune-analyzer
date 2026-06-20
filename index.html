@@ -655,8 +655,8 @@ async function autoGenerate() {
   showView('resultView');
 
   // 首次自动登录 → 引导配置
-  if (!hasLLMConfigured() && !sessionStorage.getItem('llm_guide_shown')) {
-    sessionStorage.setItem('llm_guide_shown', '1');
+  if (!hasLLMConfigured() && !window._llmGuideShown) {
+    window._llmGuideShown = true;
     setTimeout(() => showLLMGuide(), 800);
     return;
   }
@@ -673,6 +673,7 @@ async function autoGenerate() {
 
 // 退出
 function logout() {
+  window._llmGuideShown = false;
   clearCurrentUser();
   document.getElementById('birthday').value = '1995-06-20';
   document.getElementById('birthtime').value = '';
@@ -682,7 +683,8 @@ function logout() {
 
 // 显示错误
 function hasLLMConfigured() {
-  return !!(localStorage.getItem('llm_key') && localStorage.getItem('llm_endpoint'));
+  var store = getLLMStorage();
+  return !!(store.llmKey && store.llmEndpoint);
 }
 
 function showLLMGuide() {
@@ -706,9 +708,6 @@ function resetAllData() {
     localStorage.removeItem(CURRENT_KEY);
     localStorage.removeItem(REMEMBERED_KEY);
     localStorage.removeItem(CHAT_HISTORY_KEY);
-    localStorage.removeItem('llm_endpoint');
-    localStorage.removeItem('llm_key');
-    localStorage.removeItem('llm_model');
     clearCurrentUser();
     renderQuickLogin();
     showView('loginView');
@@ -1344,8 +1343,9 @@ function applyPreset() {
   endpointInput.setAttribute('readonly', true);
   modelSelect.innerHTML = preset.models.map(m => `<option value="${m}">${m}</option>`).join('');
 
-  // 恢复上次保存的模型
-  const saved = localStorage.getItem('llm_model');
+  // 恢复该用户上次保存的模型
+  var store = getLLMStorage();
+  const saved = store.llmModel;
   if (saved && preset.models.includes(saved)) {
     modelSelect.value = saved;
   }
@@ -1353,9 +1353,10 @@ function applyPreset() {
 }
 
 async function callLLM(messages, maxTokens = 500) {
-  const endpoint = localStorage.getItem('llm_endpoint') || '';
-  const apiKey = localStorage.getItem('llm_key') || '';
-  const model = localStorage.getItem('llm_model') || 'gpt-4o';
+  var store = getLLMStorage();
+  const endpoint = store.llmEndpoint || '';
+  const apiKey = store.llmKey || '';
+  const model = store.llmModel || 'gpt-4o';
 
   if (!endpoint) throw new Error('请先在「我的」→ LLM 配置中设置 API 地址');
   if (!apiKey) throw new Error('请先在「我的」→ LLM 配置中设置 API Key');
@@ -1601,10 +1602,11 @@ async function testLLM() {
 
   // 先保存当前配置
   saveLLMConfigSilent();
+  var store = getLLMStorage();
 
-  const endpoint = localStorage.getItem('llm_endpoint') || '';
-  const apiKey = localStorage.getItem('llm_key') || '';
-  const model = localStorage.getItem('llm_model') || 'gpt-4o';
+  const endpoint = store.llmEndpoint || '';
+  const apiKey = store.llmKey || '';
+  const model = store.llmModel || 'gpt-4o';
 
   if (!endpoint || !apiKey) {
     result.className = 'text-xs text-center mt-2 text-red-400';
@@ -1644,17 +1646,29 @@ async function testLLM() {
   btn.textContent = '🔍 检测连接';
 }
 
+function getLLMStorage() {
+  var cur = getCurrentUser();
+  if (!cur) return {};
+  var users = loadUsers();
+  return (users[cur.key]) || {};
+}
+
 function saveLLMConfigSilent() {
-  localStorage.setItem('llm_endpoint', document.getElementById('apiEndpoint').value.trim());
-  localStorage.setItem('llm_key', document.getElementById('apiKey').value.trim());
-  localStorage.setItem('llm_model', document.getElementById('apiModel').value.trim());
+  var cur = getCurrentUser();
+  if (!cur) return;
+  var users = loadUsers();
+  if (!users[cur.key]) return;
+  users[cur.key].llmEndpoint = document.getElementById('apiEndpoint').value.trim();
+  users[cur.key].llmKey = document.getElementById('apiKey').value.trim();
+  users[cur.key].llmModel = document.getElementById('apiModel').value.trim();
+  saveUsers(users);
 }
 
 function loadLLMConfig() {
-  document.getElementById('apiKey').value = localStorage.getItem('llm_key') || '';
-  // 恢复模型商
-  const savedEndpoint = localStorage.getItem('llm_endpoint') || '';
-  const savedModel = localStorage.getItem('llm_model') || '';
+  var store = getLLMStorage();
+  document.getElementById('apiKey').value = store.llmKey || '';
+  var savedEndpoint = store.llmEndpoint || '';
+  var savedModel = store.llmModel || '';
   // 根据 endpoint 匹配预设
   for (const [key, preset] of Object.entries(API_PRESETS)) {
     if (preset.endpoint === savedEndpoint) {
@@ -2207,8 +2221,8 @@ async function handleSubmit(event) {
   saveBirthInfo(birthday, birthtime);
 
   // 首次使用 → 引导配置大模型
-  if (!hasLLMConfigured() && !sessionStorage.getItem('llm_guide_shown')) {
-    sessionStorage.setItem('llm_guide_shown', '1');
+  if (!hasLLMConfigured() && !window._llmGuideShown) {
+    window._llmGuideShown = true;
     renderResult(currentResult, today);
     showView('resultView');
     setTimeout(() => showLLMGuide(), 800);
@@ -2422,7 +2436,8 @@ document.getElementById('randomBtn').addEventListener('click', () => {
   setTimeout(() => { btn.textContent = '随机体验'; btn.style.borderColor = '#1a1a1a'; btn.style.color = '#999'; }, 1500);
 });
 
-document.getElementById('llmGuideModal').addEventListener('click', function(e) {
+var llmGuide = document.getElementById('llmGuideModal');
+if (llmGuide) llmGuide.addEventListener('click', function(e) {
   if (e.target === this) closeLLMGuide();
 });
 document.getElementById('shareModal').addEventListener('click', function(e) {
