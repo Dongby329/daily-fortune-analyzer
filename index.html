@@ -560,10 +560,10 @@ function handleLogin(event) {
 function enterApp(username, id) {
   try {
     // 更新所有显示用户名/ID 的地方
-    document.getElementById('inputUsername').textContent = username;
-    document.getElementById('inputUserId').textContent = id;
-    document.getElementById('resultUsername').textContent = username;
-    document.getElementById('resultUserId').textContent = id;
+    var el = document.getElementById('inputUsername'); if (el) el.textContent = username;
+    el = document.getElementById('inputUserId'); if (el) el.textContent = id;
+    var el = document.getElementById('resultUsername'); if (el) el.textContent = username;
+    el = document.getElementById('resultUserId'); if (el) el.textContent = id;
 
     // 回填之前保存的出生信息
     const users = loadUsers();
@@ -2298,8 +2298,8 @@ function quickLoginFill(username) {
       // 恢复登录
       document.getElementById('inputUsername').textContent = user.username;
       document.getElementById('inputUserId').textContent = user.id;
-      document.getElementById('resultUsername').textContent = user.username;
-      document.getElementById('resultUserId').textContent = user.id;
+      var el2 = document.getElementById('resultUsername'); if (el2) el2.textContent = user.username;
+      el2 = document.getElementById('resultUserId'); if (el2) el2.textContent = user.id;
 
       if (user.birthday) {
         document.getElementById('birthday').value = user.birthday;
