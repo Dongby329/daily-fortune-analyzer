@@ -994,17 +994,21 @@ async function searchOutfitsOnline(isAuto) {
     const jsonStr = reply.replace(/```json|```/g, '').trim();
     const aiOutfits = JSON.parse(jsonStr);
 
-    // 检测移动端 + 生成对应深度链接
-    var isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    // iOS 使用 Universal Links (https:// 自动跳APP)，Android 保留 deep link
+    var isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+    var isAndroid = /Android/i.test(navigator.userAgent);
     const cacheBuster = '&t=' + ts;
     const outfitsWithLinks = aiOutfits.map((o, i) => {
       var kw = encodeURIComponent(o.search || o.style + '穿搭');
+      var xhsUrl = isAndroid ? `xhsdiscover://search?keyword=${kw}` : `https://www.xiaohongshu.com/search_result?keyword=${kw}${cacheBuster}`;
+      var pinUrl = isAndroid ? `pinterest://search/pins/?q=${kw}` : `https://www.pinterest.com/search/pins/?q=${kw}${cacheBuster}`;
+      var wbUrl = isAndroid ? `sinaweibo://searchall?q=${kw}` : `https://s.weibo.com/weibo?q=${kw}${cacheBuster}`;
       return {
         ...o, id: i, likes: 100 + Math.floor(Math.random() * 400),
         platforms: [
-          { name:'小红书', url: isMobile ? `xhsdiscover://search?keyword=${kw}` : `https://www.xiaohongshu.com/search_result?keyword=${kw}${cacheBuster}`, webUrl: `https://www.xiaohongshu.com/search_result?keyword=${kw}${cacheBuster}` },
-          { name:'Pinterest', url: isMobile ? `pinterest://search/pins/?q=${kw}` : `https://www.pinterest.com/search/pins/?q=${kw}${cacheBuster}`, webUrl: `https://www.pinterest.com/search/pins/?q=${kw}${cacheBuster}` },
-          { name:'微博', url: isMobile ? `sinaweibo://searchall?q=${kw}` : `https://s.weibo.com/weibo?q=${kw}${cacheBuster}`, webUrl: `https://s.weibo.com/weibo?q=${kw}${cacheBuster}` },
+          { name:'小红书', url: xhsUrl, webUrl: `https://www.xiaohongshu.com/search_result?keyword=${kw}${cacheBuster}` },
+          { name:'Pinterest', url: pinUrl, webUrl: `https://www.pinterest.com/search/pins/?q=${kw}${cacheBuster}` },
+          { name:'微博', url: wbUrl, webUrl: `https://s.weibo.com/weibo?q=${kw}${cacheBuster}` },
         ],
         isAi: true,
       };
@@ -1075,7 +1079,12 @@ function renderOutfitsWithLinks(outfits, targetId) {
   const grid = document.getElementById(targetId);
   if (!grid) return;
   grid.innerHTML = outfits.map((o, i) => {
-    const firstLink = o.platforms?.[0]?.url || (o.search ? `https://www.xiaohongshu.com/search_result?keyword=${encodeURIComponent(o.search)}` : '#');
+    var firstLink = o.platforms?.[0]?.url;
+    // iOS 优先用 webUrl
+    if (/iPhone|iPad|iPod/i.test(navigator.userAgent) && o.platforms?.[0]?.webUrl) {
+      firstLink = o.platforms[0].webUrl;
+    }
+    if (!firstLink) firstLink = '#';
     return `
     <div class="rounded-xl overflow-hidden transition group cursor-pointer hover:ring-1 hover:ring-neutral-600" style="background:#0a0a0a; border:1px solid #141414; animation:fadeIn 0.4s ease ${i*0.06}s both;"
          onclick="window.open('${firstLink.replace(/'/g, "\\'")}', '_blank')">
@@ -1091,7 +1100,7 @@ function renderOutfitsWithLinks(outfits, targetId) {
         <div class="flex gap-1.5 mt-3 pt-3 border-t border-neutral-900">
           ${(o.platforms || []).map(p => `<a href="${p.url}" target="_blank" rel="noopener" onclick="event.stopPropagation()" class="text-xs text-neutral-500 hover:text-white hover:bg-neutral-800 transition px-2 py-1 rounded border border-neutral-800">${p.name}</a>`).join('')}
         </div>
-        ${/Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ? '<p class="text-xs text-neutral-700 mt-1">💡 点击卡片或按钮直接打开APP查看</p>' : ''}
+        ${/iPhone|iPad|iPod/i.test(navigator.userAgent) ? '<p class="text-xs text-neutral-700 mt-1">💡 点击按钮在新标签页查看穿搭帖子</p>' : (/Android/i.test(navigator.userAgent) ? '<p class="text-xs text-neutral-700 mt-1">💡 点击按钮直接打开APP查看</p>' : '')}
         </div>
       </div>
       ` : `
