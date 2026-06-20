@@ -1106,14 +1106,16 @@ function renderOutfitsFromShared(targetId) {
 function renderOutfitsWithLinks(outfits, targetId) {
   var grid = document.getElementById(targetId);
   if (!grid) return;
+  // iOS 用 _self 触发 Universal Links 唤起APP；桌面/Android 用 _blank
+  var isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
   grid.innerHTML = outfits.map(function(o, i) {
-    // 优先用 webUrl（https），适配所有设备的浏览器
     var linkUrl = (o.platforms && o.platforms[0] && o.platforms[0].webUrl) || (o.platforms && o.platforms[0] && o.platforms[0].url) || '#';
     if (!linkUrl.startsWith('http')) linkUrl = '#';
     var safeUrl = escHtml(linkUrl);
     var platNames = (o.platforms || []).map(function(p){ return escHtml(p.name); }).join(' · ');
+    var targetAttr = isIOS ? '' : ' target="_blank" rel="noopener"';
 
-    var html = '<a href="' + safeUrl + '" target="_blank" rel="noopener" class="block rounded-xl overflow-hidden transition group cursor-pointer hover:ring-1 hover:ring-neutral-600" style="background:#0a0a0a; border:1px solid #141414; animation:fadeIn 0.4s ease ' + (i*0.06) + 's both; text-decoration:none;">';
+    var html = '<a href="' + safeUrl + '"' + targetAttr + ' class="block rounded-xl overflow-hidden transition group cursor-pointer hover:ring-1 hover:ring-neutral-600" style="background:#0a0a0a; border:1px solid #141414; animation:fadeIn 0.4s ease ' + (i*0.06) + 's both; text-decoration:none;">';
     if (o.isAi) {
       html += '<div class="p-3">';
       html += '<div class="flex items-center justify-between mb-2"><span class="text-xs text-neutral-400 font-medium">' + escHtml(o.style || '时尚搭配') + '</span><span class="text-xs text-neutral-600">❤ ' + (o.likes || 200) + '</span></div>';
@@ -1137,13 +1139,14 @@ function renderOutfitsWithLinks(outfits, targetId) {
 }
 
 function renderOutfits(outfits, targetId = 'outfitGrid') {
-  const grid = document.getElementById(targetId);
+  var grid = document.getElementById(targetId);
   if (!grid) return;
+  var isIOS2 = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+  var targetBlank = isIOS2 ? '' : ' target="_blank" rel="noopener"';
   grid.innerHTML = outfits.map((o, i) => {
     var kw = encodeURIComponent((o.style||'') + ' ' + (o.top||'') + ' 穿搭');
-    // iOS/桌面统一用 https 触发 Universal Links
     return `
-    <a href="https://www.xiaohongshu.com/search_result?keyword=${kw}" target="_blank" rel="noopener" class="block rounded-xl overflow-hidden cursor-pointer hover:ring-1 hover:ring-neutral-700 transition group" style="background:#0a0a0a; border:1px solid #141414; animation:fadeIn 0.4s ease ${i*0.06}s both; text-decoration:none;">
+    <a href="https://www.xiaohongshu.com/search_result?keyword=${kw}"${targetBlank} class="block rounded-xl overflow-hidden cursor-pointer hover:ring-1 hover:ring-neutral-700 transition group" style="background:#0a0a0a; border:1px solid #141414; animation:fadeIn 0.4s ease ${i*0.06}s both; text-decoration:none;">
       <!-- 配色条 -->
       <div class="flex h-2">
         <div class="flex-1" style="background:${o.mainColor};"></div>
