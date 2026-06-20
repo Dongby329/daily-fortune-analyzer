@@ -651,7 +651,7 @@ function enterApp(username, id) {
 }
 
 // 自动生成运势（跳过输入页）
-async function autoGenerate() {
+async function autoGenerate(skipAnimation) {
   // 优先从用户profile读取，避免DOM默认值覆盖
   var birthday = document.getElementById('birthday').value;
   var birthtime = document.getElementById('birthtime').value;
@@ -662,20 +662,24 @@ async function autoGenerate() {
     if (u && u.birthday) {
       birthday = u.birthday;
       birthtime = u.birthtime || '';
-      // 同步回DOM
       document.getElementById('birthday').value = birthday;
       if (birthtime) document.getElementById('birthtime').value = birthtime;
     }
   }
   const hasTime = !!birthtime;
 
-  const steps = ['星座运势分析中', '八字命理推算中', '综合运势生成中'];
-  const stepEl = document.getElementById('loadingStep');
-  for (let i = 0; i < steps.length; i++) {
-    stepEl.textContent = steps[i];
-    await sleep(400);
+  // 每日首次→加载动画；已有当日结果→跳过
+  var todayStr = new Date().toISOString().slice(0,10);
+  if (!skipAnimation && window._fortuneDate !== todayStr) {
+    const steps = ['星座运势分析中', '八字命理推算中', '综合运势生成中'];
+    const stepEl = document.getElementById('loadingStep');
+    for (let i = 0; i < steps.length; i++) {
+      stepEl.textContent = steps[i];
+      await sleep(400);
+    }
+    await sleep(300);
   }
-  await sleep(300);
+  window._fortuneDate = todayStr;
 
   const [by, bm, bd] = birthday.split('-').map(Number);
   let bh = 12;
@@ -735,8 +739,10 @@ function logout() {
   window._llmGuideShown = false;
   window._outfitAutoSearched = false;
   window._outfitDate = null;
+  window._fortuneDate = null;
   window._currentOutfits = null;
   window._matchedFigures = null;
+  currentResult = null;
   clearCurrentUser();
   document.getElementById('birthday').value = '1995-06-20';
   document.getElementById('birthtime').value = '';
@@ -1877,8 +1883,13 @@ function navTo(target) {
         document.getElementById('birthday').value = u.birthday;
         if (u.birthtime) document.getElementById('birthtime').value = u.birthtime;
       }
-      showView('loadingView');
-      autoGenerate();
+      // 当日已有结果→直接显示
+      if (window._fortuneDate === new Date().toISOString().slice(0,10) && currentResult) {
+        showView('resultView');
+      } else {
+        showView('loadingView');
+        autoGenerate(true);
+      }
     } else {
       showView('inputView');
     }
@@ -2329,7 +2340,6 @@ function showView(view) {
 function backToInput() {
   updateNavActive('input');
   if (hasSavedBirthInfo()) {
-    // 先回填再生成
     var cur = getCurrentUser();
     var users = loadUsers();
     var u = cur ? users[cur.key] : null;
@@ -2337,8 +2347,13 @@ function backToInput() {
       document.getElementById('birthday').value = u.birthday;
       if (u.birthtime) document.getElementById('birthtime').value = u.birthtime;
     }
-    showView('loadingView');
-    autoGenerate();
+    // 当日已有结果→直接显示，跳过加载动画
+    if (window._fortuneDate === new Date().toISOString().slice(0,10) && currentResult) {
+      showView('resultView');
+    } else {
+      showView('loadingView');
+      autoGenerate(true);
+    }
   } else {
     showView('inputView');
   }
@@ -2647,7 +2662,7 @@ function quickLoginFill(username) {
         document.getElementById('birthday').value = user.birthday;
         if (user.birthtime) document.getElementById('birthtime').value = user.birthtime;
         showView('loadingView');
-        autoGenerate();
+        autoGenerate(true);
       } else {
         showView('inputView');
       }
