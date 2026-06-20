@@ -1100,6 +1100,7 @@ function matchFigures() {
   const user = users[current.key];
   if (!user) return;
 
+  window._matchedFigures = null;
   const list = document.getElementById('figureList');
   list.innerHTML = '<div class="text-center py-8"><p class="text-neutral-500 text-sm animate-pulse">🌐 正在调用大模型联网搜索...</p><p class="text-neutral-700 text-xs mt-2" id="searchProgress">分析用户命理特征中...</p></div>';
 
@@ -1728,7 +1729,12 @@ function navTo(target) {
   else if (target === 'dialogue') {
     document.getElementById('dialogueUserId').textContent =
       getCurrentUser()?.id || '';
-    matchFigures();
+    // 已有匹配结果 → 直接渲染，不重新搜索
+    if (window._matchedFigures && window._matchedFigures.length) {
+      renderFigureList(window._matchedFigures);
+    } else {
+      matchFigures();
+    }
     showView('dialogueView');
   }
   updateNavActive(target);
