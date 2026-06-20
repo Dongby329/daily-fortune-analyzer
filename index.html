@@ -280,8 +280,14 @@
     <div class="card rounded-xl p-5 md:p-6 mb-4 md:mb-0 fade-in h-full flex flex-col">
       <h3 class="text-xs text-neutral-500 tracking-widest mb-5 shrink-0">个人信息</h3>
       <div class="space-y-4 flex-1">
-        <div>
-          <input type="text" id="editNickname" class="input-field w-full px-0 py-2 border-0 border-b border-neutral-900 rounded-none text-base bg-transparent focus:border-neutral-600 transition" placeholder="昵称">
+        <!-- 头像区 -->
+        <div class="flex flex-col items-center mb-2">
+          <div id="avatarPreview" class="w-16 h-16 rounded-full flex items-center justify-center text-2xl cursor-pointer hover:ring-2 hover:ring-neutral-600 transition mb-2" style="background:#0d0d0d; border:1px solid #1a1a1a;" onclick="toggleAvatarPicker()" title="点击更换头像">👤</div>
+          <p class="text-xs text-neutral-400" id="displayUsername"></p>
+          <button onclick="toggleAvatarPicker()" class="text-xs text-neutral-600 hover:text-white transition mt-1">更换头像</button>
+        </div>
+        <!-- 头像选择器 -->
+        <div id="avatarPicker" class="hidden grid grid-cols-6 gap-2 p-3 rounded-lg mb-3" style="background:#080808; border:1px solid #141414;">
         </div>
         <div>
           <label class="block text-xs text-neutral-600 mb-1">出生日期</label>
@@ -1558,18 +1564,45 @@ function viewHistoryDetail(id) {
 
 // ===================== 个人资料管理 =====================
 
+// 头像系统
+const AVATAR_OPTIONS = ['👤','🦊','🐱','🐶','🐰','🐼','🐨','🐯','🦁','🐮','🐷','🐸','🐵','🐔','🐧','🐦','🦄','🐲','🌟','🔥','💎','🎯','🍀','🌙','☀️','🌈','⚡','🧿','🪐','🎭'];
+
+function buildAvatarPicker() {
+  var picker = document.getElementById('avatarPicker');
+  picker.innerHTML = AVATAR_OPTIONS.map(a =>
+    `<div onclick="selectAvatar('${a}')" class="w-9 h-9 rounded-full flex items-center justify-center text-lg cursor-pointer hover:bg-neutral-800 transition" style="background:#0a0a0a;">${a}</div>`
+  ).join('');
+}
+
+function toggleAvatarPicker() {
+  var p = document.getElementById('avatarPicker');
+  p.classList.toggle('hidden');
+  if (!p.classList.contains('hidden') && !p.innerHTML.trim()) buildAvatarPicker();
+}
+
+function selectAvatar(emoji) {
+  document.getElementById('avatarPreview').textContent = emoji;
+  document.getElementById('avatarPicker').classList.add('hidden');
+  // 即时保存
+  var cur = getCurrentUser();
+  if (!cur) return;
+  var users = loadUsers();
+  if (users[cur.key]) {
+    users[cur.key].avatar = emoji;
+    saveUsers(users);
+  }
+}
+
 function saveProfile() {
   const current = getCurrentUser();
   if (!current) return;
   const users = loadUsers();
   if (!users[current.key]) return;
 
-  const nickname = document.getElementById('editNickname').value.trim();
   const birthday = document.getElementById('editBirthday').value;
   const birthtime = document.getElementById('editBirthtime').value;
   const gender = document.getElementById('editGender').value;
 
-  users[current.key].nickname = nickname;
   users[current.key].birthday = birthday;
   users[current.key].birthtime = birthtime;
   users[current.key].gender = gender;
@@ -1592,11 +1625,13 @@ function loadProfile() {
   if (!user) return;
 
   document.getElementById('profileUserId').textContent = user.id;
-  document.getElementById('editNickname').value = user.nickname || '';
+  document.getElementById('avatarPreview').textContent = user.avatar || '👤';
+  document.getElementById('displayUsername').textContent = user.username;
   document.getElementById('editBirthday').value = user.birthday || '';
   document.getElementById('editBirthtime').value = user.birthtime || '';
   document.getElementById('editGender').value = user.gender || '';
   renderHistoryList();
+  document.getElementById('historySearchId').value = '';
   document.getElementById('historySearchId').value = '';
 }
 
