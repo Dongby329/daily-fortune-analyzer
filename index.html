@@ -418,6 +418,19 @@
   </div>
 </div>
 
+<!-- LLM 配置引导弹窗 -->
+<div id="llmGuideModal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+  <div class="card rounded-2xl p-6 max-w-sm w-full text-center fade-in">
+    <p class="text-3xl mb-3">🚀</p>
+    <h3 class="text-white text-lg font-semibold mb-1">运势已生成</h3>
+    <p class="text-neutral-400 text-sm mb-5 leading-relaxed">配置大模型后，你将解锁：<br>🌌 <b class="text-white">超时空对话</b> · 与历史名人聊天<br>👕 <b class="text-white">AI 穿搭搜索</b> · 全网时尚推荐</p>
+    <div class="space-y-2">
+      <button onclick="goToLLMConfig()" class="w-full py-3 rounded-lg text-sm font-semibold tracking-wider bg-white text-black hover:bg-neutral-200 transition">去配置</button>
+      <button onclick="closeLLMGuide()" class="w-full py-2.5 rounded-lg text-xs text-neutral-600 hover:text-neutral-400 transition">稍后再说</button>
+    </div>
+  </div>
+</div>
+
 <!-- 分享弹窗 -->
 <div id="shareModal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
   <div class="card rounded-xl p-6 max-w-sm w-full text-center">
@@ -640,6 +653,13 @@ async function autoGenerate() {
   saveBirthInfo(birthday, birthtime);
   renderResult(currentResult, today);
   showView('resultView');
+
+  // 首次自动登录 → 引导配置
+  if (!hasLLMConfigured() && !sessionStorage.getItem('llm_guide_shown')) {
+    sessionStorage.setItem('llm_guide_shown', '1');
+    setTimeout(() => showLLMGuide(), 800);
+    return;
+  }
   window.scrollTo(0, 0);
 
   setTimeout(() => {
@@ -661,6 +681,25 @@ function logout() {
 }
 
 // 显示错误
+function hasLLMConfigured() {
+  return !!(localStorage.getItem('llm_key') && localStorage.getItem('llm_endpoint'));
+}
+
+function showLLMGuide() {
+  document.getElementById('llmGuideModal').classList.remove('hidden');
+}
+
+function closeLLMGuide() {
+  document.getElementById('llmGuideModal').classList.add('hidden');
+}
+
+function goToLLMConfig() {
+  document.getElementById('llmGuideModal').classList.add('hidden');
+  navTo('profile');
+  loadProfile();
+  loadLLMConfig();
+}
+
 function resetAllData() {
   if (confirm('确定要清除所有账号和运势数据吗？此操作不可撤销。')) {
     localStorage.removeItem(STORAGE_KEY);
@@ -2167,6 +2206,15 @@ async function handleSubmit(event) {
   // 保存出生信息到账号
   saveBirthInfo(birthday, birthtime);
 
+  // 首次使用 → 引导配置大模型
+  if (!hasLLMConfigured() && !sessionStorage.getItem('llm_guide_shown')) {
+    sessionStorage.setItem('llm_guide_shown', '1');
+    renderResult(currentResult, today);
+    showView('resultView');
+    setTimeout(() => showLLMGuide(), 800);
+    return;
+  }
+
   // 渲染结果页
   renderResult(currentResult, today);
   showView('resultView');
@@ -2374,6 +2422,9 @@ document.getElementById('randomBtn').addEventListener('click', () => {
   setTimeout(() => { btn.textContent = '随机体验'; btn.style.borderColor = '#1a1a1a'; btn.style.color = '#999'; }, 1500);
 });
 
+document.getElementById('llmGuideModal').addEventListener('click', function(e) {
+  if (e.target === this) closeLLMGuide();
+});
 document.getElementById('shareModal').addEventListener('click', function(e) {
   if (e.target === this) closeShare();
 });
