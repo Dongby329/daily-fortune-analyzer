@@ -121,6 +121,11 @@
       <p class="text-xs text-neutral-600 mb-3 tracking-wider">快速登录</p>
       <div id="quickLoginList" class="flex flex-wrap gap-2"></div>
     </div>
+
+    <!-- 重置 -->
+    <div class="mt-6 pt-4 border-t border-neutral-900 text-center">
+      <button onclick="resetAllData()" class="text-xs text-neutral-700 hover:text-red-400 transition">重置所有数据</button>
+    </div>
   </div>
 </div>
 
@@ -528,9 +533,14 @@ function handleLogin(event) {
   event.preventDefault();
   const username = document.getElementById('loginUser').value.trim();
   const password = document.getElementById('loginPass').value;
-  if (!username || !password) return;
+  if (!username || !password) { showError('请输入用户名和密码'); return; }
 
   const users = loadUsers();
+  if (Object.keys(users).length === 0) {
+    showError('没有已注册的账号，请先注册');
+    return;
+  }
+
   const found = Object.entries(users).find(([,u]) => u.username === username && u.password === password);
 
   if (!found) {
@@ -646,6 +656,26 @@ function logout() {
 }
 
 // 显示错误
+function resetAllData() {
+  if (confirm('确定要清除所有账号和运势数据吗？此操作不可撤销。')) {
+    localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(CURRENT_KEY);
+    localStorage.removeItem(REMEMBERED_KEY);
+    localStorage.removeItem(CHAT_HISTORY_KEY);
+    localStorage.removeItem('llm_endpoint');
+    localStorage.removeItem('llm_key');
+    localStorage.removeItem('llm_model');
+    clearCurrentUser();
+    renderQuickLogin();
+    showView('loginView');
+    switchTab('register');
+    document.getElementById('regUser').value = '';
+    document.getElementById('regPass').value = '';
+    document.getElementById('loginError').classList.add('hidden');
+    alert('数据已清除。请重新注册。');
+  }
+}
+
 function showError(msg) {
   const el = document.getElementById('loginError');
   el.textContent = msg;
@@ -2285,6 +2315,10 @@ function quickLoginFill(username) {
 })();
 
 document.getElementById('fortuneForm').addEventListener('submit', handleSubmit);
+
+// 兜底事件绑定
+document.getElementById('registerForm').addEventListener('submit', handleRegister);
+document.getElementById('loginForm').addEventListener('submit', handleLogin);
 
 document.getElementById('randomBtn').addEventListener('click', () => {
   const year = 1980 + Math.floor(Math.random() * 25);
