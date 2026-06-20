@@ -8,38 +8,51 @@
 <style>
   body { background: #000; overflow-x: hidden; }
   .card { background: #0a0a0a; border: 1px solid #141414; }
-  .bar-track { background: #111; height: 4px; border-radius: 2px; }
-  .bar-fill { height: 4px; border-radius: 2px; transition: width 0.8s ease; }
+  .bar-track { background: #111; height: 3px; border-radius: 2px; }
+  .bar-fill { height: 3px; border-radius: 2px; transition: width 0.8s ease; }
   .chip { background: #0d0d0d; border: 1px solid #1a1a1a; color: #999; }
   .chip-green { border-color: #1a3a1a; color: #4a9; }
   .chip-amber { border-color: #2a2010; color: #b98; }
   .input-field { background: #0a0a0a; border: 1px solid #1a1a1a; color: #fff; transition: border-color 0.3s; }
-  .input-field:focus { outline: none; border-color: #444; }
-  .btn-main { background: #fff; color: #000; transition: all 0.3s; }
-  .btn-main:hover { background: #e5e5e5; transform: translateY(-1px); }
-  .btn-ghost { border: 1px solid #1a1a1a; color: #999; transition: all 0.3s; }
-  .btn-ghost:hover { border-color: #444; color: #fff; }
+  .input-field:focus { outline: none; border-color: #333; }
+  .btn-main { background: #fff; color: #000; transition: all 0.2s; }
+  .btn-main:hover { background: #e5e5e5; }
+  .btn-ghost { border: 1px solid #1a1a1a; color: #999; transition: all 0.2s; }
+  .btn-ghost:hover { border-color: #333; color: #fff; }
   input[type="date"], input[type="time"] { color-scheme: dark; }
   input[type="date"]::-webkit-calendar-picker-indicator,
   input[type="time"]::-webkit-calendar-picker-indicator { filter: invert(1); }
+
+  /* 统一页面头部 */
+  .page-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 0; font-size: 12px; }
+  .page-header .title { color: #666; letter-spacing: 2px; text-transform: uppercase; }
+  .page-header .badge { color: #444; font-family: monospace; }
+
+  /* 星空 */
   .stars-container { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
   .star { position: absolute; color: #111; user-select: none; opacity: 0; animation: drift linear infinite; animation-fill-mode: backwards; }
   @keyframes drift {
     0%   { transform: translateY(105vh) rotate(0deg); opacity:0; }
-    10%  { opacity:0.5; }
-    90%  { opacity:0.5; }
+    10%  { opacity:0.4; }
+    90%  { opacity:0.4; }
     100% { transform: translateY(-15vh) rotate(360deg); opacity:0; }
   }
   .hidden { display: none !important; }
-  .fade-in { animation: fadeIn 0.5s ease; }
+  .fade-in { animation: fadeIn 0.4s ease; }
+  @keyframes fadeIn { from { opacity:0; transform: translateY(8px); } to { opacity:1; transform: translateY(0); } }
   .tab-active { color: #fff; border-bottom: 2px solid #fff; }
   .tab-inactive { color: #555; border-bottom: 2px solid transparent; }
   .tab-inactive:hover { color: #999; }
-  .nav-bar { position: fixed; bottom: 0; left: 0; right: 0; z-index: 30; background: rgba(0,0,0,0.95); border-top: 1px solid #141414; backdrop-filter: blur(10px); }
-  .nav-item { color: #555; transition: color 0.2s; }
+
+  /* 底部导航 */
+  .nav-bar { position: fixed; bottom: 0; left: 0; right: 0; z-index: 30; background: rgba(0,0,0,0.95); border-top: 1px solid #111; backdrop-filter: blur(12px); }
+  .nav-item { color: #444; transition: all 0.2s; }
   .nav-item.active { color: #fff; }
-  .nav-item:hover { color: #999; }
-  .chat-bubble-user { background: #fff; color: #000; border-radius: 16px 16px 4px 16px; }
+  .nav-item:hover { color: #888; }
+
+  /* 聊天气泡 */
+  .chat-bubble-user { background: #fff; color: #000; border-radius: 14px 14px 4px 14px; }
+  .chat-bubble-ai { background: #0d0d0d; color: #ccc; border-radius: 14px 14px 14px 4px; border: 1px solid #141414; }
   .chat-bubble-ai { background: #111; color: #ddd; border-radius: 16px 16px 16px 4px; border: 1px solid #1a1a1a; }
   .typing-dot { animation: blink 1.4s infinite both; }
   .typing-dot:nth-child(2) { animation-delay: 0.2s; }
@@ -114,9 +127,9 @@
 <!-- ═══════════ 输入态 ═══════════ -->
 <div id="inputView" class="hidden relative z-10 flex items-center justify-center min-h-screen p-4">
   <!-- 用户信息条 -->
-  <div class="fixed top-0 left-0 right-0 z-20 flex items-center justify-between px-4 py-3 text-xs border-b border-neutral-900" style="background:rgba(0,0,0,0.9);">
-    <span class="text-neutral-500"><span id="inputUsername"></span> · <span class="text-neutral-700" id="inputUserId"></span></span>
-    <button onclick="logout()" class="text-neutral-600 hover:text-neutral-400 tracking-wider">退出</button>
+  <div class="fixed top-0 left-0 right-0 z-20 flex items-center justify-between px-4 py-3" style="background:rgba(0,0,0,0.85); backdrop-filter:blur(8px);">
+    <span class="text-xs tracking-wider" style="color:#444;"><span id="inputUsername"></span> <span id="inputUserId" style="color:#222;"></span></span>
+    <button onclick="logout()" class="text-xs tracking-wider" style="color:#444;">退出</button>
   </div>
   <div class="w-full max-w-md">
     <div class="text-center mb-8">
@@ -159,10 +172,10 @@
 <div id="resultView" class="hidden relative z-10 mx-auto max-w-3xl px-4 md:px-8">
 
   <!-- 导航 -->
-  <header class="flex items-center justify-between py-5 text-xs">
-    <button onclick="backToInput()" class="text-neutral-600 hover:text-neutral-400 transition tracking-wider">← 返回</button>
-    <span class="text-neutral-700"><span id="resultUsername"></span> · <span class="text-neutral-800" id="resultUserId"></span></span>
-    <button onclick="shareCard()" class="text-neutral-600 hover:text-neutral-400 transition tracking-wider">分享</button>
+  <header class="page-header">
+    <button onclick="backToInput()" class="text-neutral-600 hover:text-neutral-400 transition text-xs tracking-wider">← 返回</button>
+    <span style="color:#333;"><span id="resultUsername"></span></span>
+    <button onclick="shareCard()" class="text-neutral-600 hover:text-neutral-400 transition text-xs tracking-wider">分享</button>
   </header>
 
   <!-- 评分区 -->
@@ -236,26 +249,26 @@
 </div>
 
 <!-- ═══════════ 底部导航 ═══════════ -->
-<nav id="bottomNav" class="hidden nav-bar flex items-center justify-around py-2.5">
-  <button onclick="navTo('input')" id="navInput" class="nav-item flex flex-col items-center gap-0.5 text-xs px-3 py-1">
-    <span class="text-lg">🔮</span><span>运势</span>
+<nav id="bottomNav" class="hidden nav-bar flex items-center justify-around py-2">
+  <button onclick="navTo('input')" id="navInput" class="nav-item flex flex-col items-center gap-0.5 text-xs px-2 py-1">
+    <span class="text-base">🔮</span><span class="text-[10px] tracking-wider">运势</span>
   </button>
-  <button onclick="navTo('outfit')" id="navOutfit" class="nav-item flex flex-col items-center gap-0.5 text-xs px-3 py-1">
-    <span class="text-lg">👕</span><span>穿搭</span>
+  <button onclick="navTo('outfit')" id="navOutfit" class="nav-item flex flex-col items-center gap-0.5 text-xs px-2 py-1">
+    <span class="text-base">👕</span><span class="text-[10px] tracking-wider">穿搭</span>
   </button>
-  <button onclick="navTo('dialogue')" id="navDialogue" class="nav-item flex flex-col items-center gap-0.5 text-xs px-3 py-1">
-    <span class="text-lg">🌌</span><span>超时空</span>
+  <button onclick="navTo('dialogue')" id="navDialogue" class="nav-item flex flex-col items-center gap-0.5 text-xs px-2 py-1">
+    <span class="text-base">🌌</span><span class="text-[10px] tracking-wider">超时空</span>
   </button>
-  <button onclick="navTo('profile')" id="navProfile" class="nav-item flex flex-col items-center gap-0.5 text-xs px-3 py-1">
-    <span class="text-lg">👤</span><span>我的</span>
+  <button onclick="navTo('profile')" id="navProfile" class="nav-item flex flex-col items-center gap-0.5 text-xs px-2 py-1">
+    <span class="text-base">👤</span><span class="text-[10px] tracking-wider">我的</span>
   </button>
 </nav>
 
 <!-- ═══════════ 「我的」页面 ═══════════ -->
 <div id="profileView" class="hidden relative z-10 mx-auto max-w-lg md:max-w-2xl px-4 md:px-8 pb-20 md:pb-24">
-  <header class="flex items-center justify-between py-5 text-xs">
-    <span class="text-neutral-400 tracking-wider">我的</span>
-    <span class="text-neutral-700 font-mono" id="profileUserId"></span>
+  <header class="page-header">
+    <span class="title">我的</span>
+    <span class="badge" id="profileUserId"></span>
   </header>
 
   <div class="md:grid md:grid-cols-2 md:gap-4">
@@ -341,9 +354,9 @@
 
 <!-- ═══════════ 超时空对话——匹配列表 ═══════════ -->
 <div id="dialogueView" class="hidden relative z-10 mx-auto max-w-lg md:max-w-2xl px-4 md:px-8 pb-20 md:pb-24">
-  <header class="flex items-center justify-between py-5 text-xs">
-    <span class="text-neutral-400 tracking-wider">超时空对话</span>
-    <span class="text-neutral-700" id="dialogueUserId"></span>
+  <header class="page-header">
+    <span class="title">超时空对话</span>
+    <span class="badge" id="dialogueUserId"></span>
   </header>
 
   <div class="text-center py-6 fade-in">
@@ -358,9 +371,9 @@
 
 <!-- ═══════════ 今日穿搭 ═══════════ -->
 <div id="outfitView" class="hidden relative z-10 mx-auto max-w-lg md:max-w-2xl px-4 md:px-8 pb-20 md:pb-24">
-  <header class="flex items-center justify-between py-5 text-xs">
-    <span class="text-neutral-400 tracking-wider">今日穿搭</span>
-    <span class="text-neutral-700" id="outfitDate"></span>
+  <header class="page-header">
+    <span class="title">今日穿搭</span>
+    <span class="badge" id="outfitDate"></span>
   </header>
 
   <div class="text-center py-6 fade-in" id="outfitHeader">
@@ -385,9 +398,9 @@
 
 <!-- ═══════════ 超时空对话——聊天 ═══════════ -->
 <div id="chatView" class="hidden relative z-10 mx-auto max-w-lg md:max-w-2xl px-4 md:px-8" style="height:100vh;">
-  <header class="flex items-center justify-between py-4 text-xs border-b border-neutral-900" style="background:#000;">
-    <button onclick="closeChat()" class="text-neutral-500 hover:text-neutral-300 tracking-wider">← 返回列表</button>
-    <span class="text-neutral-300"><span id="chatFigureName"></span> · <span id="chatFigureEra" class="text-neutral-600"></span></span>
+  <header class="page-header" style="background:#000;">
+    <button onclick="closeChat()" class="text-neutral-500 hover:text-neutral-300 text-xs tracking-wider">← 返回</button>
+    <span class="text-xs text-neutral-500"><span id="chatFigureName"></span> <span id="chatFigureEra" style="color:#333;"></span></span>
     <button onclick="clearChat()" class="text-neutral-600 hover:text-neutral-400 text-xs">清空</button>
   </header>
 
