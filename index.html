@@ -399,6 +399,9 @@
 
   <div id="outfitGridStandalone" class="grid grid-cols-2 md:grid-cols-3 gap-3 mt-2"></div>
   <p id="outfitNoData" class="hidden text-neutral-600 text-xs text-center py-8">请先在「我的」设置性别和出生信息</p>
+  <div id="outfitRefresh" class="hidden text-center mt-6 mb-2">
+    <button onclick="searchOutfitsOnline()" class="btn-ghost px-6 py-2.5 rounded-lg text-sm">🔄 看看其他搭配</button>
+  </div>
 </div>
 
 <!-- ═══════════ 超时空对话——聊天 ═══════════ -->
@@ -861,9 +864,20 @@ function generateStandaloneOutfits() {
     return;
   }
   document.getElementById('outfitNoData').classList.add('hidden');
-  document.getElementById('outfitControls').classList.remove('hidden');
   document.getElementById('outfitDate').textContent = `${ctx.today.getFullYear()}/${(ctx.today.getMonth()+1).toString().padStart(2,'0')}/${ctx.today.getDate().toString().padStart(2,'0')}`;
+
+  // 已有搜索结果 → 保留不刷新
+  if (window._currentOutfits && window._currentOutfits.length) {
+    document.getElementById('outfitControls').classList.add('hidden');
+    document.getElementById('outfitSearchStatus').classList.add('hidden');
+    document.getElementById('outfitRefresh').classList.remove('hidden');
+    renderOutfitsWithLinks(window._currentOutfits, 'outfitGridStandalone');
+    return;
+  }
+
+  // 无结果 → 显示搜索按钮
   document.getElementById('outfitGridStandalone').innerHTML = '';
+  document.getElementById('outfitControls').classList.remove('hidden');
   document.getElementById('outfitSearchStatus').classList.add('hidden');
   document.getElementById('searchOutfitBtn').classList.remove('hidden');
 }
@@ -882,6 +896,7 @@ async function searchOutfitsOnline() {
   const grid = document.getElementById('outfitGridStandalone');
 
   btn.classList.add('hidden');
+  document.getElementById('outfitRefresh').classList.add('hidden');
   status.classList.remove('hidden');
   grid.innerHTML = '';
   // 清除之前可能残留的 interval
@@ -947,6 +962,8 @@ async function searchOutfitsOnline() {
     // 同步到全局 → 运势页可用
     window._currentOutfits = outfitsWithLinks;
     renderOutfitsWithLinks(outfitsWithLinks, 'outfitGridStandalone');
+    document.getElementById('outfitRefresh').classList.remove('hidden');
+    document.getElementById('outfitControls').classList.add('hidden');
     // 同步更新结果页的穿搭卡片
     syncOutfitsToResult();
 
@@ -969,6 +986,7 @@ function fallbackToLocalOutfits(ctx, msg) {
   const withLinks = outfits.map(o => ({ ...o, isAi: false }));
   window._currentOutfits = withLinks;
   renderOutfitsWithLinks(withLinks, 'outfitGridStandalone');
+  document.getElementById('outfitRefresh').classList.remove('hidden');
   syncOutfitsToResult();
   window._outfitSearching = false;
 }
