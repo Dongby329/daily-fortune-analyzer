@@ -909,7 +909,7 @@ function generateStandaloneOutfits() {
   document.getElementById('outfitNoData').classList.add('hidden');
   document.getElementById('outfitDate').textContent = `${ctx.today.getFullYear()}/${(ctx.today.getMonth()+1).toString().padStart(2,'0')}/${ctx.today.getDate().toString().padStart(2,'0')}`;
 
-  // 已有搜索结果 → 保留不刷新
+  // 已有结果 → 保留
   if (window._currentOutfits && window._currentOutfits.length) {
     document.getElementById('outfitControls').classList.add('hidden');
     document.getElementById('outfitSearchStatus').classList.add('hidden');
@@ -918,15 +918,17 @@ function generateStandaloneOutfits() {
     return;
   }
 
-  // 无结果 → 自动触发 AI 联网搜索
-  document.getElementById('outfitControls').classList.add('hidden');
+  // 无结果 → 自动AI搜索；LLM未配置则显示搜索按钮
   document.getElementById('outfitRefresh').classList.add('hidden');
   document.getElementById('outfitGridStandalone').innerHTML = '';
-  if (!window._outfitAutoSearched) {
-    window._outfitAutoSearched = true;
-    setTimeout(function() { searchOutfitsOnline(true); }, 300);
+  if (hasLLMConfigured()) {
+    document.getElementById('outfitControls').classList.add('hidden');
+    setTimeout(function() { searchOutfitsOnline(); }, 200);
   } else {
-    searchOutfitsOnline(true);
+    document.getElementById('outfitControls').classList.remove('hidden');
+    document.getElementById('outfitSearchStatus').classList.add('hidden');
+    document.getElementById('searchOutfitBtn').classList.remove('hidden');
+    document.getElementById('searchOutfitBtn').textContent = '🔍 AI 联网搜索今日穿搭（需先配置LLM）';
   }
 }
 
@@ -1079,15 +1081,10 @@ function renderOutfitsWithLinks(outfits, targetId) {
   const grid = document.getElementById(targetId);
   if (!grid) return;
   grid.innerHTML = outfits.map((o, i) => {
-    var firstLink = o.platforms?.[0]?.url;
-    // iOS 优先用 webUrl
-    if (/iPhone|iPad|iPod/i.test(navigator.userAgent) && o.platforms?.[0]?.webUrl) {
-      firstLink = o.platforms[0].webUrl;
-    }
-    if (!firstLink) firstLink = '#';
+    var xhsUrl = (o.platforms?.[0]?.webUrl) || (o.platforms?.[0]?.url) || '#';
+    if (!xhsUrl.startsWith('http')) xhsUrl = (o.platforms?.[0]?.webUrl) || '#';
     return `
-    <div class="rounded-xl overflow-hidden transition group cursor-pointer hover:ring-1 hover:ring-neutral-600" style="background:#0a0a0a; border:1px solid #141414; animation:fadeIn 0.4s ease ${i*0.06}s both;"
-         onclick="window.open('${firstLink.replace(/'/g, "\\'")}', '_blank')">
+    <a href="${xhsUrl.replace(/'/g, "\\'")}" target="_blank" rel="noopener" class="block rounded-xl overflow-hidden transition group cursor-pointer hover:ring-1 hover:ring-neutral-600" style="background:#0a0a0a; border:1px solid #141414; animation:fadeIn 0.4s ease ${i*0.06}s both; text-decoration:none;">
       ${o.isAi ? `
       <div class="p-3">
         <div class="flex items-center justify-between mb-2">
@@ -1112,17 +1109,17 @@ function renderOutfitsWithLinks(outfits, targetId) {
         <div class="flex items-center justify-between mt-2 pt-2 border-t border-neutral-900"><span class="text-xs text-neutral-600">${o.season}季</span><span class="text-xs text-neutral-700">❤ ${o.likes}</span></div>
       </div>
       `}
-    </div>
+    </a>
   `}).join('');
 }
 
 function renderOutfits(outfits, targetId = 'outfitGrid') {
   const grid = document.getElementById(targetId);
   if (!grid) return;
-  grid.innerHTML = outfits.map((o, i) => `
-    <div class="rounded-xl overflow-hidden cursor-pointer hover:ring-1 hover:ring-neutral-700 transition group"
-         style="background:#0a0a0a; border:1px solid #141414; animation:fadeIn 0.4s ease ${i*0.06}s both;"
-         onclick="window.open('https://www.xiaohongshu.com/search_result?keyword=${encodeURIComponent((o.style||'') + ' ' + (o.top||'') + ' 穿搭')}', '_blank')">
+  grid.innerHTML = outfits.map((o, i) => {
+    var kw = encodeURIComponent((o.style||'') + ' ' + (o.top||'') + ' 穿搭');
+    return `
+    <a href="https://www.xiaohongshu.com/search_result?keyword=${kw}" target="_blank" rel="noopener" class="block rounded-xl overflow-hidden cursor-pointer hover:ring-1 hover:ring-neutral-700 transition group" style="background:#0a0a0a; border:1px solid #141414; animation:fadeIn 0.4s ease ${i*0.06}s both; text-decoration:none;">
       <!-- 配色条 -->
       <div class="flex h-2">
         <div class="flex-1" style="background:${o.mainColor};"></div>
@@ -1141,8 +1138,8 @@ function renderOutfits(outfits, targetId = 'outfitGrid') {
           <span class="text-xs text-neutral-700">❤ ${o.likes}</span>
         </div>
       </div>
-    </div>
-  `).join('');
+    </a>
+  `; }).join('');
 }
 
 // ===================== 超时空对话——LLM 动态匹配引擎 =====================
