@@ -333,7 +333,10 @@
     </div>
   </div>
 
-  <button onclick="logout()" class="w-full mt-4 py-3 rounded-lg text-xs text-neutral-700 hover:text-red-400 transition tracking-wider">退出登录</button>
+  <div class="mt-6 pt-6 border-t border-neutral-900">
+    <button onclick="logout()" class="w-full py-3 rounded-lg text-sm text-neutral-500 hover:text-red-400 transition tracking-wider border border-neutral-900 hover:border-red-900/50">退出登录</button>
+    <p class="text-center text-neutral-800 text-xs mt-2">退出后需重新登录</p>
+  </div>
 </div>
 
 <!-- ═══════════ 超时空对话——匹配列表 ═══════════ -->
@@ -2240,7 +2243,8 @@ function quickLoginFill(username) {
 // 检查登录态
 (function checkLogin() {
   const current = getCurrentUser();
-  if (current && current.remember !== false) {
+  // 仅当明确标记 remember 且账号存在时才自动登录
+  if (current && current.remember === true) {
     const users = loadUsers();
     const user = users[current.key];
     if (user) {
@@ -2251,13 +2255,11 @@ function quickLoginFill(username) {
       document.getElementById('resultUserId').textContent = user.id;
 
       if (user.birthday) {
-        // 有出生信息 → 回填后直接生成今日运势
         document.getElementById('birthday').value = user.birthday;
         if (user.birthtime) document.getElementById('birthtime').value = user.birthtime;
         showView('loadingView');
         autoGenerate();
       } else {
-        // 无出生信息 → 显示输入页
         showView('inputView');
       }
       return;
