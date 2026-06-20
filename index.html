@@ -280,7 +280,9 @@
         <select id="apiPreset" onchange="applyPreset()" class="input-field w-full px-4 py-2.5 rounded-lg text-xs">
           <option value="">自定义</option>
           <option value="openai">OpenAI</option>
-          <option value="deepseek">DeepSeek</option>
+          <option value="deepseek">DeepSeek（通用）</option>
+          <option value="deepseek-flash">DeepSeek V4 Flash</option>
+          <option value="deepseek-pro">DeepSeek V4 Pro</option>
           <option value="tongyi">通义千问（阿里）</option>
           <option value="zhipu">智谱 GLM</option>
           <option value="moonshot">Moonshot（月之暗面）</option>
@@ -867,6 +869,8 @@ function escapeHtml(str) {
 const API_PRESETS = {
   openai:   { endpoint:'https://api.openai.com/v1/chat/completions', model:'gpt-4o' },
   deepseek: { endpoint:'https://api.deepseek.com/v1/chat/completions', model:'deepseek-chat' },
+  'deepseek-flash': { endpoint:'https://api.deepseek.com/v1/chat/completions', model:'deepseek-v4-flash' },
+  'deepseek-pro':   { endpoint:'https://api.deepseek.com/v1/chat/completions', model:'deepseek-v4-pro' },
   tongyi:   { endpoint:'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions', model:'qwen-plus' },
   zhipu:    { endpoint:'https://open.bigmodel.cn/api/paas/v4/chat/completions', model:'glm-4-flash' },
   moonshot: { endpoint:'https://api.moonshot.cn/v1/chat/completions', model:'moonshot-v1-8k' },
