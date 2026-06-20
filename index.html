@@ -906,7 +906,11 @@ async function searchOutfitsOnline() {
       ],
       isAi: true,
     }));
+    // 同步到全局 → 运势页可用
+    window._currentOutfits = outfitsWithLinks;
     renderOutfitsWithLinks(outfitsWithLinks, 'outfitGridStandalone');
+    // 同步更新结果页的穿搭卡片
+    syncOutfitsToResult();
 
   } catch (e) {
     clearSearchStatus();
@@ -924,8 +928,41 @@ function fallbackToLocalOutfits(ctx, msg) {
   document.getElementById('outfitSearchDetail').textContent = msg;
   document.getElementById('searchOutfitBtn').classList.remove('hidden');
   const outfits = generateOutfits(ctx.lucky, ctx.wuxing, ctx.gender, ctx.daySeed);
-  renderOutfitsWithLinks(outfits, 'outfitGridStandalone');
+  const withLinks = outfits.map(o => ({ ...o, isAi: false }));
+  window._currentOutfits = withLinks;
+  renderOutfitsWithLinks(withLinks, 'outfitGridStandalone');
+  syncOutfitsToResult();
   window._outfitSearching = false;
+}
+
+function syncOutfitsToResult() {
+  if (!window._currentOutfits) return;
+  // 结果页穿搭网格存在时同步更新
+  var grid = document.getElementById('outfitGrid');
+  if (grid && !grid.classList.contains('hidden')) {
+    renderOutfitsFromShared('outfitGrid');
+  }
+}
+
+function renderOutfitsFromShared(targetId) {
+  var outfits = window._currentOutfits;
+  if (!outfits || !outfits.length) return;
+  var grid = document.getElementById(targetId);
+  if (!grid) return;
+  grid.innerHTML = outfits.map((o, i) => `
+    <div class="rounded-xl overflow-hidden cursor-pointer hover:ring-1 hover:ring-neutral-600 transition group"
+         style="background:#0a0a0a; border:1px solid #141414; animation:fadeIn 0.3s ease ${i*0.05}s both;"
+         onclick="var link='${(o.platforms?.[0]?.url || 'https://www.xiaohongshu.com/search_result?keyword=' + encodeURIComponent((o.search||o.style||'') + ' 穿搭')).replace(/'/g, "\\'")}'; window.open(link, '_blank')">
+      <div class="p-3">
+        <div class="flex items-center justify-between mb-1.5">
+          <span class="text-xs text-neutral-400">${o.style || '时尚搭配'}</span>
+          <span class="text-xs text-neutral-600">❤ ${o.likes || 200}</span>
+        </div>
+        <p class="text-sm text-white font-medium">${o.top || ''}</p>
+        <p class="text-xs text-neutral-500 mt-0.5">${o.bottom || ''} · ${o.shoe || ''}</p>
+      </div>
+    </div>
+  `).join('');
 }
 
 function renderOutfitsWithLinks(outfits, targetId) {
@@ -2239,8 +2276,13 @@ function renderResult(r, today) {
     </div>`).join('');
   document.getElementById('wuxingTip').textContent = r.wuxing.tip;
 
-  // 穿搭
-  if (r.outfits) renderOutfits(r.outfits, 'outfitGrid');
+  // 穿搭 —— 优先用穿搭页同步过来的结果
+  if (window._currentOutfits && window._currentOutfits.length) {
+    renderOutfitsFromShared('outfitGrid');
+  } else if (r.outfits) {
+    renderOutfits(r.outfits, 'outfitGrid');
+    window._currentOutfits = r.outfits;
+  }
 
   // 分享数据
   document.getElementById('shareDate').textContent = document.getElementById('reportDate').textContent;
