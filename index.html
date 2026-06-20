@@ -1023,15 +1023,14 @@ async function searchOutfitsOnline(isAuto) {
     const jsonStr = reply.replace(/```json|```/g, '').trim();
     const aiOutfits = JSON.parse(jsonStr);
 
-    // iOS 使用 Universal Links (https:// 自动跳APP)，Android 保留 deep link
-    var isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
-    var isAndroid = /Android/i.test(navigator.userAgent);
+    // 全部使用 https webUrl，移动端浏览器自动适配
     const cacheBuster = '&t=' + ts;
     const outfitsWithLinks = aiOutfits.map((o, i) => {
       var kw = encodeURIComponent(o.search || o.style + '穿搭');
-      var xhsUrl = isAndroid ? `xhsdiscover://search?keyword=${kw}` : `https://www.xiaohongshu.com/search_result?keyword=${kw}${cacheBuster}`;
-      var pinUrl = isAndroid ? `pinterest://search/pins/?q=${kw}` : `https://www.pinterest.com/search/pins/?q=${kw}${cacheBuster}`;
-      var wbUrl = isAndroid ? `sinaweibo://searchall?q=${kw}` : `https://s.weibo.com/weibo?q=${kw}${cacheBuster}`;
+      // 统一用 webUrl 适配移动端浏览器
+      var xhsUrl = `https://www.xiaohongshu.com/search_result?keyword=${kw}${cacheBuster}`;
+      var pinUrl = `https://www.pinterest.com/search/pins/?q=${kw}${cacheBuster}`;
+      var wbUrl = `https://m.weibo.cn/search?containerid=100103type%3D1%26q%3D${kw}${cacheBuster}`;
       return {
         ...o, id: i, likes: 100 + Math.floor(Math.random() * 400),
         platforms: [
@@ -1108,9 +1107,9 @@ function renderOutfitsWithLinks(outfits, targetId) {
   var grid = document.getElementById(targetId);
   if (!grid) return;
   grid.innerHTML = outfits.map(function(o, i) {
-    // iOS/桌面都用真实 <a> 标签触发 Universal Links
-    var linkUrl = (o.platforms && o.platforms[0] && o.platforms[0].url) || '#';
-    if (!linkUrl.startsWith('http')) linkUrl = (o.platforms && o.platforms[0] && o.platforms[0].webUrl) || '#';
+    // 优先用 webUrl（https），适配所有设备的浏览器
+    var linkUrl = (o.platforms && o.platforms[0] && o.platforms[0].webUrl) || (o.platforms && o.platforms[0] && o.platforms[0].url) || '#';
+    if (!linkUrl.startsWith('http')) linkUrl = '#';
     var safeUrl = escHtml(linkUrl);
     var platNames = (o.platforms || []).map(function(p){ return escHtml(p.name); }).join(' · ');
 
@@ -2558,15 +2557,6 @@ function closeShare() {
   document.getElementById('shareModal').classList.add('hidden');
 }
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
-// 打开穿搭链接——iOS用location.href触发Universal Links
-window._openOutfit = function(url) {
-  if (!url || url === '#') return;
-  if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-    window.location.href = url;
-  } else {
-    window.open(url, '_blank');
-  }
-};
 function showToast(msg) {
   var t = document.createElement('div'); t.className = 'toast'; t.textContent = msg;
   document.body.appendChild(t); setTimeout(function(){ t.remove(); }, 3000);
