@@ -309,6 +309,17 @@
   </div>
   </div>
 
+  <!-- 历史对话 -->
+  <div class="card rounded-xl p-6 mb-4 fade-in">
+    <h3 class="text-xs text-neutral-500 tracking-widest mb-5">历史对话</h3>
+    <div class="flex gap-2 mb-4">
+      <input type="text" id="historySearchId" class="input-field flex-1 px-4 py-2 rounded-lg text-xs" placeholder="输入对话 ID 查询，如 CH-0001">
+      <button onclick="searchHistory()" class="btn-ghost px-4 py-2 rounded-lg text-xs shrink-0">查询</button>
+    </div>
+    <div id="historyList" class="space-y-2 max-h-80 overflow-y-auto"></div>
+    <p id="historyEmpty" class="text-neutral-700 text-xs text-center py-4">暂无历史对话</p>
+  </div>
+
   <button onclick="logout()" class="w-full py-3 rounded-lg text-sm text-neutral-600 hover:text-red-400 transition tracking-wider">退出登录</button>
 </div>
 
@@ -370,6 +381,7 @@
 const STORAGE_KEY = 'fortune_users';
 const CURRENT_KEY = 'fortune_current';
 const REMEMBERED_KEY = 'fortune_remembered';
+const CHAT_HISTORY_KEY = 'fortune_chat_history';
 
 function loadUsers() {
   try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; }
@@ -747,6 +759,7 @@ let chatHistory = [];
 function startChat(figureName) {
   const fig = (window._matchedFigures || HISTORICAL_FIGURES).find(f => f.name === figureName);
   if (!fig) return;
+  window._isHistoryView = false;
   currentFigure = fig;
   chatHistory = [{ role: 'system', content: fig.soul }];
 
@@ -778,6 +791,8 @@ function getGreeting(fig) {
 }
 
 function closeChat() {
+  saveCurrentChat();
+  window._isHistoryView = false;
   showView('dialogueView');
   document.getElementById('bottomNav').classList.remove('hidden');
   currentFigure = null;
@@ -978,6 +993,114 @@ async function callLLM(messages) {
   }
 }
 
+// ===================== 历史对话管理 =====================
+
+function loadChatHistories() {
+  try { return JSON.parse(localStorage.getItem(CHAT_HISTORY_KEY)) || []; }
+  catch(e) { return []; }
+}
+function saveChatHistories(list) {
+  localStorage.setItem(CHAT_HISTORY_KEY, JSON.stringify(list.slice(0, 50))); // 最多50条
+}
+
+function saveCurrentChat() {
+  if (!currentFigure || chatHistory.length <= 2) return;
+  if (window._isHistoryView) return; // 不重复保存历史回放
+  const histories = loadChatHistories();
+
+  // 生成对话ID
+  let maxN = 0;
+  histories.forEach(h => { const n = parseInt((h.id || 'CH-0000').replace('CH-',''),10); if (n > maxN) maxN = n; });
+  const id = 'CH-' + String(maxN + 1).padStart(4, '0');
+
+  const userMsgs = chatHistory.filter(m => m.role === 'user' || m.role === 'assistant');
+  const preview = userMsgs.slice(0, 3).map(m => (m.role==='user'?'你：':'') + m.content.slice(0, 50)).join(' | ');
+
+  histories.unshift({
+    id,
+    figureName: currentFigure.name,
+    figureEmoji: currentFigure.emoji,
+    date: new Date().toISOString().slice(0, 10),
+    messageCount: userMsgs.length,
+    preview,
+    messages: chatHistory,
+  });
+  saveChatHistories(histories);
+}
+
+function renderHistoryList(filterId = '') {
+  const list = document.getElementById('historyList');
+  const empty = document.getElementById('historyEmpty');
+  let histories = loadChatHistories();
+
+  if (filterId) {
+    histories = histories.filter(h => h.id === filterId);
+  }
+
+  // 只显示当前用户相关的（all for now since we have one session per user）
+  if (histories.length === 0) {
+    list.innerHTML = '';
+    empty.classList.remove('hidden');
+    return;
+  }
+
+  empty.classList.add('hidden');
+  list.innerHTML = histories.map(h => `
+    <div class="flex items-center gap-3 p-3 rounded-lg hover:bg-neutral-900/50 transition cursor-pointer group border border-neutral-900"
+         onclick="viewHistoryDetail('${h.id}')">
+      <span class="text-xl shrink-0">${h.figureEmoji}</span>
+      <div class="flex-1 min-w-0">
+        <div class="flex items-center justify-between">
+          <span class="text-sm text-white">${h.figureName}</span>
+          <span class="text-xs text-neutral-600">${h.date}</span>
+        </div>
+        <p class="text-xs text-neutral-500 mt-0.5 truncate">${h.preview}</p>
+      </div>
+      <div class="shrink-0 text-right">
+        <span class="text-xs text-neutral-600 font-mono">${h.id}</span>
+        <p class="text-xs text-neutral-700">${h.messageCount}条</p>
+      </div>
+      <button onclick="event.stopPropagation(); deleteHistory('${h.id}')"
+        class="hidden group-hover:block text-neutral-700 hover:text-red-400 text-xs px-1">✕</button>
+    </div>
+  `).join('');
+}
+
+function searchHistory() {
+  const id = document.getElementById('historySearchId').value.trim().toUpperCase();
+  renderHistoryList(id || '');
+}
+
+function deleteHistory(id) {
+  const histories = loadChatHistories().filter(h => h.id !== id);
+  saveChatHistories(histories);
+  renderHistoryList();
+}
+
+// 查看历史对话详情（在聊天视图中回放）
+function viewHistoryDetail(id) {
+  const histories = loadChatHistories();
+  const h = histories.find(x => x.id === id);
+  if (!h) return;
+
+  window._isHistoryView = true;
+  currentFigure = { name: h.figureName, emoji: h.figureEmoji, era: '历史', score: '—' };
+  chatHistory = h.messages;
+
+  document.getElementById('chatFigureName').textContent = h.figureEmoji + ' ' + h.figureName;
+  document.getElementById('chatFigureEra').textContent = h.date + ' · ' + h.id;
+
+  const msgs = document.getElementById('chatMessages');
+  msgs.innerHTML = `<div class="text-center text-neutral-600 text-xs py-4">📜 ${h.id} · ${h.figureName} · ${h.messageCount} 条消息</div>`;
+  h.messages.filter(m => m.role === 'user' || m.role === 'assistant').forEach(m => {
+    appendMessage(m.role === 'user' ? 'user' : 'assistant', m.content);
+  });
+
+  showView('chatView');
+  document.getElementById('bottomNav').classList.add('hidden');
+  setTimeout(() => scrollChatBottom(), 200);
+}
+
 // ===================== 个人资料管理 =====================
 
 function saveProfile() {
@@ -1015,6 +1138,8 @@ function loadProfile() {
   document.getElementById('editNickname').value = user.nickname || '';
   document.getElementById('editBirthday').value = user.birthday || '';
   document.getElementById('editBirthtime').value = user.birthtime || '';
+  renderHistoryList();
+  document.getElementById('historySearchId').value = '';
 }
 
 function saveLLMConfig() {
