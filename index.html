@@ -734,6 +734,7 @@ async function autoGenerate() {
 function logout() {
   window._llmGuideShown = false;
   window._outfitAutoSearched = false;
+  window._outfitDate = null;
   window._currentOutfits = null;
   window._matchedFigures = null;
   clearCurrentUser();
@@ -925,7 +926,14 @@ function generateStandaloneOutfits() {
   document.getElementById('outfitNoData').classList.add('hidden');
   document.getElementById('outfitDate').textContent = `${ctx.today.getFullYear()}/${(ctx.today.getMonth()+1).toString().padStart(2,'0')}/${ctx.today.getDate().toString().padStart(2,'0')}`;
 
-  // 已有结果 → 保留
+  // 判断是否当日缓存——跨天则清除
+  var todayStr = ctx.today.toISOString().slice(0,10);
+  if (window._outfitDate !== todayStr) {
+    window._outfitDate = todayStr;
+    window._currentOutfits = null;
+  }
+
+  // 当日已有结果 → 保留
   if (window._currentOutfits && window._currentOutfits.length) {
     document.getElementById('outfitControls').classList.add('hidden');
     document.getElementById('outfitSearchStatus').classList.add('hidden');
@@ -934,12 +942,15 @@ function generateStandaloneOutfits() {
     return;
   }
 
-  // 无结果 → 自动AI搜索；LLM未配置则显示搜索按钮
+  // 无当日结果 → 自动AI搜索
   document.getElementById('outfitRefresh').classList.add('hidden');
   document.getElementById('outfitGridStandalone').innerHTML = '';
   if (hasLLMConfigured()) {
     document.getElementById('outfitControls').classList.add('hidden');
-    setTimeout(function() { searchOutfitsOnline(); }, 200);
+    // 显示加载动画
+    document.getElementById('outfitSearchStatus').classList.remove('hidden');
+    document.getElementById('outfitSearchDetail').textContent = '每日首次自动搜索...';
+    setTimeout(function() { searchOutfitsOnline(); }, 300);
   } else {
     document.getElementById('outfitControls').classList.remove('hidden');
     document.getElementById('outfitSearchStatus').classList.add('hidden');
