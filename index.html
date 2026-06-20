@@ -998,7 +998,14 @@ function loadLLMConfig() {
 // ===================== 导航 =====================
 
 function navTo(target) {
-  if (target === 'input') showView('inputView');
+  if (target === 'input') {
+    if (hasSavedBirthInfo()) {
+      showView('loadingView');
+      autoGenerate();
+    } else {
+      showView('inputView');
+    }
+  }
   else if (target === 'profile') { loadProfile(); loadLLMConfig(); showView('profileView'); }
   else if (target === 'dialogue') {
     document.getElementById('dialogueUserId').textContent =
@@ -1008,6 +1015,14 @@ function navTo(target) {
   }
   updateNavActive(target);
   window.scrollTo(0, 0);
+}
+
+function hasSavedBirthInfo() {
+  const current = getCurrentUser();
+  if (!current) return false;
+  const users = loadUsers();
+  const user = users[current.key];
+  return !!(user && user.birthday);
 }
 
 function updateNavActive(active) {
@@ -1427,7 +1442,12 @@ function showView(view) {
 
 function backToInput() {
   updateNavActive('input');
-  showView('inputView');
+  if (hasSavedBirthInfo()) {
+    showView('loadingView');
+    autoGenerate();
+  } else {
+    showView('inputView');
+  }
   window.scrollTo(0, 0);
 }
 
