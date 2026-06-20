@@ -35,6 +35,18 @@
   .tab-active { color: #fff; border-bottom: 2px solid #fff; }
   .tab-inactive { color: #555; border-bottom: 2px solid transparent; }
   .tab-inactive:hover { color: #999; }
+  .nav-bar { position: fixed; bottom: 0; left: 0; right: 0; z-index: 30; background: rgba(0,0,0,0.95); border-top: 1px solid #141414; backdrop-filter: blur(10px); }
+  .nav-item { color: #555; transition: color 0.2s; }
+  .nav-item.active { color: #fff; }
+  .nav-item:hover { color: #999; }
+  .chat-bubble-user { background: #fff; color: #000; border-radius: 16px 16px 4px 16px; }
+  .chat-bubble-ai { background: #111; color: #ddd; border-radius: 16px 16px 16px 4px; border: 1px solid #1a1a1a; }
+  .typing-dot { animation: blink 1.4s infinite both; }
+  .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+  .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes blink { 0%,80%,100% { opacity:0.2; } 40% { opacity:1; } }
+  #chatMessages::-webkit-scrollbar { width: 4px; }
+  #chatMessages::-webkit-scrollbar-thumb { background: #222; border-radius: 2px; }
   @keyframes fadeIn { from { opacity:0; transform: translateY(10px); } to { opacity:1; transform: translateY(0); } }
 </style>
 </head>
@@ -214,6 +226,104 @@
       生成分享卡片
     </button>
     <p class="text-center text-neutral-800 text-xs mt-4">仅供娱乐参考 · 命运掌握在自己手中</p>
+  </div>
+</div>
+
+<!-- ═══════════ 底部导航 ═══════════ -->
+<nav id="bottomNav" class="hidden nav-bar flex items-center justify-around py-2.5">
+  <button onclick="navTo('input')" id="navInput" class="nav-item flex flex-col items-center gap-0.5 text-xs px-4 py-1">
+    <span class="text-lg">🔮</span><span>运势</span>
+  </button>
+  <button onclick="navTo('profile')" id="navProfile" class="nav-item flex flex-col items-center gap-0.5 text-xs px-4 py-1">
+    <span class="text-lg">👤</span><span>我的</span>
+  </button>
+  <button onclick="navTo('dialogue')" id="navDialogue" class="nav-item flex flex-col items-center gap-0.5 text-xs px-4 py-1">
+    <span class="text-lg">🌌</span><span>超时空对话</span>
+  </button>
+</nav>
+
+<!-- ═══════════ 「我的」页面 ═══════════ -->
+<div id="profileView" class="hidden relative z-10 mx-auto max-w-lg px-4 md:px-8 pb-20">
+  <header class="flex items-center justify-between py-5 text-xs">
+    <span class="text-neutral-400 tracking-wider">我的</span>
+    <span class="text-neutral-700" id="profileUserId"></span>
+  </header>
+
+  <div class="card rounded-xl p-6 mb-4 fade-in">
+    <h3 class="text-xs text-neutral-500 tracking-widest mb-5">个人信息</h3>
+    <div class="space-y-4">
+      <div>
+        <label class="block text-xs text-neutral-600 mb-2">昵称</label>
+        <input type="text" id="editNickname" class="input-field w-full px-4 py-2.5 rounded-lg text-sm" placeholder="设置昵称">
+      </div>
+      <div>
+        <label class="block text-xs text-neutral-600 mb-2">出生年月日</label>
+        <input type="date" id="editBirthday" class="input-field w-full px-4 py-2.5 rounded-lg text-sm">
+      </div>
+      <div>
+        <label class="block text-xs text-neutral-600 mb-2">出生时间</label>
+        <input type="time" id="editBirthtime" class="input-field w-full px-4 py-2.5 rounded-lg text-sm">
+        <p class="text-neutral-700 text-xs mt-1">精确时间可获得更精准的八字分析</p>
+      </div>
+      <button onclick="saveProfile()" class="btn-main w-full py-3 rounded-lg text-sm font-semibold tracking-wider">保存修改</button>
+    </div>
+    <p id="profileSaved" class="hidden text-green-500 text-xs text-center mt-3">✅ 已保存</p>
+  </div>
+
+  <!-- LLM 设置 -->
+  <div class="card rounded-xl p-6 mb-4 fade-in">
+    <h3 class="text-xs text-neutral-500 tracking-widest mb-5">LLM 配置（超时空对话）</h3>
+    <div class="space-y-3">
+      <div>
+        <label class="block text-xs text-neutral-600 mb-1">API 地址</label>
+        <input type="text" id="apiEndpoint" class="input-field w-full px-4 py-2 rounded-lg text-xs" placeholder="https://api.openai.com/v1/chat/completions">
+      </div>
+      <div>
+        <label class="block text-xs text-neutral-600 mb-1">API Key</label>
+        <input type="password" id="apiKey" class="input-field w-full px-4 py-2 rounded-lg text-xs" placeholder="sk-...">
+      </div>
+      <div>
+        <label class="block text-xs text-neutral-600 mb-1">模型名称</label>
+        <input type="text" id="apiModel" class="input-field w-full px-4 py-2 rounded-lg text-xs" placeholder="gpt-4o / deepseek-chat">
+      </div>
+      <button onclick="saveLLMConfig()" class="btn-ghost w-full py-2.5 rounded-lg text-xs">保存 LLM 配置</button>
+    </div>
+  </div>
+
+  <button onclick="logout()" class="w-full py-3 rounded-lg text-sm text-neutral-600 hover:text-red-400 transition tracking-wider">退出登录</button>
+</div>
+
+<!-- ═══════════ 超时空对话——匹配列表 ═══════════ -->
+<div id="dialogueView" class="hidden relative z-10 mx-auto max-w-lg px-4 md:px-8 pb-20">
+  <header class="flex items-center justify-between py-5 text-xs">
+    <span class="text-neutral-400 tracking-wider">超时空对话</span>
+    <span class="text-neutral-700" id="dialogueUserId"></span>
+  </header>
+
+  <div class="text-center py-6 fade-in">
+    <p class="text-3xl mb-3">🌌</p>
+    <p class="text-sm text-neutral-400 font-light">基于你的星座与八字</p>
+    <p class="text-sm text-neutral-400 font-light">匹配与你灵魂相似的历史人物</p>
+  </div>
+
+  <div id="figureList" class="space-y-3 mt-4"></div>
+  <button id="refreshFigures" onclick="matchFigures()" class="btn-ghost w-full py-3 rounded-lg text-xs mt-4">🔄 重新匹配</button>
+</div>
+
+<!-- ═══════════ 超时空对话——聊天 ═══════════ -->
+<div id="chatView" class="hidden relative z-10 mx-auto max-w-lg px-4 md:px-8" style="height:100vh;">
+  <header class="flex items-center justify-between py-4 text-xs border-b border-neutral-900" style="background:#000;">
+    <button onclick="closeChat()" class="text-neutral-500 hover:text-neutral-300 tracking-wider">← 返回列表</button>
+    <span class="text-neutral-300"><span id="chatFigureName"></span> · <span id="chatFigureEra" class="text-neutral-600"></span></span>
+    <button onclick="clearChat()" class="text-neutral-600 hover:text-neutral-400 text-xs">清空</button>
+  </header>
+
+  <div id="chatMessages" class="overflow-y-auto py-4 space-y-4" style="height:calc(100vh - 140px);"></div>
+
+  <div class="flex gap-2 pb-4 pt-2" style="background:#000;">
+    <input type="text" id="chatInput" class="input-field flex-1 px-4 py-2.5 rounded-lg text-sm" placeholder="输入消息..."
+      onkeydown="if(event.key==='Enter')sendMessage()">
+    <button onclick="sendMessage()" class="btn-main px-5 py-2.5 rounded-lg text-sm font-semibold shrink-0">发送</button>
   </div>
 </div>
 
@@ -497,6 +607,353 @@ function saveBirthInfo(birthday, birthtime) {
     users[current.key].birthtime = birthtime;
     saveUsers(users);
   }
+}
+
+// ===================== 超时空对话——历史人物库 =====================
+
+const HISTORICAL_FIGURES = [
+  { name:'诸葛亮', era:'三国', el:'木', traits:['智慧','谋略','忠诚'], emoji:'🎯',
+    soul:`你是诸葛亮，字孔明，三国时期蜀汉丞相。你以神机妙算、鞠躬尽瘁闻名。
+性格：沉稳睿智、善于分析、言简意赅。说话喜欢引经据典，偶尔用兵法比喻。
+回复风格：谦逊而有深度，每句话都有分量，不废话。自称"亮"。`,
+    matchKeys:['智慧','谋略','分析','稳重'] },
+  { name:'李白', era:'盛唐', el:'火', traits:['浪漫','豪放','自由'], emoji:'🍷',
+    soul:`你是李白，字太白，唐代伟大的浪漫主义诗人。你生性豪放，嗜酒如命，诗才横溢。
+性格：热情奔放、不拘小节、出口成章。说话喜欢用诗句表达，豪气冲天。
+回复风格：洒脱不羁，天马行空，偶尔吟诗，语气豪迈。自称"白"。`,
+    matchKeys:['热情','自由','浪漫','豪放'] },
+  { name:'苏轼', era:'北宋', el:'水', traits:['豁达','多才','乐观'], emoji:'🎨',
+    soul:`你是苏轼，号东坡居士，北宋文学家、书画家、美食家。一生坎坷但始终保持乐观。
+性格：豁达开朗、幽默风趣、热爱生活。吃什么都香，看什么都美。
+回复风格：亲切随和，偶尔自嘲，会提到美食和人生感悟。自称"轼"。`,
+    matchKeys:['乐观','豁达','多才','通透'] },
+  { name:'武则天', era:'唐朝', el:'金', traits:['果断','权谋','霸气'], emoji:'👑',
+    soul:`你是武则天，中国历史上唯一的正统女皇帝。你以非凡的魄力和政治智慧登上权力巅峰。
+性格：果敢决断、洞察人心、不怒自威。说话简洁有力，气场强大。
+回复风格：直截了当，不绕弯子，有帝王气场但不失女性的细腻。自称"朕"。`,
+    matchKeys:['果断','领导力','洞察','霸气'] },
+  { name:'庄子', era:'战国', el:'水', traits:['逍遥','深邃','超脱'], emoji:'🦋',
+    soul:`你是庄子，名周，战国时期道家代表人物。你追求精神自由，超然物外。
+性格：逍遥洒脱、思想深邃、看透世事。说话喜欢用寓言和比喻。
+回复风格：飘逸灵动，往往以问代答，让人醍醐灌顶。自称"周"。`,
+    matchKeys:['自由','深邃','超脱','智慧'] },
+  { name:'曹操', era:'三国', el:'土', traits:['雄才','多疑','务实'], emoji:'⚔️',
+    soul:`你是曹操，字孟德，东汉末年杰出的政治家、军事家、文学家。雄才大略但多疑。
+性格：务实果断、知人善任、城府极深。说话犀利直白，不喜虚言。
+回复风格：言简意赅，切中要害，偶尔流露诗人的感性与政治家的冷峻。自称"操"。`,
+    matchKeys:['果断','务实','雄才','领导力'] },
+  { name:'王阳明', era:'明朝', el:'火', traits:['知行合一','心学','刚毅'], emoji:'💡',
+    soul:`你是王阳明，明代心学大师。你提出"知行合一"、"致良知"，影响深远。
+性格：笃定自信、注重实践、温润如玉。说话深入浅出，擅长用生活例子讲大道。
+回复风格：温和而坚定，引导对方向内求索。自称"守仁"。`,
+    matchKeys:['智慧','行动力','笃定','通透'] },
+  { name:'李清照', era:'宋代', el:'木', traits:['才情','敏感','坚韧'], emoji:'🌸',
+    soul:`你是李清照，号易安居士，宋代著名女词人。才情横溢，一生历经繁华与沧桑。
+性格：细腻敏感、才华横溢、外柔内刚。说话婉约含蓄但内心坚定。
+回复风格：温婉中带着锋芒，善用比喻，情感真挚。自称"清照"。`,
+    matchKeys:['才情','细腻','坚韧','敏感'] },
+];
+
+// ===================== 超时空对话——匹配引擎 =====================
+
+function matchFigures() {
+  const current = getCurrentUser();
+  if (!current) return;
+  const users = loadUsers();
+  const user = users[current.key];
+  if (!user) return;
+
+  // 解析用户星座和日主
+  let signEl = '火', dmEl = '火';
+  const birthday = user.birthday || document.getElementById('birthday').value;
+  const birthtime = user.birthtime || document.getElementById('birthtime').value;
+
+  if (birthday) {
+    const [y,m,d] = birthday.split('-').map(Number);
+    const sign = getStarSign(m, d);
+    signEl = sign.el;
+    const bazi = calcBaZi(y, m, d, birthtime ? parseInt(birthtime.split(':')[0]) : 12, !!birthtime);
+    dmEl = DAY_MASTER_TRAITS[bazi.dayMaster]?.el || '火';
+  }
+
+  // 计算每个历史人物的匹配度
+  const scored = HISTORICAL_FIGURES.map(f => {
+    let score = 50;
+    // 元素匹配
+    if (f.el === signEl) score += 20;
+    if (f.el === dmEl) score += 15;
+    // 特质匹配（星座标签 vs 人物特质）
+    const fKeys = f.matchKeys || [];
+    const signTraits = user.birthday ? (SIGN_TRAITS[getStarSign(
+      parseInt(birthday.split('-')[1]), parseInt(birthday.split('-')[2])
+    ).name]?.tags || []) : [];
+    const overlap = fKeys.filter(k => signTraits.some(t => t.includes(k) || k.includes(t))).length;
+    score += overlap * 8;
+    return { ...f, score: Math.min(99, score) };
+  });
+
+  // 排序取前5
+  scored.sort((a,b) => b.score - a.score);
+  const top5 = scored.slice(0, 5);
+
+  // 渲染
+  document.getElementById('figureList').innerHTML = top5.map((f, i) => `
+    <div onclick="startChat('${f.name}')" class="card rounded-xl p-4 cursor-pointer hover:border-neutral-700 transition fade-in group" style="animation-delay:${i*0.08}s">
+      <div class="flex items-center gap-3">
+        <span class="text-2xl shrink-0">${f.emoji}</span>
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center justify-between">
+            <span class="text-sm text-white font-semibold">${f.name}</span>
+            <span class="text-xs text-neutral-400">${f.era}</span>
+          </div>
+          <p class="text-xs text-neutral-500 mt-1 truncate">${f.traits.join(' · ')}</p>
+        </div>
+        <div class="shrink-0 text-right">
+          <span class="text-lg font-light ${f.score>=80?'text-white':f.score>=65?'text-neutral-300':'text-neutral-500'}">${f.score}%</span>
+          <p class="text-xs text-neutral-700">相似度</p>
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  // 保存匹配结果供聊天使用
+  window._matchedFigures = top5;
+}
+
+// ===================== 超时空对话——聊天引擎 =====================
+
+let currentFigure = null;
+let chatHistory = [];
+
+function startChat(figureName) {
+  const fig = (window._matchedFigures || HISTORICAL_FIGURES).find(f => f.name === figureName);
+  if (!fig) return;
+  currentFigure = fig;
+  chatHistory = [{ role: 'system', content: fig.soul }];
+
+  document.getElementById('chatFigureName').textContent = fig.emoji + ' ' + fig.name;
+  document.getElementById('chatFigureEra').textContent = fig.era + ' · ' + fig.score + '% 相似';
+
+  const msgs = document.getElementById('chatMessages');
+  msgs.innerHTML = `
+    <div class="text-center text-neutral-600 text-xs py-4">🌌 你已连接 ${fig.name} 的灵魂</div>
+    <div class="flex justify-start"><div class="chat-bubble-ai max-w-[80%] px-4 py-2.5 text-sm">${getGreeting(fig)}</div></div>
+  `;
+  chatHistory.push({ role: 'assistant', content: getGreeting(fig) });
+
+  showView('chatView');
+  document.getElementById('bottomNav').classList.add('hidden');
+  setTimeout(() => {
+    document.getElementById('chatInput').focus();
+    scrollChatBottom();
+  }, 200);
+}
+
+function getGreeting(fig) {
+  const greetings = [
+    `在下${fig.name}。时空交错，竟能与你相遇，实乃奇缘。`,
+    `${fig.name}在此。你的命格与我颇有共鸣，但说无妨。`,
+    `久违了。我${fig.name}虽隔千年，却觉你似曾相识。`,
+  ];
+  return greetings[Math.floor(Math.random() * greetings.length)];
+}
+
+function closeChat() {
+  showView('dialogueView');
+  document.getElementById('bottomNav').classList.remove('hidden');
+  currentFigure = null;
+  chatHistory = [];
+}
+
+function clearChat() {
+  if (!currentFigure) return;
+  chatHistory = [{ role: 'system', content: currentFigure.soul }];
+  document.getElementById('chatMessages').innerHTML = `
+    <div class="text-center text-neutral-600 text-xs py-4">对话已清空</div>
+    <div class="flex justify-start"><div class="chat-bubble-ai max-w-[80%] px-4 py-2.5 text-sm">${getGreeting(currentFigure)}</div></div>
+  `;
+  chatHistory.push({ role: 'assistant', content: getGreeting(currentFigure) });
+}
+
+async function sendMessage() {
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if (!text || !currentFigure) return;
+  input.value = '';
+  input.disabled = true;
+
+  // 显示用户消息
+  appendMessage('user', text);
+  chatHistory.push({ role: 'user', content: text });
+
+  // 显示加载中
+  const loadingId = appendLoading();
+
+  try {
+    const reply = await callLLM(chatHistory);
+    removeLoading(loadingId);
+    if (reply) {
+      appendMessage('assistant', reply);
+      chatHistory.push({ role: 'assistant', content: reply });
+    } else {
+      appendMessage('assistant', '时空信号中断……请检查 LLM 配置后重试。');
+    }
+  } catch (e) {
+    removeLoading(loadingId);
+    appendMessage('assistant', '连接失败：' + (e.message || '未知错误'));
+  }
+
+  input.disabled = false;
+  input.focus();
+  scrollChatBottom();
+}
+
+function appendMessage(role, content) {
+  const div = document.createElement('div');
+  div.className = role === 'user' ? 'flex justify-end' : 'flex justify-start';
+  div.innerHTML = `<div class="${role==='user'?'chat-bubble-user':'chat-bubble-ai'} max-w-[80%] px-4 py-2.5 text-sm">${escapeHtml(content)}</div>`;
+  document.getElementById('chatMessages').appendChild(div);
+  scrollChatBottom();
+}
+
+function appendLoading() {
+  const id = 'load_' + Date.now();
+  const div = document.createElement('div');
+  div.id = id;
+  div.className = 'flex justify-start';
+  div.innerHTML = `<div class="chat-bubble-ai px-4 py-2.5"><span class="typing-dot">●</span><span class="typing-dot">●</span><span class="typing-dot">●</span></div>`;
+  document.getElementById('chatMessages').appendChild(div);
+  scrollChatBottom();
+  return id;
+}
+
+function removeLoading(id) {
+  const el = document.getElementById(id);
+  if (el) el.remove();
+}
+
+function scrollChatBottom() {
+  const msgs = document.getElementById('chatMessages');
+  if (msgs) setTimeout(() => { msgs.scrollTop = msgs.scrollHeight; }, 50);
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML.replace(/\n/g, '<br>');
+}
+
+async function callLLM(messages) {
+  const endpoint = localStorage.getItem('llm_endpoint') || 'https://api.openai.com/v1/chat/completions';
+  const apiKey = localStorage.getItem('llm_key') || '';
+  const model = localStorage.getItem('llm_model') || 'gpt-4o';
+
+  if (!apiKey) return null;
+
+  // 限制上下文长度
+  let ctx = messages;
+  if (messages.length > 8) {
+    ctx = [messages[0], ...messages.slice(-7)];
+  }
+
+  const res = await fetch(endpoint, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify({
+      model,
+      messages: ctx,
+      max_tokens: 500,
+      temperature: 0.9,
+    }),
+  });
+
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`API ${res.status}: ${err.slice(0,100)}`);
+  }
+
+  const data = await res.json();
+  return data.choices?.[0]?.message?.content || null;
+}
+
+// ===================== 个人资料管理 =====================
+
+function saveProfile() {
+  const current = getCurrentUser();
+  if (!current) return;
+  const users = loadUsers();
+  if (!users[current.key]) return;
+
+  const nickname = document.getElementById('editNickname').value.trim();
+  const birthday = document.getElementById('editBirthday').value;
+  const birthtime = document.getElementById('editBirthtime').value;
+
+  users[current.key].nickname = nickname;
+  users[current.key].birthday = birthday;
+  users[current.key].birthtime = birthtime;
+  saveUsers(users);
+
+  // 同步到运势输入框
+  if (birthday) document.getElementById('birthday').value = birthday;
+  if (birthtime) document.getElementById('birthtime').value = birthtime;
+
+  const el = document.getElementById('profileSaved');
+  el.classList.remove('hidden');
+  setTimeout(() => el.classList.add('hidden'), 2000);
+}
+
+function loadProfile() {
+  const current = getCurrentUser();
+  if (!current) return;
+  const users = loadUsers();
+  const user = users[current.key];
+  if (!user) return;
+
+  document.getElementById('profileUserId').textContent = user.id;
+  document.getElementById('editNickname').value = user.nickname || '';
+  document.getElementById('editBirthday').value = user.birthday || '';
+  document.getElementById('editBirthtime').value = user.birthtime || '';
+}
+
+function saveLLMConfig() {
+  localStorage.setItem('llm_endpoint', document.getElementById('apiEndpoint').value.trim());
+  localStorage.setItem('llm_key', document.getElementById('apiKey').value.trim());
+  localStorage.setItem('llm_model', document.getElementById('apiModel').value.trim());
+  const btn = document.querySelector('#profileView button[onclick="saveLLMConfig()"]');
+  btn.textContent = '✅ 已保存';
+  btn.style.borderColor = '#1a3a1a'; btn.style.color = '#4a9';
+  setTimeout(() => { btn.textContent = '保存 LLM 配置'; btn.style.borderColor = '#1a1a1a'; btn.style.color = '#999'; }, 2000);
+}
+
+function loadLLMConfig() {
+  document.getElementById('apiEndpoint').value = localStorage.getItem('llm_endpoint') || '';
+  document.getElementById('apiKey').value = localStorage.getItem('llm_key') || '';
+  document.getElementById('apiModel').value = localStorage.getItem('llm_model') || '';
+}
+
+// ===================== 导航 =====================
+
+function navTo(target) {
+  if (target === 'input') showView('inputView');
+  else if (target === 'profile') { loadProfile(); loadLLMConfig(); showView('profileView'); }
+  else if (target === 'dialogue') {
+    document.getElementById('dialogueUserId').textContent =
+      getCurrentUser()?.id || '';
+    matchFigures();
+    showView('dialogueView');
+  }
+  updateNavActive(target);
+  window.scrollTo(0, 0);
+}
+
+function updateNavActive(active) {
+  ['input','profile','dialogue'].forEach(k => {
+    const btn = document.getElementById('nav' + k.charAt(0).toUpperCase() + k.slice(1));
+    if (btn) btn.classList.toggle('active', k === active);
+  });
 }
 
 // ===================== 数据常量 =====================
@@ -892,14 +1349,23 @@ function generateWuxing(dayMaster, daySeed) {
 let currentResult = null;
 
 function showView(view) {
-  document.getElementById('loginView').classList.add('hidden');
-  document.getElementById('inputView').classList.add('hidden');
-  document.getElementById('loadingView').classList.add('hidden');
-  document.getElementById('resultView').classList.add('hidden');
+  ['loginView','inputView','loadingView','resultView','profileView','dialogueView','chatView'].forEach(id => {
+    document.getElementById(id).classList.add('hidden');
+  });
   document.getElementById(view).classList.remove('hidden');
+
+  // 底部导航：仅在 input/result/profile/dialogue 显示
+  const showNav = ['inputView','resultView','profileView','dialogueView'].includes(view);
+  const nav = document.getElementById('bottomNav');
+  if (showNav) nav.classList.remove('hidden');
+  else nav.classList.add('hidden');
+
+  // 结果页高亮运势导航
+  if (view === 'resultView') updateNavActive('input');
 }
 
 function backToInput() {
+  updateNavActive('input');
   showView('inputView');
   window.scrollTo(0, 0);
 }
