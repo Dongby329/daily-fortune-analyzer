@@ -918,19 +918,19 @@ function generateStandaloneOutfits() {
     return;
   }
 
-  // 无结果 → 自动生成本地搭配，同时显示搜索按钮
-  var localOutfits = generateOutfits(ctx.lucky, ctx.wuxing, ctx.gender, ctx.daySeed);
-  var withLinks = localOutfits.map(o => ({ ...o, isAi: false }));
-  window._currentOutfits = withLinks;
-  renderOutfitsWithLinks(withLinks, 'outfitGridStandalone');
-  document.getElementById('outfitRefresh').classList.remove('hidden');
-  document.getElementById('outfitControls').classList.remove('hidden');
-  document.getElementById('outfitSearchStatus').classList.add('hidden');
-  document.getElementById('searchOutfitBtn').classList.remove('hidden');
+  // 无结果 → 自动触发 AI 联网搜索
+  document.getElementById('outfitControls').classList.add('hidden');
+  document.getElementById('outfitRefresh').classList.add('hidden');
+  document.getElementById('outfitGridStandalone').innerHTML = '';
+  if (!window._outfitAutoSearched) {
+    window._outfitAutoSearched = true;
+    setTimeout(function() { searchOutfitsOnline(true); }, 300);
+  } else {
+    searchOutfitsOnline(true);
+  }
 }
 
-async function searchOutfitsOnline() {
-  // 防止并发搜索
+async function searchOutfitsOnline(isAuto) {
   if (window._outfitSearching) return;
   window._outfitSearching = true;
 
@@ -942,8 +942,9 @@ async function searchOutfitsOnline() {
   const detail = document.getElementById('outfitSearchDetail');
   const grid = document.getElementById('outfitGridStandalone');
 
-  btn.classList.add('hidden');
+  if (btn) btn.classList.add('hidden');
   document.getElementById('outfitRefresh').classList.add('hidden');
+  if (isAuto) { document.getElementById('outfitControls').classList.add('hidden'); }
   status.classList.remove('hidden');
   grid.innerHTML = '';
   // 清除之前可能残留的 interval
@@ -993,19 +994,21 @@ async function searchOutfitsOnline() {
     const jsonStr = reply.replace(/```json|```/g, '').trim();
     const aiOutfits = JSON.parse(jsonStr);
 
-    // 为每套搭配生成搜索链接（加时间戳防浏览器缓存）
+    // 检测移动端 + 生成对应深度链接
+    var isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
     const cacheBuster = '&t=' + ts;
-    const outfitsWithLinks = aiOutfits.map((o, i) => ({
-      ...o,
-      id: i,
-      likes: 100 + Math.floor(Math.random() * 400),
-      platforms: [
-        { name:'小红书', url:`https://www.xiaohongshu.com/search_result?keyword=${encodeURIComponent(o.search || o.style + '穿搭')}${cacheBuster}` },
-        { name:'Pinterest', url:`https://www.pinterest.com/search/pins/?q=${encodeURIComponent(o.search || o.style + ' outfit')}${cacheBuster}` },
-        { name:'微博', url:`https://s.weibo.com/weibo?q=${encodeURIComponent(o.search || o.style + '穿搭')}${cacheBuster}` },
-      ],
-      isAi: true,
-    }));
+    const outfitsWithLinks = aiOutfits.map((o, i) => {
+      var kw = encodeURIComponent(o.search || o.style + '穿搭');
+      return {
+        ...o, id: i, likes: 100 + Math.floor(Math.random() * 400),
+        platforms: [
+          { name:'小红书', url: isMobile ? `xhsdiscover://search?keyword=${kw}` : `https://www.xiaohongshu.com/search_result?keyword=${kw}${cacheBuster}`, webUrl: `https://www.xiaohongshu.com/search_result?keyword=${kw}${cacheBuster}` },
+          { name:'Pinterest', url: isMobile ? `pinterest://search/pins/?q=${kw}` : `https://www.pinterest.com/search/pins/?q=${kw}${cacheBuster}`, webUrl: `https://www.pinterest.com/search/pins/?q=${kw}${cacheBuster}` },
+          { name:'微博', url: isMobile ? `sinaweibo://searchall?q=${kw}` : `https://s.weibo.com/weibo?q=${kw}${cacheBuster}`, webUrl: `https://s.weibo.com/weibo?q=${kw}${cacheBuster}` },
+        ],
+        isAi: true,
+      };
+    });
     // 同步到全局 → 运势页可用
     window._currentOutfits = outfitsWithLinks;
     renderOutfitsWithLinks(outfitsWithLinks, 'outfitGridStandalone');
@@ -1087,6 +1090,8 @@ function renderOutfitsWithLinks(outfits, targetId) {
         <p class="text-xs text-neutral-500 mt-0.5">${o.acc || ''}${o.color ? ' · ' + o.color : ''}</p>
         <div class="flex gap-1.5 mt-3 pt-3 border-t border-neutral-900">
           ${(o.platforms || []).map(p => `<a href="${p.url}" target="_blank" rel="noopener" onclick="event.stopPropagation()" class="text-xs text-neutral-500 hover:text-white hover:bg-neutral-800 transition px-2 py-1 rounded border border-neutral-800">${p.name}</a>`).join('')}
+        </div>
+        ${/Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ? '<p class="text-xs text-neutral-700 mt-1">💡 点击卡片或按钮直接打开APP查看</p>' : ''}
         </div>
       </div>
       ` : `
