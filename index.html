@@ -32,6 +32,9 @@
   }
   .hidden { display: none !important; }
   .fade-in { animation: fadeIn 0.5s ease; }
+  .tab-active { color: #fff; border-bottom: 2px solid #fff; }
+  .tab-inactive { color: #555; border-bottom: 2px solid transparent; }
+  .tab-inactive:hover { color: #999; }
   @keyframes fadeIn { from { opacity:0; transform: translateY(10px); } to { opacity:1; transform: translateY(0); } }
 </style>
 </head>
@@ -40,8 +43,69 @@
 <!-- 星空 -->
 <div class="stars-container" id="stars"></div>
 
+<!-- ═══════════ 登录/注册 ═══════════ -->
+<div id="loginView" class="hidden relative z-10 flex items-center justify-center min-h-screen p-4">
+  <div class="w-full max-w-md">
+    <div class="text-center mb-8">
+      <p class="text-2xl mb-2">🧧</p>
+      <p class="text-neutral-600 text-xs tracking-widest">登录以保存你的运势记录</p>
+    </div>
+
+    <!-- 注册/登录切换 -->
+    <div class="flex mb-6 border-b border-neutral-900">
+      <button id="tabRegister" class="flex-1 pb-3 text-sm tracking-wider tab-active" onclick="switchTab('register')">注册</button>
+      <button id="tabLogin" class="flex-1 pb-3 text-sm tracking-wider tab-inactive" onclick="switchTab('login')">登录</button>
+    </div>
+
+    <!-- 注册表单 -->
+    <form id="registerForm" onsubmit="handleRegister(event)">
+      <div class="mb-4">
+        <label class="block text-xs text-neutral-500 mb-2 tracking-wider">用户名</label>
+        <input type="text" id="regUser" required class="input-field w-full px-4 py-3 rounded-lg" placeholder="设置你的用户名" autocomplete="off">
+      </div>
+      <div class="mb-6">
+        <label class="block text-xs text-neutral-500 mb-2 tracking-wider">密码</label>
+        <input type="password" id="regPass" required class="input-field w-full px-4 py-3 rounded-lg" placeholder="设置密码" autocomplete="off">
+      </div>
+      <button type="submit" class="btn-main w-full py-3.5 rounded-lg text-sm font-semibold tracking-wider">创建账号</button>
+    </form>
+
+    <!-- 登录表单 -->
+    <form id="loginForm" class="hidden" onsubmit="handleLogin(event)">
+      <div class="mb-4">
+        <label class="block text-xs text-neutral-500 mb-2 tracking-wider">用户名</label>
+        <input type="text" id="loginUser" class="input-field w-full px-4 py-3 rounded-lg" placeholder="输入用户名" autocomplete="off">
+      </div>
+      <div class="mb-6">
+        <label class="block text-xs text-neutral-500 mb-2 tracking-wider">密码</label>
+        <input type="password" id="loginPass" class="input-field w-full px-4 py-3 rounded-lg" placeholder="输入密码">
+      </div>
+      <button type="submit" class="btn-main w-full py-3.5 rounded-lg text-sm font-semibold tracking-wider">登录</button>
+      <p class="text-center text-neutral-600 text-xs mt-4">或通过 <span class="text-white cursor-pointer hover:underline" onclick="switchTab('register')">ID 号</span> 查询已注册账号</p>
+    </form>
+
+    <!-- 错误提示 -->
+    <p id="loginError" class="hidden text-red-400 text-xs text-center mt-4"></p>
+
+    <!-- ID 查询 -->
+    <div class="mt-6 pt-5 border-t border-neutral-900">
+      <p class="text-xs text-neutral-600 mb-3 tracking-wider">通过 ID 号查询账号</p>
+      <div class="flex gap-2">
+        <input type="text" id="lookupId" class="input-field flex-1 px-4 py-2.5 rounded-lg text-sm" placeholder="输入 ID 号，如 FT-0001">
+        <button onclick="lookupById()" class="btn-ghost px-4 py-2.5 rounded-lg text-sm shrink-0">查询</button>
+      </div>
+      <p id="lookupResult" class="hidden text-neutral-400 text-xs mt-2"></p>
+    </div>
+  </div>
+</div>
+
 <!-- ═══════════ 输入态 ═══════════ -->
-<div id="inputView" class="relative z-10 flex items-center justify-center min-h-screen p-4">
+<div id="inputView" class="hidden relative z-10 flex items-center justify-center min-h-screen p-4">
+  <!-- 用户信息条 -->
+  <div class="fixed top-0 left-0 right-0 z-20 flex items-center justify-between px-4 py-3 text-xs border-b border-neutral-900" style="background:rgba(0,0,0,0.9);">
+    <span class="text-neutral-500"><span id="inputUsername"></span> · <span class="text-neutral-700" id="inputUserId"></span></span>
+    <button onclick="logout()" class="text-neutral-600 hover:text-neutral-400 tracking-wider">退出</button>
+  </div>
   <div class="w-full max-w-md">
     <div class="text-center mb-8">
       <p class="text-neutral-600 text-xs tracking-widest">Daily Fortune</p>
@@ -85,7 +149,7 @@
   <!-- 导航 -->
   <header class="flex items-center justify-between py-5 text-xs">
     <button onclick="backToInput()" class="text-neutral-600 hover:text-neutral-400 transition tracking-wider">← 返回</button>
-    <span class="text-neutral-800">今日运势</span>
+    <span class="text-neutral-700"><span id="resultUsername"></span> · <span class="text-neutral-800" id="resultUserId"></span></span>
     <button onclick="shareCard()" class="text-neutral-600 hover:text-neutral-400 transition tracking-wider">分享</button>
   </header>
 
@@ -172,6 +236,184 @@
 
 <!-- ═══════════ 全部 JS 逻辑 ═══════════ -->
 <script>
+// ===================== 账号系统 =====================
+
+const STORAGE_KEY = 'fortune_users';
+const CURRENT_KEY = 'fortune_current';
+
+function loadUsers() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; }
+  catch(e) { return {}; }
+}
+function saveUsers(users) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(users));
+}
+function getCurrentUser() {
+  try { return JSON.parse(localStorage.getItem(CURRENT_KEY)); }
+  catch(e) { return null; }
+}
+function setCurrentUser(user) {
+  localStorage.setItem(CURRENT_KEY, JSON.stringify(user));
+}
+function clearCurrentUser() {
+  localStorage.removeItem(CURRENT_KEY);
+}
+
+// 生成唯一 ID
+function generateId(users) {
+  let max = 0;
+  for (const key of Object.keys(users)) {
+    const u = users[key];
+    if (u.id && u.id.startsWith('FT-')) {
+      const n = parseInt(u.id.replace('FT-',''), 10);
+      if (n > max) max = n;
+    }
+  }
+  return 'FT-' + String(max + 1).padStart(4, '0');
+}
+
+// 注册
+function handleRegister(event) {
+  event.preventDefault();
+  const username = document.getElementById('regUser').value.trim();
+  const password = document.getElementById('regPass').value;
+  if (!username || !password) return;
+
+  const users = loadUsers();
+  // 检查用户名是否已存在
+  const exists = Object.values(users).some(u => u.username === username);
+  if (exists) {
+    showError('该用户名已被注册');
+    return;
+  }
+
+  const id = generateId(users);
+  const userKey = 'u_' + Date.now();
+  users[userKey] = {
+    id,
+    username,
+    password, // 本地存储，明文
+    birthday: '',
+    birthtime: '',
+    createdAt: new Date().toISOString().slice(0, 10),
+  };
+  saveUsers(users);
+
+  // 自动登录
+  setCurrentUser({ key: userKey, username, id });
+  document.getElementById('regUser').value = '';
+  document.getElementById('regPass').value = '';
+  document.getElementById('loginError').classList.add('hidden');
+  enterApp(username, id);
+}
+
+// 登录
+function handleLogin(event) {
+  event.preventDefault();
+  const username = document.getElementById('loginUser').value.trim();
+  const password = document.getElementById('loginPass').value;
+  if (!username || !password) return;
+
+  const users = loadUsers();
+  const found = Object.entries(users).find(([,u]) => u.username === username && u.password === password);
+
+  if (!found) {
+    showError('用户名或密码错误');
+    return;
+  }
+
+  const [key, user] = found;
+  setCurrentUser({ key, username: user.username, id: user.id });
+  document.getElementById('loginUser').value = '';
+  document.getElementById('loginPass').value = '';
+  document.getElementById('loginError').classList.add('hidden');
+  enterApp(user.username, user.id);
+}
+
+// 进入应用
+function enterApp(username, id) {
+  // 更新所有显示用户名/ID 的地方
+  document.getElementById('inputUsername').textContent = username;
+  document.getElementById('inputUserId').textContent = id;
+  document.getElementById('resultUsername').textContent = username;
+  document.getElementById('resultUserId').textContent = id;
+
+  // 回填之前保存的出生信息
+  const users = loadUsers();
+  const current = getCurrentUser();
+  if (current && users[current.key]) {
+    const u = users[current.key];
+    if (u.birthday) document.getElementById('birthday').value = u.birthday;
+    if (u.birthtime) document.getElementById('birthtime').value = u.birthtime;
+  }
+
+  showView('inputView');
+}
+
+// 退出
+function logout() {
+  clearCurrentUser();
+  document.getElementById('birthday').value = '1995-06-20';
+  document.getElementById('birthtime').value = '';
+  showView('loginView');
+}
+
+// 显示错误
+function showError(msg) {
+  const el = document.getElementById('loginError');
+  el.textContent = msg;
+  el.classList.remove('hidden');
+  setTimeout(() => el.classList.add('hidden'), 3000);
+}
+
+// ID 查询
+function lookupById() {
+  const id = document.getElementById('lookupId').value.trim().toUpperCase();
+  const result = document.getElementById('lookupResult');
+  if (!id) { result.classList.add('hidden'); return; }
+
+  const users = loadUsers();
+  const found = Object.values(users).find(u => u.id === id);
+  result.classList.remove('hidden');
+  if (found) {
+    result.textContent = `✅ 账号「${found.username}」· 创建于 ${found.createdAt}`;
+    result.className = 'text-neutral-400 text-xs mt-2';
+  } else {
+    result.textContent = '❌ 未找到该 ID 对应的账号';
+    result.className = 'text-red-400 text-xs mt-2';
+  }
+}
+
+// 注册/登录切换
+let currentTab = 'register';
+function switchTab(tab) {
+  currentTab = tab;
+  document.getElementById('loginError').classList.add('hidden');
+  if (tab === 'register') {
+    document.getElementById('registerForm').classList.remove('hidden');
+    document.getElementById('loginForm').classList.add('hidden');
+    document.getElementById('tabRegister').className = 'flex-1 pb-3 text-sm tracking-wider tab-active';
+    document.getElementById('tabLogin').className = 'flex-1 pb-3 text-sm tracking-wider tab-inactive';
+  } else {
+    document.getElementById('registerForm').classList.add('hidden');
+    document.getElementById('loginForm').classList.remove('hidden');
+    document.getElementById('tabRegister').className = 'flex-1 pb-3 text-sm tracking-wider tab-inactive';
+    document.getElementById('tabLogin').className = 'flex-1 pb-3 text-sm tracking-wider tab-active';
+  }
+}
+
+// 保存出生信息（在生成运势后调用）
+function saveBirthInfo(birthday, birthtime) {
+  const current = getCurrentUser();
+  if (!current) return;
+  const users = loadUsers();
+  if (users[current.key]) {
+    users[current.key].birthday = birthday;
+    users[current.key].birthtime = birthtime;
+    saveUsers(users);
+  }
+}
+
 // ===================== 数据常量 =====================
 
 const STEMS = ['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
@@ -565,6 +807,7 @@ function generateWuxing(dayMaster, daySeed) {
 let currentResult = null;
 
 function showView(view) {
+  document.getElementById('loginView').classList.add('hidden');
   document.getElementById('inputView').classList.add('hidden');
   document.getElementById('loadingView').classList.add('hidden');
   document.getElementById('resultView').classList.add('hidden');
@@ -636,6 +879,9 @@ async function handleSubmit(event) {
 
   currentResult = { compositeScore, level, levelEn, summary, sign, animal: ZODIAC_EMOJI[ZODIAC_ANIMALS.indexOf(animal)] + ' ' + animal,
     bazi, horoscopeScores, personality, interpersonal, lucky, wuxing, hasTime };
+
+  // 保存出生信息到账号
+  saveBirthInfo(birthday, birthtime);
 
   // 渲染结果页
   renderResult(currentResult, today);
@@ -762,6 +1008,27 @@ function closeShare() {
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
 // ===================== 初始化 =====================
+
+// 检查登录态
+(function checkLogin() {
+  const current = getCurrentUser();
+  if (current) {
+    const users = loadUsers();
+    const user = users[current.key];
+    if (user) {
+      // 恢复登录
+      document.getElementById('inputUsername').textContent = user.username;
+      document.getElementById('inputUserId').textContent = user.id;
+      document.getElementById('resultUsername').textContent = user.username;
+      document.getElementById('resultUserId').textContent = user.id;
+      if (user.birthday) document.getElementById('birthday').value = user.birthday;
+      if (user.birthtime) document.getElementById('birthtime').value = user.birthtime;
+      showView('inputView');
+      return;
+    }
+  }
+  showView('loginView');
+})();
 
 document.getElementById('fortuneForm').addEventListener('submit', handleSubmit);
 
