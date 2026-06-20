@@ -220,6 +220,12 @@
     </div>
   </div>
 
+  <!-- ═══════════ 今日穿搭 ═══════════ -->
+  <div class="card rounded-xl p-5 md:p-6 mb-3 md:mb-4 fade-in">
+    <h3 class="text-xs text-neutral-500 tracking-widest mb-5">今日穿搭</h3>
+    <div id="outfitGrid" class="grid grid-cols-2 md:grid-cols-3 gap-3"></div>
+  </div>
+
   <!-- 分享按钮 -->
   <div class="max-w-md mx-auto mt-4 mb-10 fade-in">
     <button onclick="shareCard()" class="w-full py-3.5 rounded-lg text-sm tracking-wider transition bg-white text-black font-semibold hover:bg-neutral-200">
@@ -263,6 +269,14 @@
         <div>
           <label class="block text-xs text-neutral-600 mb-1">出生时间</label>
           <input type="time" id="editBirthtime" class="input-field w-full px-4 py-2.5 rounded-lg text-sm">
+        </div>
+        <div>
+          <label class="block text-xs text-neutral-600 mb-1">性别</label>
+          <select id="editGender" class="input-field w-full px-4 py-2.5 rounded-lg text-sm">
+            <option value="">未设置</option>
+            <option value="male">男</option>
+            <option value="female">女</option>
+          </select>
         </div>
         <button onclick="saveProfile()" class="btn-main w-full py-3 rounded-lg text-sm font-semibold tracking-wider mt-auto">保存</button>
       </div>
@@ -554,8 +568,13 @@ async function autoGenerate() {
   const lucky = generateLuckyItems(bazi, daySeed);
   const wuxing = generateWuxing(bazi.dayMaster, daySeed);
 
+  const curUser = getCurrentUser();
+  const allUsers = loadUsers();
+  const uGender = (curUser && allUsers[curUser.key]) ? (allUsers[curUser.key].gender || 'female') : 'female';
+  const outfits = generateOutfits(lucky, wuxing, uGender, daySeed);
+
   currentResult = { compositeScore, level, levelEn, summary, sign, animal: ZODIAC_EMOJI[ZODIAC_ANIMALS.indexOf(animal)] + ' ' + animal,
-    bazi, horoscopeScores, personality, interpersonal, lucky, wuxing, hasTime };
+    bazi, horoscopeScores, personality, interpersonal, lucky, wuxing, outfits, hasTime };
 
   saveBirthInfo(birthday, birthtime);
   renderResult(currentResult, today);
@@ -634,6 +653,90 @@ function saveBirthInfo(birthday, birthtime) {
     users[current.key].birthtime = birthtime;
     saveUsers(users);
   }
+}
+
+// ===================== 今日穿搭引擎 =====================
+
+const OUTFIT_DB = {
+  male: {
+    tops: ['廓形西装','机能马甲','落肩T恤','亨利领针织','宽松衬衫','连帽卫衣','古巴领短袖','工装夹克'],
+    bottoms: ['阔腿西裤','机能束脚裤','水洗直筒牛仔','垂感九分裤','工装短裤','锥形休闲裤'],
+    shoes: ['德比皮鞋','厚底乐福','复古跑鞋','切尔西靴','帆布板鞋','机能凉鞋'],
+    accessories: ['金属框墨镜','帆布托特包','银质项链','皮质腕表','棒球帽','渔夫帽'],
+    styles: ['极简廓形','日系cityboy','轻机能风','美式复古','韩系cleanfit','新中式'],
+  },
+  female: {
+    tops: ['垫肩西装','针织开衫','法式衬衫','挂脖背心','泡泡袖上衣','短款针织','真丝吊带','廓形风衣'],
+    bottoms: ['高腰阔腿裤','缎面半裙','直筒牛仔裤','A字短裙','垂感西裤','百褶中裙'],
+    shoes: ['尖头猫跟','方头凉鞋','厚底乐福','马丁靴','细带高跟','芭蕾平底'],
+    accessories: ['金属耳环','链条腋下包','珍珠项链','丝巾发带','细腰带','叠戴手链'],
+    styles: ['静奢风','法式慵懒','韩系千金','新中式','街头辣妹','知识分子风'],
+  },
+};
+
+function getOutfitDb(gender) {
+  return OUTFIT_DB[gender] || OUTFIT_DB['female'];
+}
+
+function generateOutfits(lucky, wuxing, gender, daySeed) {
+  const db = getOutfitDb(gender === 'male' ? 'male' : 'female');
+  const colorMap = {
+    '海洋蓝': ['#4A90D9','#6BAED6','#2171B5','#9ECAE1'],
+    '森林绿': ['#4a9','#2D8A4E','#1B5E20','#81C784'],
+    '琥珀金': ['#d4a853','#F9A825','#F57F17','#FFE082'],
+    '赭石棕': ['#b87351','#8D6E63','#5D4037','#BCAAA4'],
+    '珊瑚橙': ['#e8755a','#FF7043','#E64A19','#FFAB91'],
+    '深空灰': ['#666','#424242','#212121','#9E9E9E'],
+  };
+  const palette = colorMap[lucky.color.name] || colorMap['深空灰'];
+
+  const seasons = ['春','夏','夏','秋','秋','冬','冬','春'];
+  const season = seasons[new Date().getMonth() % 8];
+
+  const count = 6;
+  const outfits = [];
+  for (let i = 0; i < count; i++) {
+    const idx = hashDay(daySeed, i * 31 + 17);
+    const top = db.tops[idx % db.tops.length];
+    const bottom = db.bottoms[(idx * 3) % db.bottoms.length];
+    const shoe = db.shoes[(idx * 7) % db.shoes.length];
+    const acc = db.accessories[(idx * 5) % db.accessories.length];
+    const style = db.styles[(idx * 11) % db.styles.length];
+    const mainColor = palette[i % palette.length];
+    const subColor = palette[(i + 2) % palette.length];
+
+    const platform = ['小红书','Instagram','Pinterest','微博'][i % 4];
+    const likes = 120 + hashDay(daySeed, i * 41 + 99);
+
+    outfits.push({ top, bottom, shoe, acc, style, mainColor, subColor, platform, likes, season });
+  }
+  return outfits;
+}
+
+function renderOutfits(outfits) {
+  document.getElementById('outfitGrid').innerHTML = outfits.map((o, i) => `
+    <div class="rounded-xl overflow-hidden cursor-pointer hover:ring-1 hover:ring-neutral-700 transition group"
+         style="background:#0a0a0a; border:1px solid #141414; animation:fadeIn 0.4s ease ${i*0.06}s both;">
+      <!-- 配色条 -->
+      <div class="flex h-2">
+        <div class="flex-1" style="background:${o.mainColor};"></div>
+        <div class="flex-1" style="background:${o.subColor};"></div>
+        <div class="flex-[0.5]" style="background:${o.mainColor}66;"></div>
+      </div>
+      <div class="p-3">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs text-neutral-500">${o.style}</span>
+          <span class="text-xs text-neutral-700">${o.platform}</span>
+        </div>
+        <p class="text-sm text-white font-medium truncate">${o.top} × ${o.bottom}</p>
+        <p class="text-xs text-neutral-500 mt-0.5">${o.shoe} · ${o.acc}</p>
+        <div class="flex items-center justify-between mt-2 pt-2 border-t border-neutral-900">
+          <span class="text-xs text-neutral-600">${o.season}季</span>
+          <span class="text-xs text-neutral-700">❤ ${o.likes}</span>
+        </div>
+      </div>
+    </div>
+  `).join('');
 }
 
 // ===================== 超时空对话——历史人物库 =====================
@@ -1122,10 +1225,12 @@ function saveProfile() {
   const nickname = document.getElementById('editNickname').value.trim();
   const birthday = document.getElementById('editBirthday').value;
   const birthtime = document.getElementById('editBirthtime').value;
+  const gender = document.getElementById('editGender').value;
 
   users[current.key].nickname = nickname;
   users[current.key].birthday = birthday;
   users[current.key].birthtime = birthtime;
+  users[current.key].gender = gender;
   saveUsers(users);
 
   // 同步到运势输入框
@@ -1148,6 +1253,7 @@ function loadProfile() {
   document.getElementById('editNickname').value = user.nickname || '';
   document.getElementById('editBirthday').value = user.birthday || '';
   document.getElementById('editBirthtime').value = user.birthtime || '';
+  document.getElementById('editGender').value = user.gender || '';
   renderHistoryList();
   document.getElementById('historySearchId').value = '';
 }
@@ -1763,8 +1869,14 @@ async function handleSubmit(event) {
   // 五行
   const wuxing = generateWuxing(bazi.dayMaster, daySeed);
 
+  // 穿搭
+  const currentUser = getCurrentUser();
+  const users = loadUsers();
+  const userGender = (currentUser && users[currentUser.key]) ? (users[currentUser.key].gender || 'female') : 'female';
+  const outfits = generateOutfits(lucky, wuxing, userGender, daySeed);
+
   currentResult = { compositeScore, level, levelEn, summary, sign, animal: ZODIAC_EMOJI[ZODIAC_ANIMALS.indexOf(animal)] + ' ' + animal,
-    bazi, horoscopeScores, personality, interpersonal, lucky, wuxing, hasTime };
+    bazi, horoscopeScores, personality, interpersonal, lucky, wuxing, outfits, hasTime };
 
   // 保存出生信息到账号
   saveBirthInfo(birthday, birthtime);
@@ -1877,6 +1989,9 @@ function renderResult(r, today) {
       ${w.emoji}<br><span class="${w.strong ? 'text-neutral-400' : w.weak ? 'text-neutral-700' : 'text-neutral-600'}">${w.level}</span>
     </div>`).join('');
   document.getElementById('wuxingTip').textContent = r.wuxing.tip;
+
+  // 穿搭
+  if (r.outfits) renderOutfits(r.outfits);
 
   // 分享数据
   document.getElementById('shareDate').textContent = document.getElementById('reportDate').textContent;
