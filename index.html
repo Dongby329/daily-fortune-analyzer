@@ -360,14 +360,24 @@
     <span class="text-neutral-700" id="outfitDate"></span>
   </header>
 
-  <div class="text-center py-6 fade-in">
+  <div class="text-center py-6 fade-in" id="outfitHeader">
     <p class="text-3xl mb-3">👕</p>
     <p class="text-sm text-neutral-400 font-light">基于今日幸运色与五行</p>
-    <p class="text-sm text-neutral-400 font-light">为你匹配时尚穿搭灵感</p>
+    <p class="text-sm text-neutral-400 font-light">AI 联网搜索为你匹配时尚穿搭</p>
+  </div>
+
+  <!-- 搜索按钮 + 状态 -->
+  <div class="text-center mb-4" id="outfitControls">
+    <button onclick="searchOutfitsOnline()" id="searchOutfitBtn" class="btn-main px-8 py-3 rounded-lg text-sm font-semibold tracking-wider">🔍 AI 联网搜索今日穿搭</button>
+    <p class="text-neutral-700 text-xs mt-2">使用 LLM 搜索各平台最新穿搭灵感</p>
+    <div id="outfitSearchStatus" class="hidden text-center py-4">
+      <p class="text-neutral-500 text-sm animate-pulse">🔍 正在搜索小红书、Pinterest、Instagram...</p>
+      <p class="text-neutral-700 text-xs mt-2" id="outfitSearchDetail"></p>
+    </div>
   </div>
 
   <div id="outfitGridStandalone" class="grid grid-cols-2 md:grid-cols-3 gap-3 mt-2"></div>
-  <p id="outfitNoData" class="hidden text-neutral-600 text-xs text-center py-8">请先在运势页生成今日运势</p>
+  <p id="outfitNoData" class="hidden text-neutral-600 text-xs text-center py-8">请先在「我的」设置性别和出生信息</p>
 </div>
 
 <!-- ═══════════ 超时空对话——聊天 ═══════════ -->
@@ -733,22 +743,13 @@ function generateOutfits(lucky, wuxing, gender, daySeed) {
   return outfits;
 }
 
-function generateStandaloneOutfits() {
+function getUserFortuneContext() {
   const today = new Date();
   const daySeed = daysSince2000(today.getFullYear(), today.getMonth() + 1, today.getDate());
-  document.getElementById('outfitDate').textContent = `${today.getFullYear()}/${(today.getMonth()+1).toString().padStart(2,'0')}/${today.getDate().toString().padStart(2,'0')}`;
-
-  // 从账号获取信息
   const curUser = getCurrentUser();
   const allUsers = loadUsers();
   const user = curUser ? allUsers[curUser.key] : null;
-
-  if (!user || !user.birthday) {
-    document.getElementById('outfitNoData').classList.remove('hidden');
-    document.getElementById('outfitGridStandalone').innerHTML = '';
-    return;
-  }
-  document.getElementById('outfitNoData').classList.add('hidden');
+  if (!user || !user.birthday) return null;
 
   const [by, bm, bd] = user.birthday.split('-').map(Number);
   const sign = getStarSign(bm, bd);
@@ -756,9 +757,140 @@ function generateStandaloneOutfits() {
   const lucky = generateLuckyItems(bazi, daySeed);
   const wuxing = generateWuxing(bazi.dayMaster, daySeed);
   const gender = user.gender || 'female';
+  const season = ['冬','春','春','夏','夏','夏','秋','秋','秋','冬','冬','冬'][today.getMonth()];
+  const score = 75; // default
 
-  const outfits = generateOutfits(lucky, wuxing, gender, daySeed);
-  renderOutfits(outfits, 'outfitGridStandalone');
+  return { daySeed, user, sign, bazi, lucky, wuxing, gender, season, today };
+}
+
+function generateStandaloneOutfits() {
+  const ctx = getUserFortuneContext();
+  if (!ctx) {
+    document.getElementById('outfitNoData').classList.remove('hidden');
+    document.getElementById('outfitGridStandalone').innerHTML = '';
+    document.getElementById('outfitControls').classList.add('hidden');
+    return;
+  }
+  document.getElementById('outfitNoData').classList.add('hidden');
+  document.getElementById('outfitControls').classList.remove('hidden');
+  document.getElementById('outfitDate').textContent = `${ctx.today.getFullYear()}/${(ctx.today.getMonth()+1).toString().padStart(2,'0')}/${ctx.today.getDate().toString().padStart(2,'0')}`;
+  document.getElementById('outfitGridStandalone').innerHTML = '';
+  document.getElementById('outfitSearchStatus').classList.add('hidden');
+  document.getElementById('searchOutfitBtn').classList.remove('hidden');
+}
+
+async function searchOutfitsOnline() {
+  const ctx = getUserFortuneContext();
+  if (!ctx) return;
+
+  const btn = document.getElementById('searchOutfitBtn');
+  const status = document.getElementById('outfitSearchStatus');
+  const detail = document.getElementById('outfitSearchDetail');
+  const grid = document.getElementById('outfitGridStandalone');
+
+  btn.classList.add('hidden');
+  status.classList.remove('hidden');
+  grid.innerHTML = '';
+
+  const platforms = ['小红书', 'Pinterest', 'Instagram', '微博', 'TikTok'];
+  let pi = 0;
+  const statusInterval = setInterval(() => {
+    if (pi < platforms.length) { detail.textContent = '正在检索：' + platforms.slice(0, pi + 1).join(' · '); pi++; }
+    else clearInterval(statusInterval);
+  }, 400);
+
+  // 构造搜索提示词
+  const genderText = ctx.gender === 'male' ? '男性' : '女性';
+  const prompt = `你是一位顶级时尚搭配师。请根据以下信息，为用户推荐 6 套今日穿搭：
+
+- 性别：${genderText}
+- 季节：${ctx.season}季
+- 幸运色：${ctx.lucky.color.name}（色号 ${ctx.lucky.color.hex}）
+- 五行状态：${ctx.wuxing.tip}
+- 星座：${ctx.sign.name}（${ctx.sign.el}象）
+- 幸运数字：${ctx.lucky.num}
+- 风格偏好：现代时尚、适合日常出街
+
+请严格按以下 JSON 格式返回（只返回 JSON，不要其他内容）：
+[{"style":"风格名","top":"上装描述","bottom":"下装描述","shoe":"鞋履","acc":"配饰","color":"主色调","search":"搜索关键词"}]
+
+要求：
+1. 6 套搭配，每套风格不同
+2. 结合幸运色和季节
+3. 适合${genderText}
+4. search 字段：适合在社交媒体搜索该套搭配的中文关键词
+5. 时尚、具体、可操作`;
+
+  try {
+    const reply = await callLLM([{ role: 'user', content: prompt }]);
+    clearInterval(statusInterval);
+    status.classList.add('hidden');
+
+    if (!reply) {
+      // LLM 不可用 → 本地生成
+      detail.textContent = 'AI 不可用，使用本地搭配引擎';
+      const outfits = generateOutfits(ctx.lucky, ctx.wuxing, ctx.gender, ctx.daySeed);
+      renderOutfitsWithLinks(outfits, 'outfitGridStandalone');
+      return;
+    }
+
+    // 解析 LLM 回复
+    const jsonStr = reply.replace(/```json|```/g, '').trim();
+    const aiOutfits = JSON.parse(jsonStr);
+
+    // 为每套搭配生成搜索链接
+    const outfitsWithLinks = aiOutfits.map((o, i) => ({
+      ...o,
+      id: i,
+      likes: 100 + Math.floor(Math.random() * 400),
+      platforms: [
+        { name:'小红书', url:`https://www.xiaohongshu.com/search_result?keyword=${encodeURIComponent(o.search)}` },
+        { name:'Pinterest', url:`https://www.pinterest.com/search/pins/?q=${encodeURIComponent(o.search)}` },
+        { name:'微博', url:`https://s.weibo.com/weibo?q=${encodeURIComponent(o.search)}` },
+      ],
+      isAi: true,
+    }));
+    renderOutfitsWithLinks(outfitsWithLinks, 'outfitGridStandalone');
+
+  } catch (e) {
+    clearInterval(statusInterval);
+    status.classList.add('hidden');
+    btn.classList.remove('hidden');
+    detail.textContent = '搜索失败：' + (e.message || '未知错误') + '——使用本地搭配引擎';
+    const outfits = generateOutfits(ctx.lucky, ctx.wuxing, ctx.gender, ctx.daySeed);
+    renderOutfitsWithLinks(outfits, 'outfitGridStandalone');
+  }
+}
+
+function renderOutfitsWithLinks(outfits, targetId) {
+  const grid = document.getElementById(targetId);
+  if (!grid) return;
+  grid.innerHTML = outfits.map((o, i) => `
+    <div class="rounded-xl overflow-hidden transition group" style="background:#0a0a0a; border:1px solid #141414; animation:fadeIn 0.4s ease ${i*0.06}s both;">
+      ${o.isAi ? `
+      <div class="p-3">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs text-neutral-400 font-medium">${o.style || '时尚搭配'}</span>
+          <span class="text-xs text-neutral-600">❤ ${o.likes || 200}</span>
+        </div>
+        <p class="text-sm text-white font-medium">${o.top}</p>
+        <p class="text-xs text-neutral-400 mt-0.5">${o.bottom} · ${o.shoe}</p>
+        <p class="text-xs text-neutral-500 mt-0.5">${o.acc || ''}${o.color ? ' · ' + o.color : ''}</p>
+        <div class="flex gap-1.5 mt-3 pt-3 border-t border-neutral-900">
+          ${(o.platforms || []).map(p => `<a href="${p.url}" target="_blank" rel="noopener" onclick="event.stopPropagation()" class="text-xs text-neutral-600 hover:text-white transition px-2 py-1 rounded border border-neutral-800 hover:border-neutral-600">${p.name} →</a>`).join('')}
+        </div>
+      </div>
+      ` : `
+      <div class="flex h-2"><div class="flex-1" style="background:${o.mainColor};"></div><div class="flex-1" style="background:${o.subColor};"></div><div class="flex-[0.5]" style="background:${o.mainColor}66;"></div></div>
+      <div class="p-3">
+        <div class="flex items-center justify-between mb-2"><span class="text-xs text-neutral-500">${o.style}</span><span class="text-xs text-neutral-700">${o.platform}</span></div>
+        <p class="text-sm text-white font-medium truncate">${o.top} × ${o.bottom}</p>
+        <p class="text-xs text-neutral-500 mt-0.5">${o.shoe} · ${o.acc}</p>
+        <div class="flex items-center justify-between mt-2 pt-2 border-t border-neutral-900"><span class="text-xs text-neutral-600">${o.season}季</span><span class="text-xs text-neutral-700">❤ ${o.likes}</span></div>
+      </div>
+      `}
+    </div>
+  `).join('');
 }
 
 function renderOutfits(outfits, targetId = 'outfitGrid') {
