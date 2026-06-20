@@ -865,8 +865,11 @@ async function searchOutfitsOnline() {
 function renderOutfitsWithLinks(outfits, targetId) {
   const grid = document.getElementById(targetId);
   if (!grid) return;
-  grid.innerHTML = outfits.map((o, i) => `
-    <div class="rounded-xl overflow-hidden transition group" style="background:#0a0a0a; border:1px solid #141414; animation:fadeIn 0.4s ease ${i*0.06}s both;">
+  grid.innerHTML = outfits.map((o, i) => {
+    const firstLink = o.platforms?.[0]?.url || (o.search ? `https://www.xiaohongshu.com/search_result?keyword=${encodeURIComponent(o.search)}` : '#');
+    return `
+    <div class="rounded-xl overflow-hidden transition group cursor-pointer hover:ring-1 hover:ring-neutral-600" style="background:#0a0a0a; border:1px solid #141414; animation:fadeIn 0.4s ease ${i*0.06}s both;"
+         onclick="window.open('${firstLink.replace(/'/g, "\\'")}', '_blank')">
       ${o.isAi ? `
       <div class="p-3">
         <div class="flex items-center justify-between mb-2">
@@ -877,7 +880,7 @@ function renderOutfitsWithLinks(outfits, targetId) {
         <p class="text-xs text-neutral-400 mt-0.5">${o.bottom} · ${o.shoe}</p>
         <p class="text-xs text-neutral-500 mt-0.5">${o.acc || ''}${o.color ? ' · ' + o.color : ''}</p>
         <div class="flex gap-1.5 mt-3 pt-3 border-t border-neutral-900">
-          ${(o.platforms || []).map(p => `<a href="${p.url}" target="_blank" rel="noopener" onclick="event.stopPropagation()" class="text-xs text-neutral-600 hover:text-white transition px-2 py-1 rounded border border-neutral-800 hover:border-neutral-600">${p.name} →</a>`).join('')}
+          ${(o.platforms || []).map(p => `<a href="${p.url}" target="_blank" rel="noopener" onclick="event.stopPropagation()" class="text-xs text-neutral-500 hover:text-white hover:bg-neutral-800 transition px-2 py-1 rounded border border-neutral-800">${p.name}</a>`).join('')}
         </div>
       </div>
       ` : `
@@ -890,7 +893,7 @@ function renderOutfitsWithLinks(outfits, targetId) {
       </div>
       `}
     </div>
-  `).join('');
+  `}).join('');
 }
 
 function renderOutfits(outfits, targetId = 'outfitGrid') {
@@ -898,7 +901,8 @@ function renderOutfits(outfits, targetId = 'outfitGrid') {
   if (!grid) return;
   grid.innerHTML = outfits.map((o, i) => `
     <div class="rounded-xl overflow-hidden cursor-pointer hover:ring-1 hover:ring-neutral-700 transition group"
-         style="background:#0a0a0a; border:1px solid #141414; animation:fadeIn 0.4s ease ${i*0.06}s both;">
+         style="background:#0a0a0a; border:1px solid #141414; animation:fadeIn 0.4s ease ${i*0.06}s both;"
+         onclick="window.open('https://www.xiaohongshu.com/search_result?keyword=${encodeURIComponent((o.style||'') + ' ' + (o.top||'') + ' 穿搭')}', '_blank')">
       <!-- 配色条 -->
       <div class="flex h-2">
         <div class="flex-1" style="background:${o.mainColor};"></div>
