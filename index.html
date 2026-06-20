@@ -652,8 +652,21 @@ function enterApp(username, id) {
 
 // 自动生成运势（跳过输入页）
 async function autoGenerate() {
-  const birthday = document.getElementById('birthday').value;
-  const birthtime = document.getElementById('birthtime').value;
+  // 优先从用户profile读取，避免DOM默认值覆盖
+  var birthday = document.getElementById('birthday').value;
+  var birthtime = document.getElementById('birthtime').value;
+  var cur = getCurrentUser();
+  if (cur) {
+    var users = loadUsers();
+    var u = users[cur.key];
+    if (u && u.birthday) {
+      birthday = u.birthday;
+      birthtime = u.birthtime || '';
+      // 同步回DOM
+      document.getElementById('birthday').value = birthday;
+      if (birthtime) document.getElementById('birthtime').value = birthtime;
+    }
+  }
   const hasTime = !!birthtime;
 
   const steps = ['星座运势分析中', '八字命理推算中', '综合运势生成中'];
@@ -720,6 +733,9 @@ async function autoGenerate() {
 // 退出
 function logout() {
   window._llmGuideShown = false;
+  window._outfitAutoSearched = false;
+  window._currentOutfits = null;
+  window._matchedFigures = null;
   clearCurrentUser();
   document.getElementById('birthday').value = '1995-06-20';
   document.getElementById('birthtime').value = '';
@@ -1849,6 +1865,13 @@ function loadLLMConfig() {
 function navTo(target) {
   if (target === 'input') {
     if (hasSavedBirthInfo()) {
+      var cur = getCurrentUser();
+      var users = loadUsers();
+      var u = cur ? users[cur.key] : null;
+      if (u && u.birthday) {
+        document.getElementById('birthday').value = u.birthday;
+        if (u.birthtime) document.getElementById('birthtime').value = u.birthtime;
+      }
       showView('loadingView');
       autoGenerate();
     } else {
@@ -2301,6 +2324,14 @@ function showView(view) {
 function backToInput() {
   updateNavActive('input');
   if (hasSavedBirthInfo()) {
+    // 先回填再生成
+    var cur = getCurrentUser();
+    var users = loadUsers();
+    var u = cur ? users[cur.key] : null;
+    if (u && u.birthday) {
+      document.getElementById('birthday').value = u.birthday;
+      if (u.birthtime) document.getElementById('birthtime').value = u.birthtime;
+    }
     showView('loadingView');
     autoGenerate();
   } else {
