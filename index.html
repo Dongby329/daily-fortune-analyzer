@@ -2274,11 +2274,21 @@ function generateInterpersonal(bazi, daySeed) {
 }
 
 function generateLuckyItems(bazi, daySeed) {
-  const dmEl = DAY_MASTER_TRAITS[bazi.dayMaster]?.el || '火';
+  // ── 幸运色：基于今日日柱天干的「印星」（生我者）──
+  // 每日天干不同 → 印星不同 → 幸运色每天变化，且有五行相生理论依据
   const colors = { '木':{name:'森林绿',hex:'#4a9'}, '火':{name:'海洋蓝',hex:'#4A90D9'}, '土':{name:'琥珀金',hex:'#d4a853'}, '金':{name:'赭石棕',hex:'#b87351'}, '水':{name:'珊瑚橙',hex:'#e8755a'} };
+  // daySeed = daysSince2000(today), 2000-01-01 日柱为戊午(天干戊=索引4)
+  const todayStemIdx = ((4 + daySeed) % 10 + 10) % 10;
+  // 十天干五行: 甲乙(0,1)=木 丙丁(2,3)=火 戊己(4,5)=土 庚辛(6,7)=金 壬癸(8,9)=水
+  const stemToEl = ['木','木','火','火','土','土','金','金','水','水'];
+  const todayEl = stemToEl[todayStemIdx];
+  // 五行相生: 木→火→土→金→水→木，生我者（印星）为上一环
+  const elOrder = ['木','火','土','金','水'];
+  const luckyEl = elOrder[(elOrder.indexOf(todayEl) - 1 + 5) % 5]; // 生我者
+  const color = colors[luckyEl];
+
   const dirs = ['东','南','西','北','东南','西南','东北','西北'];
   const nums = [3,7,11,23,28,32,47,55];
-  const color = colors[dmEl] || { name:'深空灰', hex:'#666' };
   const num = nums[hashDay(daySeed, 99) % nums.length];
   const dir = dirs[hashDay(daySeed, 77) % dirs.length];
 
