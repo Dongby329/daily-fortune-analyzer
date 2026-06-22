@@ -97,44 +97,44 @@
     <div class="text-center mb-8">
       <h1 id="splitTitle" class="text-2xl font-semibold text-white tracking-wide" style="overflow:hidden;"></h1>
       <p class="text-neutral-600 text-xs tracking-widest mt-2" id="splitSubtitle"></p>
-      <p class="text-neutral-800 text-xs mt-3 flex items-center justify-center gap-1"><span>🔒</span> 所有数据仅存储在你的浏览器本地，不会上传</p>
+      <p class="text-neutral-800 text-xs mt-3 flex items-center justify-center gap-1"><span>🔒</span> <span data-i18n="login.privacy">所有数据仅存储在你的浏览器本地，不会上传</span></p>
     </div>
 
     <!-- 注册/登录切换 -->
     <div class="flex mb-6 border-b border-neutral-900">
-      <button id="tabRegister" class="flex-1 pb-3 text-sm tracking-wider tab-active" onclick="switchTab('register')">注册</button>
-      <button id="tabLogin" class="flex-1 pb-3 text-sm tracking-wider tab-inactive" onclick="switchTab('login')">登录</button>
+      <button id="tabRegister" class="flex-1 pb-3 text-sm tracking-wider tab-active" onclick="switchTab('register')" data-i18n="login.tab_register">注册</button>
+      <button id="tabLogin" class="flex-1 pb-3 text-sm tracking-wider tab-inactive" onclick="switchTab('login')" data-i18n="login.tab_login">登录</button>
     </div>
 
     <!-- 注册表单 -->
     <form id="registerForm" onsubmit="handleRegister(event); return false;">
       <div class="mb-4">
-        <label class="block text-xs text-neutral-500 mb-2 tracking-wider">用户名</label>
-        <input type="text" id="regUser" required class="input-field w-full px-4 py-3 rounded-lg" placeholder="设置你的用户名" autocomplete="off">
+        <label class="block text-xs text-neutral-500 mb-2 tracking-wider" data-i18n="login.label_username">用户名</label>
+        <input type="text" id="regUser" required class="input-field w-full px-4 py-3 rounded-lg" data-i18n-placeholder="login.placeholder_reg_username" placeholder="设置你的用户名" autocomplete="off">
       </div>
       <div class="mb-6">
-        <label class="block text-xs text-neutral-500 mb-2 tracking-wider">密码</label>
-        <input type="password" id="regPass" required class="input-field w-full px-4 py-3 rounded-lg" placeholder="设置密码" autocomplete="off">
+        <label class="block text-xs text-neutral-500 mb-2 tracking-wider" data-i18n="login.label_password">密码</label>
+        <input type="password" id="regPass" required class="input-field w-full px-4 py-3 rounded-lg" data-i18n-placeholder="login.placeholder_reg_password" placeholder="设置密码" autocomplete="off">
       </div>
-      <button type="submit" class="btn-main w-full py-3.5 rounded-lg text-sm font-semibold tracking-wider">创建账号</button>
+      <button type="submit" class="btn-main w-full py-3.5 rounded-lg text-sm font-semibold tracking-wider" data-i18n="login.btn_create">创建账号</button>
     </form>
 
     <!-- 登录表单 -->
     <form id="loginForm" class="hidden" onsubmit="handleLogin(event); return false;">
       <div class="mb-4">
-        <label class="block text-xs text-neutral-500 mb-2 tracking-wider">用户名</label>
-        <input type="text" id="loginUser" class="input-field w-full px-4 py-3 rounded-lg" placeholder="输入用户名" autocomplete="off">
+        <label class="block text-xs text-neutral-500 mb-2 tracking-wider" data-i18n="login.label_username">用户名</label>
+        <input type="text" id="loginUser" class="input-field w-full px-4 py-3 rounded-lg" data-i18n-placeholder="login.placeholder_login_username" placeholder="输入用户名" autocomplete="off">
       </div>
       <div class="mb-3">
-        <label class="block text-xs text-neutral-500 mb-2 tracking-wider">密码</label>
-        <input type="password" id="loginPass" class="input-field w-full px-4 py-3 rounded-lg" placeholder="输入密码">
+        <label class="block text-xs text-neutral-500 mb-2 tracking-wider" data-i18n="login.label_password">密码</label>
+        <input type="password" id="loginPass" class="input-field w-full px-4 py-3 rounded-lg" data-i18n-placeholder="login.placeholder_login_password" placeholder="输入密码">
       </div>
       <!-- 记住我 -->
       <div class="flex items-center gap-2 mb-5">
         <input type="checkbox" id="rememberMe" class="accent-white w-3.5 h-3.5 rounded border-neutral-700 bg-neutral-900">
-        <label for="rememberMe" class="text-xs text-neutral-500 cursor-pointer">记住登录，下次自动进入</label>
+        <label for="rememberMe" class="text-xs text-neutral-500 cursor-pointer" data-i18n="login.remember_me">记住登录，下次自动进入</label>
       </div>
-      <button type="submit" class="btn-main w-full py-3.5 rounded-lg text-sm font-semibold tracking-wider">登录</button>
+      <button type="submit" class="btn-main w-full py-3.5 rounded-lg text-sm font-semibold tracking-wider" data-i18n="login.btn_login">登录</button>
     </form>
 
     <!-- 错误提示 -->
@@ -142,13 +142,13 @@
 
     <!-- 快速登录——已记住的账号 -->
     <div id="quickLogin" class="hidden mt-6 pt-5 border-t border-neutral-900">
-      <p class="text-xs text-neutral-600 mb-3 tracking-wider">快速登录</p>
+      <p class="text-xs text-neutral-600 mb-3 tracking-wider" data-i18n="login.quick_login">快速登录</p>
       <div id="quickLoginList" class="flex flex-wrap gap-2"></div>
     </div>
 
     <!-- 重置 -->
     <div class="mt-6 pt-4 border-t border-neutral-900 text-center">
-      <button onclick="resetAllData()" class="text-xs text-neutral-700 hover:text-red-400 transition">重置所有数据</button>
+      <button onclick="resetAllData()" class="text-xs text-neutral-700 hover:text-red-400 transition" data-i18n="login.reset_all">重置所有数据</button>
     </div>
   </div>
 </div>
@@ -158,7 +158,7 @@
   <!-- 用户信息条 -->
   <div class="fixed top-0 left-0 right-0 z-20 flex items-center justify-between px-4 py-3" style="background:rgba(0,0,0,0.85); backdrop-filter:blur(8px);">
     <span class="text-xs tracking-wider" style="color:#444;"><span id="inputUsername"></span> <span id="inputUserId" style="color:#222;"></span></span>
-    <button onclick="logout()" class="text-xs tracking-wider" style="color:#444;">退出</button>
+    <button onclick="logout()" class="text-xs tracking-wider" style="color:#444;" data-i18n="input.btn_logout">退出</button>
   </div>
   <div class="w-full max-w-md">
     <div class="text-center mb-8">
@@ -166,25 +166,42 @@
     </div>
     <form id="fortuneForm" onsubmit="handleSubmit(event); return false;">
       <div class="mb-6">
-        <label class="block text-xs text-neutral-500 mb-3 tracking-wider">出生年月日 <span class="text-neutral-700">*</span></label>
+        <label class="block text-xs text-neutral-500 mb-3 tracking-wider"><span data-i18n="input.label_birthday">出生年月日</span> <span class="text-neutral-700">*</span></label>
         <input type="date" id="birthday" required class="input-field w-full px-4 py-3 rounded-lg text-base">
       </div>
-      <div class="mb-8">
-        <label class="block text-xs text-neutral-500 mb-3 tracking-wider">出生时间 <span class="text-neutral-700 text-xs">选填</span></label>
+      <div class="mb-4">
+        <label class="block text-xs text-neutral-500 mb-3 tracking-wider"><span data-i18n="input.label_birthtime">出生时间</span> <span class="text-neutral-700 text-xs" data-i18n="input.label_birthtime_optional">选填</span></label>
         <input type="time" id="birthtime" class="input-field w-full px-4 py-3 rounded-lg text-base">
-        <p class="text-neutral-700 text-xs mt-2">填写后可解锁八字精算</p>
+        <p class="text-neutral-700 text-xs mt-2" data-i18n="input.hint_birthtime">填写后可解锁八字精算</p>
       </div>
-      <button type="submit" class="btn-main w-full py-3.5 rounded-lg text-base font-semibold tracking-wider">
+      <div class="grid grid-cols-2 gap-3 mb-8">
+        <div>
+          <label class="block text-xs text-neutral-500 mb-2" data-i18n="profile.label_gender">性别</label>
+          <select id="inputGender" class="input-field w-full px-3 py-3 rounded-lg text-sm">
+            <option value="" data-i18n="profile.gender_unset">未设置</option>
+            <option value="male" data-i18n="profile.gender_male">男</option>
+            <option value="female" data-i18n="profile.gender_female">女</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs text-neutral-500 mb-2" data-i18n="profile.language">语言 / Language</label>
+          <select id="inputLocale" class="input-field w-full px-3 py-3 rounded-lg text-sm">
+            <option value="zh">中文</option>
+            <option value="en">English</option>
+          </select>
+        </div>
+      </div>
+      <button type="submit" class="btn-main w-full py-3.5 rounded-lg text-base font-semibold tracking-wider" data-i18n="input.btn_get_fortune">
         查看今日运势
       </button>
     </form>
     <div class="flex items-center gap-3 my-6">
       <div class="flex-1 border-t border-neutral-900"></div>
-      <span class="text-xs text-neutral-700">或</span>
+      <span class="text-xs text-neutral-700" data-i18n="input.divider">或</span>
       <div class="flex-1 border-t border-neutral-900"></div>
     </div>
-    <button id="randomBtn" class="btn-ghost w-full py-3 rounded-lg text-sm">随机体验</button>
-    <p class="text-center text-neutral-800 text-xs mt-8">仅供娱乐参考 · 数据仅在本地计算</p>
+    <button id="randomBtn" class="btn-ghost w-full py-3 rounded-lg text-sm" data-i18n="input.btn_random">随机体验</button>
+    <p class="text-center text-neutral-800 text-xs mt-8" data-i18n="input.disclaimer">仅供娱乐参考 · 数据仅在本地计算</p>
   </div>
 </div>
 
@@ -192,8 +209,8 @@
 <div id="loadingView" class="hidden relative z-10 flex items-center justify-center min-h-screen">
   <div class="text-center">
     <div class="text-4xl mb-4 animate-bounce">🔮</div>
-    <p class="text-white text-sm font-semibold tracking-wider">正在推演今日运势</p>
-    <p class="text-neutral-500 text-xs mt-1" id="loadingStep">星座运势分析中</p>
+    <p class="text-white text-sm font-semibold tracking-wider" data-i18n="loading.main">正在推演今日运势</p>
+    <p class="text-neutral-500 text-xs mt-1" id="loadingStep" data-i18n="loading.step_1">星座运势分析中</p>
   </div>
 </div>
 
@@ -202,9 +219,9 @@
 
   <!-- 导航 -->
   <header class="page-header">
-    <button onclick="backToInput()" class="text-neutral-600 hover:text-neutral-400 transition text-xs tracking-wider">← 返回</button>
+    <button onclick="backToInput()" class="text-neutral-600 hover:text-neutral-400 transition text-xs tracking-wider" data-i18n="result.back">← 返回</button>
     <span style="color:#333;"><span id="resultUsername"></span></span>
-    <button onclick="shareCard()" class="text-neutral-600 hover:text-neutral-400 transition text-xs tracking-wider">分享</button>
+    <button onclick="shareCard()" class="text-neutral-600 hover:text-neutral-400 transition text-xs tracking-wider" data-i18n="result.share">分享</button>
   </header>
 
   <!-- 评分区 -->
@@ -232,13 +249,13 @@
 
     <!-- 分类运势 -->
     <div class="card rounded-xl p-5 md:p-6 mb-3 md:mb-4 fade-in">
-      <h3 class="text-xs text-neutral-500 tracking-widest mb-5">分类运势</h3>
+      <h3 class="text-xs text-neutral-500 tracking-widest mb-5" data-i18n="result.category_fortunes">分类运势</h3>
       <div class="space-y-5" id="categoryFortunes"></div>
     </div>
 
     <!-- 性格解析 -->
     <div class="card rounded-xl p-5 md:p-6 mb-3 md:mb-4 fade-in">
-      <h3 class="text-xs text-neutral-500 tracking-widest mb-5">性格解析</h3>
+      <h3 class="text-xs text-neutral-500 tracking-widest mb-5" data-i18n="result.personality">性格解析</h3>
       <div class="flex gap-3 mb-4" id="personaCards"></div>
       <p class="text-sm text-neutral-400 leading-relaxed font-light" id="personaDesc"></p>
       <div class="flex flex-wrap gap-1.5 mt-4" id="personaTags"></div>
@@ -246,16 +263,16 @@
 
     <!-- 人际契合 -->
     <div class="card rounded-xl p-5 md:p-6 mb-3 md:mb-4 fade-in">
-      <h3 class="text-xs text-neutral-500 tracking-widest mb-5">今日人际</h3>
+      <h3 class="text-xs text-neutral-500 tracking-widest mb-5" data-i18n="result.interpersonal">今日人际</h3>
       <div id="interpersonalContent"></div>
     </div>
 
     <!-- 幸运物 + 五行 -->
     <div class="card rounded-xl p-5 md:p-6 mb-3 md:mb-4 fade-in">
-      <h3 class="text-xs text-neutral-500 tracking-widest mb-5">今日幸运</h3>
+      <h3 class="text-xs text-neutral-500 tracking-widest mb-5" data-i18n="result.lucky_today">今日幸运</h3>
       <div class="grid grid-cols-3 gap-3 text-center mb-5" id="luckyItems"></div>
       <div class="pt-4 border-t border-neutral-900">
-        <p class="text-xs text-neutral-600 tracking-widest mb-3">五行</p>
+        <p class="text-xs text-neutral-600 tracking-widest mb-3" data-i18n="result.wuxing">五行</p>
         <div class="flex gap-1.5 text-center text-xs" id="wuxingBars"></div>
         <p class="text-neutral-700 text-xs mt-2" id="wuxingTip"></p>
       </div>
@@ -264,53 +281,53 @@
 
   <!-- ═══════════ 今日穿搭 ═══════════ -->
   <div class="card rounded-xl p-5 md:p-6 mb-3 md:mb-4 fade-in">
-    <h3 class="text-xs text-neutral-500 tracking-widest mb-5">今日穿搭</h3>
+    <h3 class="text-xs text-neutral-500 tracking-widest mb-5" data-i18n="result.outfit_today">今日穿搭</h3>
     <div id="outfitGrid" class="grid grid-cols-2 md:grid-cols-3 gap-3"></div>
   </div>
 
   <!-- 分享按钮 -->
   <div class="max-w-md mx-auto mt-4 mb-10 fade-in">
     <button onclick="shareCard()" class="w-full py-3.5 rounded-lg text-sm tracking-wider transition bg-white text-black font-semibold hover:bg-neutral-200">
-      生成分享卡片
+      <span data-i18n="result.share_card">生成分享卡片</span>
     </button>
-    <p class="text-center text-neutral-800 text-xs mt-4">仅供娱乐参考 · 数据仅存储本地 · 不上传任何个人信息</p>
+    <p class="text-center text-neutral-800 text-xs mt-4" data-i18n="result.disclaimer">仅供娱乐参考 · 数据仅存储本地 · 不上传任何个人信息</p>
   </div>
 </div>
 
 <!-- ═══════════ 底部导航 ═══════════ -->
 <nav id="bottomNav" class="hidden nav-bar flex items-center justify-around py-2">
   <button onclick="navTo('input')" id="navInput" class="nav-item flex flex-col items-center gap-0.5 text-xs px-2 py-1">
-    <span class="text-base">🔮</span><span class="text-[10px] tracking-wider">运势</span>
+    <span class="text-base">🔮</span><span class="text-[10px] tracking-wider" data-i18n="nav.fortune">运势</span>
   </button>
   <button onclick="navTo('outfit')" id="navOutfit" class="nav-item flex flex-col items-center gap-0.5 text-xs px-2 py-1">
-    <span class="text-base">👕</span><span class="text-[10px] tracking-wider">穿搭</span>
+    <span class="text-base">👕</span><span class="text-[10px] tracking-wider" data-i18n="nav.outfit">穿搭</span>
   </button>
   <button onclick="navTo('dialogue')" id="navDialogue" class="nav-item flex flex-col items-center gap-0.5 text-xs px-2 py-1">
-    <span class="text-base">🌌</span><span class="text-[10px] tracking-wider">超时空</span>
+    <span class="text-base">🌌</span><span class="text-[10px] tracking-wider" data-i18n="nav.dialogue">超时空</span>
   </button>
   <button onclick="navTo('profile')" id="navProfile" class="nav-item flex flex-col items-center gap-0.5 text-xs px-2 py-1">
-    <span class="text-base">👤</span><span class="text-[10px] tracking-wider">我的</span>
+    <span class="text-base">👤</span><span class="text-[10px] tracking-wider" data-i18n="nav.profile">我的</span>
   </button>
 </nav>
 
 <!-- ═══════════ 「我的」页面 ═══════════ -->
 <div id="profileView" class="hidden relative z-10 mx-auto max-w-lg md:max-w-2xl px-4 md:px-8 pb-20 md:pb-24">
   <header class="page-header">
-    <span class="title">我的</span>
+    <span class="title" data-i18n="profile.title">我的</span>
     <span class="badge" id="profileUserId"></span>
   </header>
 
   <div class="md:grid md:grid-cols-2 md:gap-4">
     <div class="card rounded-xl p-5 md:p-6 mb-4 md:mb-0 fade-in h-full flex flex-col">
-      <h3 class="text-xs text-neutral-500 tracking-widest mb-5 shrink-0">个人信息</h3>
+      <h3 class="text-xs text-neutral-500 tracking-widest mb-5 shrink-0" data-i18n="profile.personal_info">个人信息</h3>
       <div class="space-y-4 flex-1">
         <!-- 头像区 -->
         <div class="flex flex-col items-center mb-2">
-          <div id="avatarPreview" class="w-16 h-16 rounded-full flex items-center justify-center text-2xl cursor-pointer hover:ring-2 hover:ring-neutral-600 transition mb-2 bg-cover bg-center" style="background-color:#0d0d0d; border:1px solid #1a1a1a;" onclick="toggleAvatarPicker()" title="点击更换头像">👤</div>
+          <div id="avatarPreview" class="w-16 h-16 rounded-full flex items-center justify-center text-2xl cursor-pointer hover:ring-2 hover:ring-neutral-600 transition mb-2 bg-cover bg-center" style="background-color:#0d0d0d; border:1px solid #1a1a1a;" onclick="toggleAvatarPicker()" data-i18n-title="profile.click_change_avatar" title="点击更换头像">👤</div>
           <p class="text-xs text-neutral-400" id="displayUsername"></p>
           <div class="flex gap-3 mt-1">
-            <button onclick="toggleAvatarPicker()" class="text-xs text-neutral-600 hover:text-white transition">选头像</button>
-            <button onclick="document.getElementById('avatarUpload').click()" class="text-xs text-neutral-600 hover:text-white transition">上传图片</button>
+            <button onclick="toggleAvatarPicker()" class="text-xs text-neutral-600 hover:text-white transition" data-i18n="profile.select_avatar">选头像</button>
+            <button onclick="var f=document.getElementById('avatarUpload');if(f)f.click()" class="text-xs text-neutral-600 hover:text-white transition" data-i18n="profile.upload_image">上传图片</button>
             <input type="file" id="avatarUpload" accept="image/*" onchange="uploadAvatar(event)" class="hidden">
           </div>
         </div>
@@ -318,34 +335,42 @@
         <div id="avatarPicker" class="hidden grid grid-cols-6 gap-2 p-3 rounded-lg mb-3" style="background:#080808; border:1px solid #141414;">
         </div>
         <div>
-          <label class="block text-xs text-neutral-600 mb-1">出生日期</label>
+          <label class="block text-xs text-neutral-600 mb-1" data-i18n="profile.label_birthday">出生日期</label>
           <input type="date" id="editBirthday" class="input-field w-full px-4 py-2.5 rounded-lg text-sm">
         </div>
         <div>
-          <label class="block text-xs text-neutral-600 mb-1">出生时间</label>
+          <label class="block text-xs text-neutral-600 mb-1" data-i18n="profile.label_birthtime">出生时间</label>
           <input type="time" id="editBirthtime" class="input-field w-full px-4 py-2.5 rounded-lg text-sm">
         </div>
         <div>
-          <label class="block text-xs text-neutral-600 mb-1">性别</label>
+          <label class="block text-xs text-neutral-600 mb-1" data-i18n="profile.label_gender">性别</label>
           <select id="editGender" class="input-field w-full px-4 py-2.5 rounded-lg text-sm">
-            <option value="">未设置</option>
-            <option value="male">男</option>
-            <option value="female">女</option>
+            <option value="" data-i18n="profile.gender_unset">未设置</option>
+            <option value="male" data-i18n="profile.gender_male">男</option>
+            <option value="female" data-i18n="profile.gender_female">女</option>
           </select>
         </div>
-        <button onclick="saveProfile()" class="btn-main w-full py-3 rounded-lg text-sm font-semibold tracking-wider mt-auto">保存</button>
+        <!-- 语言选择 -->
+        <div>
+          <label class="block text-xs text-neutral-600 mb-1" data-i18n="profile.language">语言 / Language</label>
+          <select id="editLocale" class="input-field w-full px-4 py-2.5 rounded-lg text-sm" onchange="handleLocaleChange(this.value)">
+            <option value="zh">中文</option>
+            <option value="en">English</option>
+          </select>
+        </div>
+        <button onclick="saveProfile()" class="btn-main w-full py-3 rounded-lg text-sm font-semibold tracking-wider mt-auto" data-i18n="profile.btn_save">保存</button>
       </div>
-      <p id="profileSaved" class="hidden text-green-400 text-xs text-center mt-2 shrink-0">已保存</p>
+      <p id="profileSaved" class="hidden text-green-400 text-xs text-center mt-2 shrink-0" data-i18n="profile.saved">已保存</p>
     </div>
 
     <div class="card rounded-xl p-5 md:p-6 mb-4 md:mb-0 fade-in h-full flex flex-col">
-      <h3 class="text-xs text-neutral-500 tracking-widest mb-5 shrink-0">模型配置</h3>
-      <p class="text-xs text-neutral-700 mb-3">API Key 仅存储本地，仅用于你指定的服务商</p>
+      <h3 class="text-xs text-neutral-500 tracking-widest mb-5 shrink-0" data-i18n="profile.model_config">模型配置</h3>
+      <p class="text-xs text-neutral-700 mb-3" data-i18n="profile.api_note">API Key 仅存储本地，仅用于你指定的服务商</p>
       <input type="hidden" id="apiEndpoint">
       <div class="space-y-3 flex-1">
         <div>
           <select id="apiPreset" onchange="applyPreset()" class="input-field w-full px-4 py-2.5 rounded-lg text-xs">
-            <option value="">选择模型商</option>
+            <option value="" data-i18n="profile.select_preset">选择模型商</option>
             <option value="openai">OpenAI</option>
             <option value="deepseek">DeepSeek</option>
             <option value="tongyi">通义千问</option>
@@ -355,15 +380,15 @@
         </div>
         <div>
           <select id="apiModel" onchange="saveLLMConfigSilent()" class="input-field w-full px-4 py-2.5 rounded-lg text-xs">
-            <option value="">选择模型</option>
+            <option value="" data-i18n="profile.select_model">选择模型</option>
           </select>
         </div>
         <div>
-          <input type="password" id="apiKey" class="input-field w-full px-4 py-2.5 rounded-lg text-xs" placeholder="API Key">
+          <input type="password" id="apiKey" class="input-field w-full px-4 py-2.5 rounded-lg text-xs" data-i18n-placeholder="profile.api_key_placeholder" placeholder="API Key">
         </div>
         <div class="flex gap-2 mt-auto">
-          <button onclick="testLLM()" id="testLLMBtn" class="btn-ghost flex-1 py-2.5 rounded-lg text-xs">检测</button>
-          <button onclick="saveLLMConfig()" class="btn-main flex-1 py-2.5 rounded-lg text-xs">保存</button>
+          <button onclick="testLLM()" id="testLLMBtn" class="btn-ghost flex-1 py-2.5 rounded-lg text-xs" data-i18n="profile.btn_test">检测</button>
+          <button onclick="saveLLMConfig()" class="btn-main flex-1 py-2.5 rounded-lg text-xs" data-i18n="profile.btn_save_llm">保存</button>
         </div>
         <p id="testResult" class="hidden text-xs text-center mt-1 shrink-0"></p>
       </div>
@@ -373,86 +398,86 @@
   <!-- 历史对话 -->
   <div class="card rounded-xl p-5 md:p-6 mt-4 fade-in">
     <div class="flex items-center justify-between cursor-pointer select-none" onclick="toggleHistory()">
-      <span class="text-xs text-neutral-500 tracking-wider">历史对话 <span id="historyCount" class="text-neutral-700"></span></span>
+      <span class="text-xs text-neutral-500 tracking-wider"><span data-i18n="profile.history">历史对话</span> <span id="historyCount" class="text-neutral-700"></span></span>
       <span id="historyToggleIcon" class="text-xs text-neutral-600 transition-transform inline-block">▶</span>
     </div>
     <div id="historyBody" class="hidden mt-4">
       <div class="flex items-center gap-2 mb-3">
-        <input type="text" id="historySearchId" class="input-field flex-1 px-3 py-1.5 rounded-lg text-xs" placeholder="输入对话 ID">
-        <button onclick="searchHistory()" class="text-xs text-neutral-500 hover:text-white transition shrink-0">查询</button>
+        <input type="text" id="historySearchId" class="input-field flex-1 px-3 py-1.5 rounded-lg text-xs" data-i18n-placeholder="profile.search_by_id" placeholder="输入对话 ID">
+        <button onclick="searchHistory()" class="text-xs text-neutral-500 hover:text-white transition shrink-0" data-i18n="profile.btn_search">查询</button>
       </div>
       <div id="historyList" class="divide-y divide-neutral-900"></div>
-      <p id="historyEmpty" class="text-neutral-700 text-xs text-center py-6">暂无历史对话</p>
+      <p id="historyEmpty" class="text-neutral-700 text-xs text-center py-6" data-i18n="profile.history_empty">暂无历史对话</p>
     </div>
   </div>
 
   <div class="mt-6 pt-6 border-t border-neutral-900">
-    <button onclick="logout()" class="w-full py-3 rounded-lg text-sm text-neutral-500 hover:text-red-400 transition tracking-wider border border-neutral-900 hover:border-red-900/50">退出登录</button>
-    <p class="text-center text-neutral-800 text-xs mt-2">退出后需重新登录</p>
+    <button onclick="logout()" class="w-full py-3 rounded-lg text-sm text-neutral-500 hover:text-red-400 transition tracking-wider border border-neutral-900 hover:border-red-900/50" data-i18n="profile.btn_logout">退出登录</button>
+    <p class="text-center text-neutral-800 text-xs mt-2" data-i18n="profile.logout_footer">退出后需重新登录</p>
   </div>
 </div>
 
 <!-- ═══════════ 超时空对话——匹配列表 ═══════════ -->
 <div id="dialogueView" class="hidden relative z-10 mx-auto max-w-lg md:max-w-2xl px-4 md:px-8 pb-20 md:pb-24">
   <header class="page-header">
-    <span class="title">超时空对话</span>
+    <span class="title" data-i18n="dialogue.title">超时空对话</span>
     <span class="badge" id="dialogueUserId"></span>
   </header>
 
   <div class="text-center py-6 fade-in">
     <p class="text-3xl mb-3">🌌</p>
-    <p class="text-sm text-neutral-400 font-light">基于你的星座与八字</p>
-    <p class="text-sm text-neutral-400 font-light">匹配与你灵魂相似的历史人物</p>
+    <p class="text-sm text-neutral-400 font-light" data-i18n="dialogue.subtitle_1">基于你的星座与八字</p>
+    <p class="text-sm text-neutral-400 font-light" data-i18n="dialogue.subtitle_2">匹配与你灵魂相似的历史人物</p>
   </div>
 
   <div id="figureList" class="grid md:grid-cols-2 gap-3 mt-4"></div>
-  <button id="refreshFigures" onclick="matchFigures()" class="btn-ghost w-full py-3 rounded-lg text-xs mt-4">🔄 重新匹配</button>
+  <button id="refreshFigures" onclick="matchFigures()" class="btn-ghost w-full py-3 rounded-lg text-xs mt-4" data-i18n="dialogue.btn_refresh">🔄 重新匹配</button>
 </div>
 
 <!-- ═══════════ 今日穿搭 ═══════════ -->
 <div id="outfitView" class="hidden relative z-10 mx-auto max-w-lg md:max-w-2xl px-4 md:px-8 pb-20 md:pb-24">
   <header class="page-header">
-    <span class="title">今日穿搭</span>
+    <span class="title" data-i18n="outfit.title">今日穿搭</span>
     <span class="badge" id="outfitDate"></span>
   </header>
 
   <div class="text-center py-6 fade-in" id="outfitHeader">
     <p class="text-3xl mb-3">👕</p>
-    <p class="text-sm text-neutral-400 font-light">基于今日幸运色与五行</p>
-    <p class="text-sm text-neutral-400 font-light">AI 联网搜索为你匹配时尚穿搭</p>
+    <p class="text-sm text-neutral-400 font-light" data-i18n="outfit.subtitle_1">基于今日幸运色与五行</p>
+    <p class="text-sm text-neutral-400 font-light" data-i18n="outfit.subtitle_2">AI 联网搜索为你匹配时尚穿搭</p>
   </div>
 
   <!-- 搜索按钮 + 状态 -->
   <div class="text-center mb-4" id="outfitControls">
-    <button onclick="searchOutfitsOnline()" id="searchOutfitBtn" class="btn-main px-8 py-3 rounded-lg text-sm font-semibold tracking-wider">🔍 AI 联网搜索今日穿搭</button>
-    <p class="text-neutral-700 text-xs mt-2">使用 LLM 搜索各平台最新穿搭灵感</p>
+    <button onclick="searchOutfitsOnline()" id="searchOutfitBtn" class="btn-main px-8 py-3 rounded-lg text-sm font-semibold tracking-wider" data-i18n="outfit.btn_search">🔍 AI 联网搜索今日穿搭</button>
+    <p class="text-neutral-700 text-xs mt-2" data-i18n="outfit.search_hint">使用 LLM 搜索各平台最新穿搭灵感</p>
     <div id="outfitSearchStatus" class="hidden text-center py-4">
-      <p class="text-neutral-500 text-sm animate-pulse">🔍 正在搜索小红书、Pinterest、Instagram...</p>
+      <p class="text-neutral-500 text-sm animate-pulse" data-i18n="outfit.searching">🔍 正在搜索小红书、Pinterest、Instagram...</p>
       <p class="text-neutral-700 text-xs mt-2" id="outfitSearchDetail"></p>
     </div>
   </div>
 
   <div id="outfitGridStandalone" class="grid grid-cols-2 md:grid-cols-3 gap-3 mt-2"></div>
-  <p id="outfitNoData" class="hidden text-neutral-600 text-xs text-center py-8">请先在「我的」设置性别和出生信息</p>
+  <p id="outfitNoData" class="hidden text-neutral-600 text-xs text-center py-8" data-i18n="outfit.no_data">请先在「我的」设置性别和出生信息</p>
   <div id="outfitRefresh" class="hidden text-center mt-6 mb-2">
-    <button onclick="searchOutfitsOnline()" class="btn-ghost px-6 py-2.5 rounded-lg text-sm">🔄 看看其他搭配</button>
+    <button onclick="searchOutfitsOnline()" class="btn-ghost px-6 py-2.5 rounded-lg text-sm" data-i18n="outfit.btn_refresh">🔄 看看其他搭配</button>
   </div>
 </div>
 
 <!-- ═══════════ 超时空对话——聊天 ═══════════ -->
 <div id="chatView" class="hidden relative z-10 mx-auto max-w-lg md:max-w-2xl px-4 md:px-8" style="height:100vh;">
   <header class="page-header" style="background:#000;">
-    <button onclick="closeChat()" class="text-neutral-500 hover:text-neutral-300 text-xs tracking-wider">← 返回</button>
+    <button onclick="closeChat()" class="text-neutral-500 hover:text-neutral-300 text-xs tracking-wider" data-i18n="dialogue.btn_back">← 返回</button>
     <span class="text-xs text-neutral-500"><span id="chatFigureName"></span> <span id="chatFigureEra" style="color:#333;"></span></span>
-    <button onclick="clearChat()" class="text-neutral-600 hover:text-neutral-400 text-xs">清空</button>
+    <button onclick="clearChat()" class="text-neutral-600 hover:text-neutral-400 text-xs" data-i18n="dialogue.btn_clear">清空</button>
   </header>
 
   <div id="chatMessages" class="overflow-y-auto py-4 space-y-4" style="height:calc(100vh - 140px);"></div>
 
   <div class="flex gap-2 pb-4 pt-2" style="background:#000;">
-    <input type="text" id="chatInput" class="input-field flex-1 px-4 py-2.5 rounded-lg text-sm" placeholder="输入消息..."
+    <input type="text" id="chatInput" class="input-field flex-1 px-4 py-2.5 rounded-lg text-sm" data-i18n-placeholder="dialogue.chat_placeholder" placeholder="输入消息..."
       onkeydown="if(event.key==='Enter')sendMessage()">
-    <button onclick="sendMessage()" class="btn-main px-5 py-2.5 rounded-lg text-sm font-semibold shrink-0">发送</button>
+    <button onclick="sendMessage()" class="btn-main px-5 py-2.5 rounded-lg text-sm font-semibold shrink-0" data-i18n="dialogue.btn_send">发送</button>
   </div>
 </div>
 
@@ -460,11 +485,11 @@
 <div id="llmGuideModal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
   <div class="card rounded-2xl p-6 max-w-sm w-full text-center scale-in">
     <p class="text-3xl mb-3">🚀</p>
-    <h3 class="text-white text-lg font-semibold mb-1">运势已生成</h3>
-    <p class="text-neutral-400 text-sm mb-5 leading-relaxed">配置大模型后，你将解锁：<br>🌌 <b class="text-white">超时空对话</b> · 与历史名人聊天<br>👕 <b class="text-white">AI 穿搭搜索</b> · 全网时尚推荐</p>
+    <h3 class="text-white text-lg font-semibold mb-1" data-i18n="llm_guide.title">运势已生成</h3>
+    <p class="text-neutral-400 text-sm mb-5 leading-relaxed"><span data-i18n="llm_guide.desc">配置大模型后，你将解锁：</span><br>🌌 <b class="text-white" data-i18n="llm_guide.feature_1">超时空对话</b> <span data-i18n="llm_guide.feature_1_desc">· 与历史名人聊天</span><br>👕 <b class="text-white" data-i18n="llm_guide.feature_2">AI 穿搭搜索</b> <span data-i18n="llm_guide.feature_2_desc">· 全网时尚推荐</span></p>
     <div class="space-y-2">
-      <button onclick="goToLLMConfig()" class="w-full py-3 rounded-lg text-sm font-semibold tracking-wider bg-white text-black hover:bg-neutral-200 transition">去配置</button>
-      <button onclick="closeLLMGuide()" class="w-full py-2.5 rounded-lg text-xs text-neutral-600 hover:text-neutral-400 transition">稍后再说</button>
+      <button onclick="goToLLMConfig()" class="w-full py-3 rounded-lg text-sm font-semibold tracking-wider bg-white text-black hover:bg-neutral-200 transition" data-i18n="llm_guide.btn_configure">去配置</button>
+      <button onclick="closeLLMGuide()" class="w-full py-2.5 rounded-lg text-xs text-neutral-600 hover:text-neutral-400 transition" data-i18n="llm_guide.btn_later">稍后再说</button>
     </div>
   </div>
 </div>
@@ -472,7 +497,7 @@
 <!-- 分享弹窗 -->
 <div id="shareModal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
   <div class="card rounded-xl p-6 max-w-sm w-full text-center">
-    <p class="text-xs text-neutral-500 tracking-widest mb-4">分享运势</p>
+    <p class="text-xs text-neutral-500 tracking-widest mb-4" data-i18n="share.title">分享运势</p>
     <div class="rounded-xl p-6 mb-5" style="background:#080808; border:1px solid #1a1a1a;">
       <p class="text-xs text-neutral-600 mb-2" id="shareDate"></p>
       <p class="text-4xl font-light text-white" id="shareScore"></p>
@@ -480,11 +505,796 @@
       <p class="text-xs text-neutral-600 mt-3" id="shareSummary"></p>
     </div>
     <div class="flex gap-3">
-      <button onclick="closeShare()" class="flex-1 py-2.5 border border-neutral-800 rounded-lg text-neutral-400 text-sm">关闭</button>
-      <button onclick="closeShare()" class="flex-1 py-2.5 bg-white text-black rounded-lg text-sm font-semibold">保存</button>
+      <button onclick="closeShare()" class="flex-1 py-2.5 border border-neutral-800 rounded-lg text-neutral-400 text-sm" data-i18n="share.btn_close">关闭</button>
+      <button onclick="closeShare()" class="flex-1 py-2.5 bg-white text-black rounded-lg text-sm font-semibold" data-i18n="share.btn_save">保存</button>
     </div>
   </div>
 </div>
+
+<!-- ═══════════ i18n 多语言系统 ═══════════ -->
+<script>
+// ===================== i18n System =====================
+const SUPPORTED_LOCALES = ['zh','en'];
+const DEFAULT_LOCALE = 'zh';
+
+function currentLocale() {
+  const stored = localStorage.getItem('fortune_locale');
+  return stored && SUPPORTED_LOCALES.includes(stored) ? stored : DEFAULT_LOCALE;
+}
+function setLocale(locale) {
+  if (!SUPPORTED_LOCALES.includes(locale)) return;
+  localStorage.setItem('fortune_locale', locale);
+}
+
+function t(key, params) {
+  const locale = currentLocale();
+  var text;
+  if (TRANSLATIONS[locale] && TRANSLATIONS[locale][key] !== undefined) {
+    text = TRANSLATIONS[locale][key];
+  } else if (TRANSLATIONS['zh'] && TRANSLATIONS['zh'][key] !== undefined) {
+    text = TRANSLATIONS['zh'][key];
+  }
+  if (text === undefined || text === null) { console.warn('Missing i18n key:', key); return key; }
+  if (params) {
+    Object.keys(params).forEach(function(k) {
+      text = text.replace(new RegExp('\\$\\{' + k + '\\}', 'g'), params[k]);
+    });
+  }
+  return text;
+}
+
+function applyStaticTexts() {
+  // textContent
+  document.querySelectorAll('[data-i18n]').forEach(function(el) {
+    var key = el.getAttribute('data-i18n');
+    if (!key) return;
+    // Skip inputs that have both data-i18n and a placeholder attribute
+    if (el.tagName === 'INPUT' && (el.type === 'text' || el.type === 'password' || el.type === 'date' || el.type === 'time')) return;
+    // Skip select elements
+    if (el.tagName === 'SELECT') return;
+    el.textContent = t(key);
+  });
+  // placeholder
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(function(el) {
+    var key = el.getAttribute('data-i18n-placeholder');
+    if (!key) return;
+    el.setAttribute('placeholder', t(key));
+  });
+  // title attribute
+  document.querySelectorAll('[data-i18n-title]').forEach(function(el) {
+    var key = el.getAttribute('data-i18n-title');
+    if (!key) return;
+    el.setAttribute('title', t(key));
+  });
+  // value for input[type=submit], input[type=button], button without children
+  document.querySelectorAll('[data-i18n-value]').forEach(function(el) {
+    var key = el.getAttribute('data-i18n-value');
+    if (!key) return;
+    el.value = t(key);
+  });
+}
+
+// Locale-aware data helpers
+function getZodiacName(idx) { return t('data.zodiac.' + idx); }
+function getStemName(idx) { return t('data.stem.' + idx); }
+function getBranchName(idx) { return t('data.branch.' + idx); }
+function getHourName(idx) { return t('data.hour.' + idx); }
+function getStarSignName(i) { return t('data.star.' + i + '.name'); }
+function getStarSignDesc(i) { return t('data.star.' + i + '.desc'); }
+function getStarSignTags(i) { return [t('data.star.' + i + '.tag0'), t('data.star.' + i + '.tag1'), t('data.star.' + i + '.tag2')]; }
+function getDmName(stem) { var idx = ['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'].indexOf(stem); return idx>=0 ? t('data.dm.'+idx+'.name') : stem; }
+function getDmDesc(stem) { var idx = ['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'].indexOf(stem); return idx>=0 ? t('data.dm.'+idx+'.desc') : ''; }
+function getDmTags(stem) { var idx = ['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'].indexOf(stem); return idx>=0 ? [t('data.dm.'+idx+'.tag0'),t('data.dm.'+idx+'.tag1'),t('data.dm.'+idx+'.tag2')] : []; }
+function getElementName(el) { var m={木:'wood',火:'fire',土:'earth',金:'metal',水:'water'}; return t('data.wuxing.'+(m[el]||el)); }
+function getDirectionName(dir) { var m={东:'east',南:'south',西:'west',北:'north',东南:'southeast',西南:'southwest',东北:'northeast',西北:'northwest'}; return t('data.dir.'+(m[dir]||dir)); }
+function getSignIndex(name) { var m={摩羯座:0,水瓶座:1,双鱼座:2,白羊座:3,金牛座:4,双子座:5,巨蟹座:6,狮子座:7,处女座:8,天秤座:9,天蝎座:10,射手座:11}; return m[name]!==undefined ? m[name] : 0; }
+
+// ===================== Translations =====================
+const TRANSLATIONS = {
+  zh: {
+    // --- Login/Register ---
+    'login.title': '今日运势分析器',
+    'login.subtitle': '星座 × 传统命理 · 每日运势早知道',
+    'login.privacy': '所有数据仅存储在你的浏览器本地，不会上传',
+    'login.tab_register': '注册',
+    'login.tab_login': '登录',
+    'login.label_username': '用户名',
+    'login.placeholder_reg_username': '设置你的用户名',
+    'login.label_password': '密码',
+    'login.placeholder_reg_password': '设置密码',
+    'login.placeholder_login_username': '输入用户名',
+    'login.placeholder_login_password': '输入密码',
+    'login.remember_me': '记住登录，下次自动进入',
+    'login.btn_create': '创建账号',
+    'login.btn_login': '登录',
+    'login.quick_login': '快速登录',
+    'login.reset_all': '重置所有数据',
+
+    // --- Input ---
+    'input.label_birthday': '出生年月日',
+    'input.label_birthtime': '出生时间',
+    'input.label_birthtime_optional': '选填',
+    'input.hint_birthtime': '填写后可解锁八字精算',
+    'input.btn_get_fortune': '查看今日运势',
+    'input.divider': '或',
+    'input.btn_random': '随机体验',
+    'input.btn_generated': '已生成',
+    'input.disclaimer': '仅供娱乐参考 · 数据仅在本地计算',
+    'input.btn_logout': '退出',
+
+    // --- Loading ---
+    'loading.main': '正在推演今日运势',
+    'loading.step_1': '星座运势分析中',
+    'loading.step_2': '八字命理推算中',
+    'loading.step_3': '综合运势生成中',
+
+    // --- Navigation ---
+    'nav.fortune': '运势',
+    'nav.outfit': '穿搭',
+    'nav.dialogue': '超时空',
+    'nav.profile': '我的',
+
+    // --- Result ---
+    'result.back': '← 返回',
+    'result.share': '分享',
+    'result.category_fortunes': '分类运势',
+    'result.personality': '性格解析',
+    'result.interpersonal': '今日人际',
+    'result.lucky_today': '今日幸运',
+    'result.wuxing': '五行',
+    'result.outfit_today': '今日穿搭',
+    'result.share_card': '生成分享卡片',
+    'result.disclaimer': '仅供娱乐参考 · 数据仅存储本地 · 不上传任何个人信息',
+    'result.lucky_number': '数字',
+    'result.lucky_direction': '方位',
+    'result.close_to': '宜近',
+    'result.avoid': '宜远',
+    'result.weekday_sun': '日',
+    'result.weekday_mon': '一',
+    'result.weekday_tue': '二',
+    'result.weekday_wed': '三',
+    'result.weekday_thu': '四',
+    'result.weekday_fri': '五',
+    'result.weekday_sat': '六',
+    'result.weekday_prefix': '星期',
+    'result.cat_career': '事业运',
+    'result.cat_wealth': '财运',
+    'result.cat_love': '感情运',
+    'result.cat_health': '健康运',
+    'result.score_excellent': '极佳',
+    'result.score_good': '良好',
+    'result.score_stable': '平稳',
+    'result.score_low': '稍低',
+    'result.score_caution': '低迷',
+    'result.score_en_excellent': 'EXCELLENT',
+    'result.score_en_good': 'GOOD',
+    'result.score_en_stable': 'STABLE',
+    'result.score_en_low': 'LOW',
+    'result.score_en_caution': 'CAUTION',
+    'result.fortune_good': '吉',
+    'result.fortune_flat': '平',
+    'result.fortune_low': '低',
+
+    // --- Profile ---
+    'profile.title': '我的',
+    'profile.personal_info': '个人信息',
+    'profile.click_change_avatar': '点击更换头像',
+    'profile.select_avatar': '选头像',
+    'profile.upload_image': '上传图片',
+    'profile.label_birthday': '出生日期',
+    'profile.label_birthtime': '出生时间',
+    'profile.label_gender': '性别',
+    'profile.gender_unset': '未设置',
+    'profile.gender_male': '男',
+    'profile.gender_female': '女',
+    'profile.btn_save': '保存',
+    'profile.saved': '已保存',
+    'profile.language': '语言 / Language',
+    'profile.model_config': '模型配置',
+    'profile.api_note': 'API Key 仅存储本地，仅用于你指定的服务商',
+    'profile.select_preset': '选择模型商',
+    'profile.select_model': '选择模型',
+    'profile.api_key_placeholder': 'API Key',
+    'profile.btn_test': '检测',
+    'profile.btn_save_llm': '保存',
+    'profile.history': '历史对话',
+    'profile.search_by_id': '输入对话 ID',
+    'profile.btn_search': '查询',
+    'profile.history_empty': '暂无历史对话',
+    'profile.btn_logout': '退出登录',
+    'profile.logout_footer': '退出后需重新登录',
+    'profile.custom_model': '自定义',
+    'profile.select_preset_first': '请先选择模型商',
+    'profile.history_count_suffix': '条',
+
+    // --- Outfit ---
+    'outfit.title': '今日穿搭',
+    'outfit.subtitle_1': '基于今日幸运色与五行',
+    'outfit.subtitle_2': 'AI 联网搜索为你匹配时尚穿搭',
+    'outfit.btn_search': '🔍 AI 联网搜索今日穿搭',
+    'outfit.btn_search_no_llm': '🔍 AI 联网搜索今日穿搭（需先配置LLM）',
+    'outfit.search_hint': '使用 LLM 搜索各平台最新穿搭灵感',
+    'outfit.searching': '🔍 正在搜索小红书、Pinterest、Instagram...',
+    'outfit.no_data': '请先在「我的」设置性别和出生信息',
+    'outfit.btn_refresh': '🔄 看看其他搭配',
+    'outfit.auto_search': '每日首次自动搜索...',
+    'outfit.searching_detail': '正在检索：',
+    'outfit.fallback_ai': 'AI 不可用，使用本地搭配引擎',
+    'outfit.fallback_search': '搜索失败：',
+    'outfit.fallback_search_suffix': '使用本地搭配引擎',
+    'outfit.style_fallback': '时尚搭配',
+    'outfit.season_suffix': '季',
+    'outfit.season_spring': '春',
+    'outfit.season_summer': '夏',
+    'outfit.season_autumn': '秋',
+    'outfit.season_winter': '冬',
+    'outfit.gender_male': '男性',
+    'outfit.gender_female': '女性',
+
+    // --- Dialogue ---
+    'dialogue.title': '超时空对话',
+    'dialogue.subtitle_1': '基于你的星座与八字',
+    'dialogue.subtitle_2': '匹配与你灵魂相似的历史人物',
+    'dialogue.btn_refresh': '🔄 重新匹配',
+    'dialogue.searching': '🌐 正在调用大模型联网搜索...',
+    'dialogue.analyzing': '分析用户命理特征中...',
+    'dialogue.fallback_local': 'LLM 不可用，使用本地匹配引擎',
+    'dialogue.similarity': '相似度',
+    'dialogue.greeting_1': '在下${name}。时空交错，竟能与你相遇，实乃奇缘。',
+    'dialogue.greeting_2': '${name}在此。你的命格与我颇有共鸣，但说无妨。',
+    'dialogue.greeting_3': '久违了。我${name}虽隔千年，却觉你似曾相识。',
+    'dialogue.connected': '🌌 你已连接 ${name} 的灵魂',
+    'dialogue.cleared': '对话已清空',
+    'dialogue.signal_lost': '时空信号中断……请检查 LLM 配置后重试。',
+    'dialogue.unknown_error': '未知错误',
+    'dialogue.history_era': '历史',
+    'dialogue.history_detail': '📜 ${id} · ${figure} · ${count} 条消息',
+    'dialogue.chat_placeholder': '输入消息...',
+    'dialogue.btn_send': '发送',
+    'dialogue.btn_back': '← 返回',
+    'dialogue.btn_clear': '清空',
+
+    // --- LLM Guide Modal ---
+    'llm_guide.title': '运势已生成',
+    'llm_guide.desc': '配置大模型后，你将解锁：',
+    'llm_guide.feature_1': '超时空对话',
+    'llm_guide.feature_1_desc': '· 与历史名人聊天',
+    'llm_guide.feature_2': 'AI 穿搭搜索',
+    'llm_guide.feature_2_desc': '· 全网时尚推荐',
+    'llm_guide.btn_configure': '去配置',
+    'llm_guide.btn_later': '稍后再说',
+
+    // --- Share Modal ---
+    'share.title': '分享运势',
+    'share.btn_close': '关闭',
+    'share.btn_save': '保存',
+
+    // --- LLM Status ---
+    'llm.testing': '⏳ 检测中...',
+    'llm.connecting': '正在连接...',
+    'llm.fill_both': '❌ 请填写 API 地址和 Key',
+    'llm.test_connection': '🔍 检测连接',
+    'llm.success': '✅ 连接成功！模型回复：${reply}',
+    'llm.unauthorized': '❌ Key 无效 (401)——请检查 API Key',
+    'llm.not_found': '❌ 地址不存在 (404)——请用下拉预设',
+    'llm.status_error': '⚠️ 状态 ${code}：${detail}',
+    'llm.network_error': '❌ 网络不通：${detail}',
+    'llm.saved': '✅ 已保存',
+    'llm.save_config': '保存 LLM 配置',
+
+    // --- API Errors ---
+    'api.no_endpoint': '请先在「我的」→ LLM 配置中设置 API 地址',
+    'api.no_key': '请先在「我的」→ LLM 配置中设置 API Key',
+    'api.network_fail': '网络请求失败——请检查 API 地址是否正确（当前：${endpoint}）',
+    'api.not_found_detail': '端点不存在 (404)\n当前地址：${endpoint}\n\n请检查：\n· 地址是否包含完整路径（如 /v1/chat/completions）\n· 或使用「服务商预设」下拉选择',
+    'api.auth_fail': '认证失败 (${code})——API Key 无效或已过期',
+    'api.rate_limit': '请求过于频繁 (429)——请稍后重试',
+    'api.error': 'API 错误 (${code}): ${detail}',
+    'api.empty_response': 'API 返回为空——请检查模型名称是否正确',
+    'api.parse_fail': '解析响应失败——返回内容：${detail}',
+
+    // --- Errors & Messages ---
+    'error.username_taken': '该用户名已被注册',
+    'error.fill_both': '请输入用户名和密码',
+    'error.no_users': '没有已注册的账号，请先注册',
+    'error.bad_credentials': '用户名或密码错误',
+    'error.enter_failed': '进入失败：${msg}',
+    'error.reset_confirm': '确定要清除所有账号和运势数据吗？此操作不可撤销。',
+    'error.data_cleared': '数据已清除，请重新注册',
+    'error.image_too_big': '图片请小于 100KB',
+    'error.storage_full': '存储空间不足，请先清理历史对话',
+    'error.account_found': '✅ 账号「${user}」· 创建于 ${date}',
+    'error.account_not_found': '❌ 未找到该 ID 对应的账号',
+
+    // --- Data: Zodiac ---
+    'data.zodiac.0': '鼠', 'data.zodiac.1': '牛', 'data.zodiac.2': '虎', 'data.zodiac.3': '兔',
+    'data.zodiac.4': '龙', 'data.zodiac.5': '蛇', 'data.zodiac.6': '马', 'data.zodiac.7': '羊',
+    'data.zodiac.8': '猴', 'data.zodiac.9': '鸡', 'data.zodiac.10': '狗', 'data.zodiac.11': '猪',
+
+    // --- Data: Heavenly Stems ---
+    'data.stem.0': '甲', 'data.stem.1': '乙', 'data.stem.2': '丙', 'data.stem.3': '丁', 'data.stem.4': '戊',
+    'data.stem.5': '己', 'data.stem.6': '庚', 'data.stem.7': '辛', 'data.stem.8': '壬', 'data.stem.9': '癸',
+
+    // --- Data: Earthly Branches ---
+    'data.branch.0': '子', 'data.branch.1': '丑', 'data.branch.2': '寅', 'data.branch.3': '卯',
+    'data.branch.4': '辰', 'data.branch.5': '巳', 'data.branch.6': '午', 'data.branch.7': '未',
+    'data.branch.8': '申', 'data.branch.9': '酉', 'data.branch.10': '戌', 'data.branch.11': '亥',
+
+    // --- Data: Hour Names ---
+    'data.hour.0': '子时', 'data.hour.1': '丑时', 'data.hour.2': '寅时', 'data.hour.3': '卯时',
+    'data.hour.4': '辰时', 'data.hour.5': '巳时', 'data.hour.6': '午时', 'data.hour.7': '未时',
+    'data.hour.8': '申时', 'data.hour.9': '酉时', 'data.hour.10': '戌时', 'data.hour.11': '亥时',
+
+    // --- Data: Star Signs (0-11: Capricorn start Jan, Aquarius, Pisces, Aries, Taurus, Gemini, Cancer, Leo, Virgo, Libra, Scorpio, Sagittarius, Capricorn end Dec) ---
+    'data.star.0.name': '摩羯座', 'data.star.0.desc': '沉稳务实，目标明确，坚韧不拔', 'data.star.0.tag0': '沉稳', 'data.star.0.tag1': '务实', 'data.star.0.tag2': '坚韧',
+    'data.star.1.name': '水瓶座', 'data.star.1.desc': '独立创新，思维超前，特立独行', 'data.star.1.tag0': '独立', 'data.star.1.tag1': '创新', 'data.star.1.tag2': '理性',
+    'data.star.2.name': '双鱼座', 'data.star.2.desc': '浪漫感性，富有同理心，想象力丰富', 'data.star.2.tag0': '浪漫', 'data.star.2.tag1': '同理心', 'data.star.2.tag2': '想象',
+    'data.star.3.name': '白羊座', 'data.star.3.desc': '热情冲动，勇往直前，充满活力', 'data.star.3.tag0': '勇敢', 'data.star.3.tag1': '直接', 'data.star.3.tag2': '热情',
+    'data.star.4.name': '金牛座', 'data.star.4.desc': '稳重踏实，重视物质，品味出众', 'data.star.4.tag0': '稳重', 'data.star.4.tag1': '务实', 'data.star.4.tag2': '耐心',
+    'data.star.5.name': '双子座', 'data.star.5.desc': '聪明灵活，好奇心强，善于沟通', 'data.star.5.tag0': '聪明', 'data.star.5.tag1': '好奇', 'data.star.5.tag2': '善谈',
+    'data.star.6.name': '巨蟹座', 'data.star.6.desc': '温柔细腻，重视家庭，情感丰富', 'data.star.6.tag0': '温柔', 'data.star.6.tag1': '顾家', 'data.star.6.tag2': '敏感',
+    'data.star.7.name': '狮子座', 'data.star.7.desc': '自信大方，领导力强，慷慨热情', 'data.star.7.tag0': '自信', 'data.star.7.tag1': '慷慨', 'data.star.7.tag2': '领导力',
+    'data.star.8.name': '处女座', 'data.star.8.desc': '细致认真，追求完美，逻辑清晰', 'data.star.8.tag0': '细致', 'data.star.8.tag1': '完美', 'data.star.8.tag2': '理性',
+    'data.star.9.name': '天秤座', 'data.star.9.desc': '优雅平衡，善于社交，追求和谐', 'data.star.9.tag0': '优雅', 'data.star.9.tag1': '社交', 'data.star.9.tag2': '公正',
+    'data.star.10.name': '天蝎座', 'data.star.10.desc': '深沉敏锐，意志坚定，洞察力强', 'data.star.10.tag0': '深沉', 'data.star.10.tag1': '意志', 'data.star.10.tag2': '洞察',
+    'data.star.11.name': '射手座', 'data.star.11.desc': '乐观自由，热爱探索，心胸开阔', 'data.star.11.tag0': '乐观', 'data.star.11.tag1': '自由', 'data.star.11.tag2': '探索',
+
+    // --- Data: Day Master Traits ---
+    'data.dm.0.name': '甲木', 'data.dm.0.desc': '参天大树，正直坚定，领导力强', 'data.dm.0.tag0': '正直', 'data.dm.0.tag1': '领导力', 'data.dm.0.tag2': '坚韧',
+    'data.dm.1.name': '乙木', 'data.dm.1.desc': '藤萝花草，柔韧灵活，善于适应', 'data.dm.1.tag0': '灵活', 'data.dm.1.tag1': '细腻', 'data.dm.1.tag2': '适应力',
+    'data.dm.2.name': '丙火', 'data.dm.2.desc': '太阳之火，光明磊落，感染力强', 'data.dm.2.tag0': '热情', 'data.dm.2.tag1': '感染力', 'data.dm.2.tag2': '光明',
+    'data.dm.3.name': '丁火', 'data.dm.3.desc': '灯烛之火，温和细腻，洞察人心', 'data.dm.3.tag0': '细腻', 'data.dm.3.tag1': '洞察', 'data.dm.3.tag2': '温和',
+    'data.dm.4.name': '戊土', 'data.dm.4.desc': '城墙之土，稳重厚道，可靠踏实', 'data.dm.4.tag0': '稳重', 'data.dm.4.tag1': '可靠', 'data.dm.4.tag2': '包容',
+    'data.dm.5.name': '己土', 'data.dm.5.desc': '田园之土，滋养万物，耐心细致', 'data.dm.5.tag0': '耐心', 'data.dm.5.tag1': '滋养', 'data.dm.5.tag2': '务实',
+    'data.dm.6.name': '庚金', 'data.dm.6.desc': '刀剑之金，刚毅果断，执行力强', 'data.dm.6.tag0': '果断', 'data.dm.6.tag1': '刚毅', 'data.dm.6.tag2': '执行',
+    'data.dm.7.name': '辛金', 'data.dm.7.desc': '珠宝之金，精致讲究，追求完美', 'data.dm.7.tag0': '精致', 'data.dm.7.tag1': '完美', 'data.dm.7.tag2': '品味',
+    'data.dm.8.name': '壬水', 'data.dm.8.desc': '江河之水，智慧通达，包容万象', 'data.dm.8.tag0': '智慧', 'data.dm.8.tag1': '通达', 'data.dm.8.tag2': '包容',
+    'data.dm.9.name': '癸水', 'data.dm.9.desc': '雨露之水，细腻敏感，直觉敏锐', 'data.dm.9.tag0': '敏感', 'data.dm.9.tag1': '直觉', 'data.dm.9.tag2': '灵性',
+
+    // --- Data: Five Elements ---
+    'data.wuxing.wood': '木', 'data.wuxing.fire': '火', 'data.wuxing.earth': '土', 'data.wuxing.metal': '金', 'data.wuxing.water': '水',
+    'data.wuxing.level_high': '旺', 'data.wuxing.level_mid': '平', 'data.wuxing.level_low': '弱',
+    'data.wuxing.tip': '${maxEl}旺${minEl}弱，今日宜多补${minEl}元素',
+
+    // --- Data: Directions ---
+    'data.dir.east': '东', 'data.dir.south': '南', 'data.dir.west': '西', 'data.dir.north': '北',
+    'data.dir.southeast': '东南', 'data.dir.southwest': '西南', 'data.dir.northeast': '东北', 'data.dir.northwest': '西北',
+
+    // --- Data: Lucky Colors ---
+    'data.color.forest_green': '森林绿', 'data.color.ocean_blue': '海洋蓝', 'data.color.amber_gold': '琥珀金',
+    'data.color.ochre_brown': '赭石棕', 'data.color.coral_orange': '珊瑚橙', 'data.color.deepspace_gray': '深空灰',
+
+    // --- Data: Interpersonal Types ---
+    'data.itype.0': '沉稳务实型', 'data.itype.1': '理性分析型', 'data.itype.2': '幽默风趣型', 'data.itype.3': '温和包容型',
+    'data.itype.4': '果断利落型', 'data.itype.5': '热情开朗型', 'data.itype.6': '细腻敏感型', 'data.itype.7': '独立创新型',
+    'data.itype.bad_0': '急躁冲动型', 'data.itype.bad_1': '情绪多变型',
+    'data.itype.good_reason': '今日与${el}象特质的人相处更合拍',
+    'data.itype.bad_reason': '火星逆行期间，注意情绪管理',
+
+    // --- Data: Persona ---
+    'data.persona.same_element': '${sign}与${dm}同属${el}象，双重叠加让你在人群中格外耀眼。',
+    'data.persona.diff_element': '${sign}（${signEl}象）与${dm}（${dmEl}象）互为补充，内外兼修。',
+    'data.persona.tag_same': '双重特质',
+    'data.persona.tag_diff': '刚柔并济',
+
+    // --- Data: Figures ---
+    'data.figure.0.name': '诸葛亮', 'data.figure.0.era': '三国·蜀', 'data.figure.0.tag0': '智慧', 'data.figure.0.tag1': '谋略', 'data.figure.0.tag2': '忠诚',
+    'data.figure.0.soul': '你是诸葛亮，蜀汉丞相。神机妙算。自称"亮"。',
+    'data.figure.1.name': '李白', 'data.figure.1.era': '盛唐', 'data.figure.1.tag0': '浪漫', 'data.figure.1.tag1': '豪放', 'data.figure.1.tag2': '自由',
+    'data.figure.1.soul': '你是李白，诗仙。豪放不羁。自称"白"。',
+    'data.figure.2.name': '莎士比亚', 'data.figure.2.era': '文艺复兴', 'data.figure.2.tag0': '戏剧', 'data.figure.2.tag1': '人性', 'data.figure.2.tag2': '诗意',
+    'data.figure.2.soul': '你是莎士比亚。To be or not to be。',
+    'data.figure.3.name': '爱因斯坦', 'data.figure.3.era': '现代', 'data.figure.3.tag0': '天才', 'data.figure.3.tag1': '好奇', 'data.figure.3.tag2': '反叛',
+    'data.figure.3.soul': '你是爱因斯坦。想象力比知识更重要。',
+
+    // --- Summary Templates ---
+    'summary.career_best_0': '今日适合主动出击', 'summary.career_best_1': '职场上贵人运在线',
+    'summary.career_best_2': '工作汇报容易获得认可', 'summary.career_best_3': '团队协作效率高涨',
+    'summary.career_caution_0': '重要会议安排在上午', 'summary.career_caution_1': '避免与同事争执', 'summary.career_caution_2': '多听少说，观察为先',
+    'summary.wealth_best_0': '正财运稳健', 'summary.wealth_best_1': '适合做财务规划',
+    'summary.wealth_best_2': '偏财勿碰，守住底线', 'summary.wealth_best_3': '小额支出无需纠结',
+    'summary.wealth_caution_0': '不宜大额支出', 'summary.wealth_caution_1': '控制冲动消费', 'summary.wealth_caution_2': '适合记账复盘',
+    'summary.love_best_0': '桃花运不错', 'summary.love_best_1': '适合表达心意',
+    'summary.love_best_2': '感情上顺其自然就好', 'summary.love_best_3': '有伴者相处融洽',
+    'summary.love_caution_0': '给对方一些空间', 'summary.love_caution_1': '不要翻旧账', 'summary.love_caution_2': '多表达感激之情',
+    'summary.health_best_0': '精力充沛', 'summary.health_best_1': '适合开始新运动计划',
+    'summary.health_best_2': '注意作息规律', 'summary.health_best_3': '身体状态良好',
+    'summary.health_caution_0': '避免熬夜', 'summary.health_caution_1': '多喝水', 'summary.health_caution_2': '适当活动颈部',
+    'summary.generic_best': '运势不错',
+    'summary.generic_caution': '保持谨慎',
+    'summary.low_score': '今日整体运势偏低，${tip}。不必焦虑，明天会好起来。',
+    'summary.mid_score': '运势平稳的一天，${tip}。保持平常心，享受当下。',
+    'summary.fallback': '运势平稳，保持平常心。',
+
+    // --- Category Fortune Text ---
+    'cat.career_high_0': '适合主动汇报工作，领导认可度高', 'cat.career_high_1': '下午适合谈判签约', 'cat.career_high_2': '团队协作顺畅高效',
+    'cat.career_mid_0': '按部就班即可，不必急于表现', 'cat.career_mid_1': '注意细节，避免小失误',
+    'cat.career_low_0': '宜低调行事，避免正面冲突', 'cat.career_low_1': '重要决策推迟到明天',
+    'cat.wealth_high_0': '正财运稳定，适合做财务规划', 'cat.wealth_high_1': '偏财运一般，不宜大额投资', 'cat.wealth_high_2': '小额理财可考虑',
+    'cat.wealth_mid_0': '收支平衡，不宜冒险', 'cat.wealth_mid_1': '保守理财为上策',
+    'cat.wealth_low_0': '谨慎支出，避免冲动消费', 'cat.wealth_low_1': '今天不宜做投资决定',
+    'cat.love_high_0': '桃花运在线，适合出门社交', 'cat.love_high_1': '有伴者感情升温', 'cat.love_high_2': '单身者有机会遇见有趣的人',
+    'cat.love_mid_0': '桃花运一般，顺其自然', 'cat.love_mid_1': '有伴者注意沟通方式，小事莫计较',
+    'cat.love_low_0': '不宜表白或重大感情决定', 'cat.love_low_1': '给自己一些独处的时间',
+    'cat.health_high_0': '精力充沛，适合运动', 'cat.health_high_1': '身体状态良好', 'cat.health_high_2': '保持当前作息即可',
+    'cat.health_mid_0': '注意颈椎和用眼疲劳', 'cat.health_mid_1': '建议每小时起身活动5分钟',
+    'cat.health_low_0': '容易疲劳，注意休息', 'cat.health_low_1': '避免高强度运动',
+
+    // --- Outfit DB ---
+    'outfit.male.top_0': '廓形西装', 'outfit.male.top_1': '机能马甲', 'outfit.male.top_2': '落肩T恤', 'outfit.male.top_3': '亨利领针织',
+    'outfit.male.top_4': '宽松衬衫', 'outfit.male.top_5': '连帽卫衣', 'outfit.male.top_6': '古巴领短袖', 'outfit.male.top_7': '工装夹克',
+    'outfit.male.bottom_0': '阔腿西裤', 'outfit.male.bottom_1': '机能束脚裤', 'outfit.male.bottom_2': '水洗直筒牛仔', 'outfit.male.bottom_3': '垂感九分裤',
+    'outfit.male.bottom_4': '工装短裤', 'outfit.male.bottom_5': '锥形休闲裤',
+    'outfit.male.shoe_0': '德比皮鞋', 'outfit.male.shoe_1': '厚底乐福', 'outfit.male.shoe_2': '复古跑鞋', 'outfit.male.shoe_3': '切尔西靴',
+    'outfit.male.shoe_4': '帆布板鞋', 'outfit.male.shoe_5': '机能凉鞋',
+    'outfit.male.acc_0': '金属框墨镜', 'outfit.male.acc_1': '帆布托特包', 'outfit.male.acc_2': '银质项链', 'outfit.male.acc_3': '皮质腕表',
+    'outfit.male.acc_4': '棒球帽', 'outfit.male.acc_5': '渔夫帽',
+    'outfit.male.style_0': '极简廓形', 'outfit.male.style_1': '日系cityboy', 'outfit.male.style_2': '轻机能风',
+    'outfit.male.style_3': '美式复古', 'outfit.male.style_4': '韩系cleanfit', 'outfit.male.style_5': '新中式',
+    'outfit.female.top_0': '垫肩西装', 'outfit.female.top_1': '针织开衫', 'outfit.female.top_2': '法式衬衫', 'outfit.female.top_3': '挂脖背心',
+    'outfit.female.top_4': '泡泡袖上衣', 'outfit.female.top_5': '短款针织', 'outfit.female.top_6': '真丝吊带', 'outfit.female.top_7': '廓形风衣',
+    'outfit.female.bottom_0': '高腰阔腿裤', 'outfit.female.bottom_1': '缎面半裙', 'outfit.female.bottom_2': '直筒牛仔裤', 'outfit.female.bottom_3': 'A字短裙',
+    'outfit.female.bottom_4': '垂感西裤', 'outfit.female.bottom_5': '百褶中裙',
+    'outfit.female.shoe_0': '尖头猫跟', 'outfit.female.shoe_1': '方头凉鞋', 'outfit.female.shoe_2': '厚底乐福', 'outfit.female.shoe_3': '马丁靴',
+    'outfit.female.shoe_4': '细带高跟', 'outfit.female.shoe_5': '芭蕾平底',
+    'outfit.female.acc_0': '金属耳环', 'outfit.female.acc_1': '链条腋下包', 'outfit.female.acc_2': '珍珠项链', 'outfit.female.acc_3': '丝巾发带',
+    'outfit.female.acc_4': '细腰带', 'outfit.female.acc_5': '叠戴手链',
+    'outfit.female.style_0': '静奢风', 'outfit.female.style_1': '法式慵懒', 'outfit.female.style_2': '韩系千金',
+    'outfit.female.style_3': '新中式', 'outfit.female.style_4': '街头辣妹', 'outfit.female.style_5': '知识分子风',
+  },
+  en: {
+    // --- Login/Register ---
+    'login.title': 'Daily Fortune Analyzer',
+    'login.subtitle': 'Zodiac × Traditional Divination',
+    'login.privacy': 'All data stored locally in your browser, never uploaded',
+    'login.tab_register': 'Register',
+    'login.tab_login': 'Login',
+    'login.label_username': 'Username',
+    'login.placeholder_reg_username': 'Set your username',
+    'login.label_password': 'Password',
+    'login.placeholder_reg_password': 'Set password',
+    'login.placeholder_login_username': 'Enter username',
+    'login.placeholder_login_password': 'Enter password',
+    'login.remember_me': 'Remember me, auto-login next time',
+    'login.btn_create': 'Create Account',
+    'login.btn_login': 'Login',
+    'login.quick_login': 'Quick Login',
+    'login.reset_all': 'Reset All Data',
+
+    // --- Input ---
+    'input.label_birthday': 'Birth Date',
+    'input.label_birthtime': 'Birth Time',
+    'input.label_birthtime_optional': 'Optional',
+    'input.hint_birthtime': 'Fill in to unlock Ba Zi (Four Pillars) analysis',
+    'input.btn_get_fortune': 'Check Today\'s Fortune',
+    'input.divider': 'or',
+    'input.btn_random': 'Random',
+    'input.btn_generated': 'Generated',
+    'input.disclaimer': 'For entertainment only · Data computed locally',
+    'input.btn_logout': 'Logout',
+
+    // --- Loading ---
+    'loading.main': 'Calculating your fortune...',
+    'loading.step_1': 'Analyzing horoscope...',
+    'loading.step_2': 'Computing Ba Zi destiny...',
+    'loading.step_3': 'Generating composite fortune...',
+
+    // --- Navigation ---
+    'nav.fortune': 'Fortune',
+    'nav.outfit': 'Outfit',
+    'nav.dialogue': 'Dialogue',
+    'nav.profile': 'Profile',
+
+    // --- Result ---
+    'result.back': '← Back',
+    'result.share': 'Share',
+    'result.category_fortunes': 'Fortune Categories',
+    'result.personality': 'Personality',
+    'result.interpersonal': 'Interpersonal',
+    'result.lucky_today': 'Today\'s Lucky',
+    'result.wuxing': 'Five Elements',
+    'result.outfit_today': 'Today\'s Outfit',
+    'result.share_card': 'Generate Share Card',
+    'result.disclaimer': 'For entertainment only · Local data · No personal info uploaded',
+    'result.lucky_number': 'Number',
+    'result.lucky_direction': 'Direction',
+    'result.close_to': 'Close To',
+    'result.avoid': 'Avoid',
+    'result.weekday_sun': 'Sun',
+    'result.weekday_mon': 'Mon',
+    'result.weekday_tue': 'Tue',
+    'result.weekday_wed': 'Wed',
+    'result.weekday_thu': 'Thu',
+    'result.weekday_fri': 'Fri',
+    'result.weekday_sat': 'Sat',
+    'result.weekday_prefix': '',
+    'result.cat_career': 'Career',
+    'result.cat_wealth': 'Wealth',
+    'result.cat_love': 'Love',
+    'result.cat_health': 'Health',
+    'result.score_excellent': 'Excellent',
+    'result.score_good': 'Good',
+    'result.score_stable': 'Stable',
+    'result.score_low': 'Below Avg',
+    'result.score_caution': 'Caution',
+    'result.score_en_excellent': 'EXCELLENT',
+    'result.score_en_good': 'GOOD',
+    'result.score_en_stable': 'STABLE',
+    'result.score_en_low': 'LOW',
+    'result.score_en_caution': 'CAUTION',
+    'result.fortune_good': 'Good',
+    'result.fortune_flat': 'Neutral',
+    'result.fortune_low': 'Low',
+
+    // --- Profile ---
+    'profile.title': 'Profile',
+    'profile.personal_info': 'Personal Info',
+    'profile.click_change_avatar': 'Click to change avatar',
+    'profile.select_avatar': 'Select Avatar',
+    'profile.upload_image': 'Upload Image',
+    'profile.label_birthday': 'Birth Date',
+    'profile.label_birthtime': 'Birth Time',
+    'profile.label_gender': 'Gender',
+    'profile.gender_unset': 'Not Set',
+    'profile.gender_male': 'Male',
+    'profile.gender_female': 'Female',
+    'profile.btn_save': 'Save',
+    'profile.saved': 'Saved',
+    'profile.language': 'Language / 语言',
+    'profile.model_config': 'Model Config',
+    'profile.api_note': 'API Key stored locally, only used for your selected provider',
+    'profile.select_preset': 'Select Provider',
+    'profile.select_model': 'Select Model',
+    'profile.api_key_placeholder': 'API Key',
+    'profile.btn_test': 'Test',
+    'profile.btn_save_llm': 'Save',
+    'profile.history': 'Chat History',
+    'profile.search_by_id': 'Enter Conversation ID',
+    'profile.btn_search': 'Search',
+    'profile.history_empty': 'No chat history',
+    'profile.btn_logout': 'Logout',
+    'profile.logout_footer': 'You will need to login again after logout',
+    'profile.custom_model': 'Custom',
+    'profile.select_preset_first': 'Please select a provider first',
+    'profile.history_count_suffix': '',
+
+    // --- Outfit ---
+    'outfit.title': 'Today\'s Outfit',
+    'outfit.subtitle_1': 'Based on today\'s lucky color & five elements',
+    'outfit.subtitle_2': 'AI-powered web search for fashion inspiration',
+    'outfit.btn_search': '🔍 AI Search Today\'s Outfit',
+    'outfit.btn_search_no_llm': '🔍 AI Search Today\'s Outfit (LLM required)',
+    'outfit.search_hint': 'Searching fashion platforms for latest trends',
+    'outfit.searching': '🔍 Searching Xiaohongshu, Pinterest, Instagram...',
+    'outfit.no_data': 'Please set your gender and birth info in Profile first',
+    'outfit.btn_refresh': '🔄 Discover More Styles',
+    'outfit.auto_search': 'Auto-searching daily first time...',
+    'outfit.searching_detail': 'Retrieving: ',
+    'outfit.fallback_ai': 'AI unavailable, using local outfit engine',
+    'outfit.fallback_search': 'Search failed: ',
+    'outfit.fallback_search_suffix': ' using local outfit engine',
+    'outfit.style_fallback': 'Fashion Look',
+    'outfit.season_suffix': '',
+    'outfit.season_spring': 'Spring',
+    'outfit.season_summer': 'Summer',
+    'outfit.season_autumn': 'Autumn',
+    'outfit.season_winter': 'Winter',
+    'outfit.gender_male': 'Male',
+    'outfit.gender_female': 'Female',
+
+    // --- Dialogue ---
+    'dialogue.title': 'Time-Cross Dialogue',
+    'dialogue.subtitle_1': 'Based on your zodiac sign & Ba Zi',
+    'dialogue.subtitle_2': 'Match with historical figures sharing your soul essence',
+    'dialogue.btn_refresh': '🔄 Rematch',
+    'dialogue.searching': '🌐 Searching via LLM web search...',
+    'dialogue.analyzing': 'Analyzing user destiny traits...',
+    'dialogue.fallback_local': 'LLM unavailable, using local match engine',
+    'dialogue.similarity': 'Similarity',
+    'dialogue.greeting_1': 'I am ${name}. Across time and space, it is a strange fate to meet you.',
+    'dialogue.greeting_2': '${name} here. Your destiny resonates with mine — speak freely.',
+    'dialogue.greeting_3': 'Long time no see. I, ${name}, though separated by millennia, feel we\'ve met before.',
+    'dialogue.connected': '🌌 You are connected with ${name}\'s soul',
+    'dialogue.cleared': 'Conversation cleared',
+    'dialogue.signal_lost': 'Time-space signal lost… Please check LLM configuration and retry.',
+    'dialogue.unknown_error': 'Unknown error',
+    'dialogue.history_era': 'History',
+    'dialogue.history_detail': '📜 ${id} · ${figure} · ${count} messages',
+    'dialogue.chat_placeholder': 'Type a message...',
+    'dialogue.btn_send': 'Send',
+    'dialogue.btn_back': '← Back',
+    'dialogue.btn_clear': 'Clear',
+
+    // --- LLM Guide Modal ---
+    'llm_guide.title': 'Fortune Generated!',
+    'llm_guide.desc': 'Configure an LLM to unlock:',
+    'llm_guide.feature_1': 'Time-Cross Dialogue',
+    'llm_guide.feature_1_desc': '· Chat with historical figures',
+    'llm_guide.feature_2': 'AI Outfit Search',
+    'llm_guide.feature_2_desc': '· Fashion recommendations from the web',
+    'llm_guide.btn_configure': 'Configure',
+    'llm_guide.btn_later': 'Maybe Later',
+
+    // --- Share Modal ---
+    'share.title': 'Share Fortune',
+    'share.btn_close': 'Close',
+    'share.btn_save': 'Save',
+
+    // --- LLM Status ---
+    'llm.testing': '⏳ Testing...',
+    'llm.connecting': 'Connecting...',
+    'llm.fill_both': '❌ Please enter API address and key',
+    'llm.test_connection': '🔍 Test Connection',
+    'llm.success': '✅ Connected! Model reply: ${reply}',
+    'llm.unauthorized': '❌ Invalid Key (401) — check your API Key',
+    'llm.not_found': '❌ Address not found (404) — use preset dropdown',
+    'llm.status_error': '⚠️ Status ${code}: ${detail}',
+    'llm.network_error': '❌ Network error: ${detail}',
+    'llm.saved': '✅ Saved',
+    'llm.save_config': 'Save LLM Config',
+
+    // --- API Errors ---
+    'api.no_endpoint': 'Please set API address in Profile → LLM Config',
+    'api.no_key': 'Please set API Key in Profile → LLM Config',
+    'api.network_fail': 'Network request failed — check API address (current: ${endpoint})',
+    'api.not_found_detail': 'Endpoint not found (404)\nCurrent: ${endpoint}\n\nCheck:\n· Full path included (e.g. /v1/chat/completions)\n· Or use the provider preset dropdown',
+    'api.auth_fail': 'Authentication failed (${code}) — API Key invalid or expired',
+    'api.rate_limit': 'Rate limited (429) — please retry later',
+    'api.error': 'API Error (${code}): ${detail}',
+    'api.empty_response': 'API returned empty — check model name',
+    'api.parse_fail': 'Parse error — response: ${detail}',
+
+    // --- Errors & Messages ---
+    'error.username_taken': 'Username already taken',
+    'error.fill_both': 'Please enter username and password',
+    'error.no_users': 'No registered accounts, please register first',
+    'error.bad_credentials': 'Incorrect username or password',
+    'error.enter_failed': 'Login failed: ${msg}',
+    'error.reset_confirm': 'Are you sure you want to clear ALL accounts and fortune data? This cannot be undone.',
+    'error.data_cleared': 'Data cleared, please register again',
+    'error.image_too_big': 'Image must be under 100KB',
+    'error.storage_full': 'Storage full, please clear chat history first',
+    'error.account_found': '✅ Account "${user}" · Created ${date}',
+    'error.account_not_found': '❌ Account ID not found',
+
+    // --- Data: Zodiac ---
+    'data.zodiac.0': 'Rat', 'data.zodiac.1': 'Ox', 'data.zodiac.2': 'Tiger', 'data.zodiac.3': 'Rabbit',
+    'data.zodiac.4': 'Dragon', 'data.zodiac.5': 'Snake', 'data.zodiac.6': 'Horse', 'data.zodiac.7': 'Goat',
+    'data.zodiac.8': 'Monkey', 'data.zodiac.9': 'Rooster', 'data.zodiac.10': 'Dog', 'data.zodiac.11': 'Pig',
+
+    // --- Data: Heavenly Stems ---
+    'data.stem.0': 'Jia', 'data.stem.1': 'Yi', 'data.stem.2': 'Bing', 'data.stem.3': 'Ding', 'data.stem.4': 'Wu',
+    'data.stem.5': 'Ji', 'data.stem.6': 'Geng', 'data.stem.7': 'Xin', 'data.stem.8': 'Ren', 'data.stem.9': 'Gui',
+
+    // --- Data: Earthly Branches ---
+    'data.branch.0': 'Zi', 'data.branch.1': 'Chou', 'data.branch.2': 'Yin', 'data.branch.3': 'Mao',
+    'data.branch.4': 'Chen', 'data.branch.5': 'Si', 'data.branch.6': 'Wu', 'data.branch.7': 'Wei',
+    'data.branch.8': 'Shen', 'data.branch.9': 'You', 'data.branch.10': 'Xu', 'data.branch.11': 'Hai',
+
+    // --- Data: Hour Names ---
+    'data.hour.0': 'Zi Hour', 'data.hour.1': 'Chou Hour', 'data.hour.2': 'Yin Hour', 'data.hour.3': 'Mao Hour',
+    'data.hour.4': 'Chen Hour', 'data.hour.5': 'Si Hour', 'data.hour.6': 'Wu Hour', 'data.hour.7': 'Wei Hour',
+    'data.hour.8': 'Shen Hour', 'data.hour.9': 'You Hour', 'data.hour.10': 'Xu Hour', 'data.hour.11': 'Hai Hour',
+
+    // --- Data: Star Signs ---
+    'data.star.0.name': 'Capricorn', 'data.star.0.desc': 'Steadfast and pragmatic, goal-oriented and resilient', 'data.star.0.tag0': 'Steady', 'data.star.0.tag1': 'Pragmatic', 'data.star.0.tag2': 'Resilient',
+    'data.star.1.name': 'Aquarius', 'data.star.1.desc': 'Independent and innovative, visionary and unconventional', 'data.star.1.tag0': 'Independent', 'data.star.1.tag1': 'Innovative', 'data.star.1.tag2': 'Rational',
+    'data.star.2.name': 'Pisces', 'data.star.2.desc': 'Romantic and sensitive, empathetic and imaginative', 'data.star.2.tag0': 'Romantic', 'data.star.2.tag1': 'Empathetic', 'data.star.2.tag2': 'Imaginative',
+    'data.star.3.name': 'Aries', 'data.star.3.desc': 'Passionate and bold, charging forward with vitality', 'data.star.3.tag0': 'Brave', 'data.star.3.tag1': 'Direct', 'data.star.3.tag2': 'Passionate',
+    'data.star.4.name': 'Taurus', 'data.star.4.desc': 'Steady and grounded, values quality and substance', 'data.star.4.tag0': 'Stable', 'data.star.4.tag1': 'Practical', 'data.star.4.tag2': 'Patient',
+    'data.star.5.name': 'Gemini', 'data.star.5.desc': 'Clever and flexible, curious and communicative', 'data.star.5.tag0': 'Clever', 'data.star.5.tag1': 'Curious', 'data.star.5.tag2': 'Articulate',
+    'data.star.6.name': 'Cancer', 'data.star.6.desc': 'Gentle and nurturing, family-oriented and emotional', 'data.star.6.tag0': 'Gentle', 'data.star.6.tag1': 'Caring', 'data.star.6.tag2': 'Sensitive',
+    'data.star.7.name': 'Leo', 'data.star.7.desc': 'Confident and generous, a natural leader with warmth', 'data.star.7.tag0': 'Confident', 'data.star.7.tag1': 'Generous', 'data.star.7.tag2': 'Leader',
+    'data.star.8.name': 'Virgo', 'data.star.8.desc': 'Meticulous and precise, striving for perfection with clarity', 'data.star.8.tag0': 'Meticulous', 'data.star.8.tag1': 'Perfect', 'data.star.8.tag2': 'Rational',
+    'data.star.9.name': 'Libra', 'data.star.9.desc': 'Elegant and balanced, social and harmony-seeking', 'data.star.9.tag0': 'Elegant', 'data.star.9.tag1': 'Social', 'data.star.9.tag2': 'Fair',
+    'data.star.10.name': 'Scorpio', 'data.star.10.desc': 'Deep and perceptive, determined and insightful', 'data.star.10.tag0': 'Deep', 'data.star.10.tag1': 'Determined', 'data.star.10.tag2': 'Insightful',
+    'data.star.11.name': 'Sagittarius', 'data.star.11.desc': 'Optimistic and free-spirited, adventurous and open-minded', 'data.star.11.tag0': 'Optimistic', 'data.star.11.tag1': 'Free', 'data.star.11.tag2': 'Explorer',
+
+    // --- Data: Day Master Traits ---
+    'data.dm.0.name': 'Jia Wood', 'data.dm.0.desc': 'Towering tree — upright, determined, a natural leader', 'data.dm.0.tag0': 'Integrity', 'data.dm.0.tag1': 'Leadership', 'data.dm.0.tag2': 'Perseverance',
+    'data.dm.1.name': 'Yi Wood', 'data.dm.1.desc': 'Vine and flower — flexible, adaptable, graceful', 'data.dm.1.tag0': 'Flexible', 'data.dm.1.tag1': 'Refined', 'data.dm.1.tag2': 'Adaptable',
+    'data.dm.2.name': 'Bing Fire', 'data.dm.2.desc': 'Sun fire — radiant, honest, powerfully inspiring', 'data.dm.2.tag0': 'Passionate', 'data.dm.2.tag1': 'Inspiring', 'data.dm.2.tag2': 'Radiant',
+    'data.dm.3.name': 'Ding Fire', 'data.dm.3.desc': 'Candle fire — gentle, perceptive, sees into hearts', 'data.dm.3.tag0': 'Refined', 'data.dm.3.tag1': 'Perceptive', 'data.dm.3.tag2': 'Gentle',
+    'data.dm.4.name': 'Wu Earth', 'data.dm.4.desc': 'Castle wall earth — steady, reliable, deeply grounded', 'data.dm.4.tag0': 'Steady', 'data.dm.4.tag1': 'Reliable', 'data.dm.4.tag2': 'Tolerant',
+    'data.dm.5.name': 'Ji Earth', 'data.dm.5.desc': 'Garden earth — nurturing, patient, detail-oriented', 'data.dm.5.tag0': 'Patient', 'data.dm.5.tag1': 'Nurturing', 'data.dm.5.tag2': 'Practical',
+    'data.dm.6.name': 'Geng Metal', 'data.dm.6.desc': 'Sword metal — resolute, decisive, executes with force', 'data.dm.6.tag0': 'Decisive', 'data.dm.6.tag1': 'Resolute', 'data.dm.6.tag2': 'Executing',
+    'data.dm.7.name': 'Xin Metal', 'data.dm.7.desc': 'Jewelry metal — refined, elegant, pursues perfection', 'data.dm.7.tag0': 'Refined', 'data.dm.7.tag1': 'Perfect', 'data.dm.7.tag2': 'Tasteful',
+    'data.dm.8.name': 'Ren Water', 'data.dm.8.desc': 'River water — wise, adaptable, embraces all things', 'data.dm.8.tag0': 'Wise', 'data.dm.8.tag1': 'Versatile', 'data.dm.8.tag2': 'Tolerant',
+    'data.dm.9.name': 'Gui Water', 'data.dm.9.desc': 'Dew water — sensitive, intuitive, deeply perceptive', 'data.dm.9.tag0': 'Sensitive', 'data.dm.9.tag1': 'Intuitive', 'data.dm.9.tag2': 'Spiritual',
+
+    // --- Data: Five Elements ---
+    'data.wuxing.wood': 'Wood', 'data.wuxing.fire': 'Fire', 'data.wuxing.earth': 'Earth', 'data.wuxing.metal': 'Metal', 'data.wuxing.water': 'Water',
+    'data.wuxing.level_high': 'Strong', 'data.wuxing.level_mid': 'Neutral', 'data.wuxing.level_low': 'Weak',
+    'data.wuxing.tip': '${maxEl} strong, ${minEl} weak — today favors supplementing ${minEl} element',
+
+    // --- Data: Directions ---
+    'data.dir.east': 'East', 'data.dir.south': 'South', 'data.dir.west': 'West', 'data.dir.north': 'North',
+    'data.dir.southeast': 'Southeast', 'data.dir.southwest': 'Southwest', 'data.dir.northeast': 'Northeast', 'data.dir.northwest': 'Northwest',
+
+    // --- Data: Lucky Colors ---
+    'data.color.forest_green': 'Forest Green', 'data.color.ocean_blue': 'Ocean Blue', 'data.color.amber_gold': 'Amber Gold',
+    'data.color.ochre_brown': 'Ochre Brown', 'data.color.coral_orange': 'Coral Orange', 'data.color.deepspace_gray': 'Deep Space Gray',
+
+    // --- Data: Interpersonal Types ---
+    'data.itype.0': 'Steady & Practical', 'data.itype.1': 'Rational & Analytical', 'data.itype.2': 'Humorous & Witty', 'data.itype.3': 'Gentle & Tolerant',
+    'data.itype.4': 'Decisive & Sharp', 'data.itype.5': 'Warm & Outgoing', 'data.itype.6': 'Sensitive & Refined', 'data.itype.7': 'Independent & Creative',
+    'data.itype.bad_0': 'Impulsive & Irritable', 'data.itype.bad_1': 'Moody & Volatile',
+    'data.itype.good_reason': 'Today you resonate best with ${el}-type personalities',
+    'data.itype.bad_reason': 'During Mars retrograde, watch your emotional management',
+
+    // --- Data: Persona ---
+    'data.persona.same_element': '${sign} and ${dm} both belong to the ${el} element — a double resonance that makes you shine.',
+    'data.persona.diff_element': '${sign} (${signEl} element) and ${dm} (${dmEl} element) complement each other — inner and outer harmony.',
+    'data.persona.tag_same': 'Dual Nature',
+    'data.persona.tag_diff': 'Balanced Duality',
+
+    // --- Data: Figures ---
+    'data.figure.0.name': 'Zhuge Liang', 'data.figure.0.era': 'Three Kingdoms', 'data.figure.0.tag0': 'Wisdom', 'data.figure.0.tag1': 'Strategy', 'data.figure.0.tag2': 'Loyalty',
+    'data.figure.0.soul': 'You are Zhuge Liang, Chancellor of Shu Han. A master strategist. Call yourself "Liang".',
+    'data.figure.1.name': 'Li Bai', 'data.figure.1.era': 'Tang Dynasty', 'data.figure.1.tag0': 'Romantic', 'data.figure.1.tag1': 'Bold', 'data.figure.1.tag2': 'Free',
+    'data.figure.1.soul': 'You are Li Bai, the Poet Immortal. Bold and unrestrained. Call yourself "Bai".',
+    'data.figure.2.name': 'Shakespeare', 'data.figure.2.era': 'Renaissance', 'data.figure.2.tag0': 'Drama', 'data.figure.2.tag1': 'Humanity', 'data.figure.2.tag2': 'Poetry',
+    'data.figure.2.soul': 'You are Shakespeare. To be or not to be.',
+    'data.figure.3.name': 'Einstein', 'data.figure.3.era': 'Modern', 'data.figure.3.tag0': 'Genius', 'data.figure.3.tag1': 'Curious', 'data.figure.3.tag2': 'Rebel',
+    'data.figure.3.soul': 'You are Einstein. Imagination is more important than knowledge.',
+
+    // --- Summary Templates ---
+    'summary.career_best_0': 'Today favors taking initiative', 'summary.career_best_1': 'Helpful people appear in your career',
+    'summary.career_best_2': 'Your work reports gain recognition', 'summary.career_best_3': 'Team collaboration flows efficiently',
+    'summary.career_caution_0': 'Schedule important meetings in the morning', 'summary.career_caution_1': 'Avoid arguments with colleagues', 'summary.career_caution_2': 'Listen more, speak less, observe first',
+    'summary.wealth_best_0': 'Steady income flow today', 'summary.wealth_best_1': 'Good day for financial planning',
+    'summary.wealth_best_2': 'Avoid risky investments', 'summary.wealth_best_3': 'Small expenses are fine',
+    'summary.wealth_caution_0': 'Avoid large purchases', 'summary.wealth_caution_1': 'Control impulse spending', 'summary.wealth_caution_2': 'Good day to review finances',
+    'summary.love_best_0': 'Romance is in the air', 'summary.love_best_1': 'Good day to express your feelings',
+    'summary.love_best_2': 'Let relationships flow naturally', 'summary.love_best_3': 'Couples get along well today',
+    'summary.love_caution_0': 'Give your partner some space', 'summary.love_caution_1': 'Don\'t bring up old arguments', 'summary.love_caution_2': 'Express gratitude more',
+    'summary.health_best_0': 'Full of energy today', 'summary.health_best_1': 'Good day to start a new exercise routine',
+    'summary.health_best_2': 'Maintain a regular sleep schedule', 'summary.health_best_3': 'Physical condition is good',
+    'summary.health_caution_0': 'Avoid staying up late', 'summary.health_caution_1': 'Drink more water', 'summary.health_caution_2': 'Take breaks to stretch your neck',
+    'summary.generic_best': 'Overall good fortune',
+    'summary.generic_caution': 'Stay cautious',
+    'summary.low_score': 'Today\'s overall fortune is lower. ${tip}. Don\'t worry — tomorrow will be better.',
+    'summary.mid_score': 'A stable day. ${tip}. Keep a calm mind and enjoy the present.',
+    'summary.fallback': 'Fortune is stable today. Keep a calm mind.',
+
+    // --- Category Fortune Text ---
+    'cat.career_high_0': 'Good day to proactively report work — leadership will recognize you', 'cat.career_high_1': 'Afternoon is good for negotiations and signing', 'cat.career_high_2': 'Team collaboration is smooth and efficient',
+    'cat.career_mid_0': 'Follow the routine, no need to stand out', 'cat.career_mid_1': 'Pay attention to details, avoid small mistakes',
+    'cat.career_low_0': 'Keep a low profile, avoid direct conflicts', 'cat.career_low_1': 'Postpone important decisions to tomorrow',
+    'cat.wealth_high_0': 'Steady income — good day for financial planning', 'cat.wealth_high_1': 'Speculative luck is average — avoid large investments', 'cat.wealth_high_2': 'Small financial moves are acceptable',
+    'cat.wealth_mid_0': 'Balance income and expenses — no risky moves', 'cat.wealth_mid_1': 'Conservative financial strategy is best',
+    'cat.wealth_low_0': 'Be cautious with spending, avoid impulse purchases', 'cat.wealth_low_1': 'Not a good day for investment decisions',
+    'cat.love_high_0': 'Romance is active — good day to socialize', 'cat.love_high_1': 'Couples feel closer today', 'cat.love_high_2': 'Singles may meet someone interesting',
+    'cat.love_mid_0': 'Romance is average — let things flow naturally', 'cat.love_mid_1': 'Couples: watch communication, don\'t sweat small things',
+    'cat.love_low_0': 'Not ideal for confessions or major relationship decisions', 'cat.love_low_1': 'Take some time for yourself',
+    'cat.health_high_0': 'Full of energy — great for exercise', 'cat.health_high_1': 'Physical condition is excellent', 'cat.health_high_2': 'Maintain your current routine',
+    'cat.health_mid_0': 'Watch for neck and eye strain', 'cat.health_mid_1': 'Stand up and move for 5 minutes every hour',
+    'cat.health_low_0': 'Easy to feel tired — prioritize rest', 'cat.health_low_1': 'Avoid high-intensity exercise',
+
+    // --- Outfit DB ---
+    'outfit.male.top_0': 'Oversized Blazer', 'outfit.male.top_1': 'Tech Vest', 'outfit.male.top_2': 'Drop-Shoulder Tee', 'outfit.male.top_3': 'Henley Knit',
+    'outfit.male.top_4': 'Relaxed Shirt', 'outfit.male.top_5': 'Hoodie', 'outfit.male.top_6': 'Cuban Collar Shirt', 'outfit.male.top_7': 'Cargo Jacket',
+    'outfit.male.bottom_0': 'Wide-leg Trousers', 'outfit.male.bottom_1': 'Tech Cargo Pants', 'outfit.male.bottom_2': 'Washed Straight Jeans', 'outfit.male.bottom_3': 'Cropped Trousers',
+    'outfit.male.bottom_4': 'Cargo Shorts', 'outfit.male.bottom_5': 'Tapered Chinos',
+    'outfit.male.shoe_0': 'Derby Shoes', 'outfit.male.shoe_1': 'Platform Loafers', 'outfit.male.shoe_2': 'Retro Sneakers', 'outfit.male.shoe_3': 'Chelsea Boots',
+    'outfit.male.shoe_4': 'Canvas Skate Shoes', 'outfit.male.shoe_5': 'Tech Sandals',
+    'outfit.male.acc_0': 'Metal Frame Sunglasses', 'outfit.male.acc_1': 'Canvas Tote', 'outfit.male.acc_2': 'Silver Necklace', 'outfit.male.acc_3': 'Leather Watch',
+    'outfit.male.acc_4': 'Baseball Cap', 'outfit.male.acc_5': 'Bucket Hat',
+    'outfit.male.style_0': 'Minimal Silhouette', 'outfit.male.style_1': 'Japandi Cityboy', 'outfit.male.style_2': 'Light Techwear',
+    'outfit.male.style_3': 'Americana Vintage', 'outfit.male.style_4': 'Korean Cleanfit', 'outfit.male.style_5': 'New Chinese Style',
+    'outfit.female.top_0': 'Shoulder-Pad Blazer', 'outfit.female.top_1': 'Knit Cardigan', 'outfit.female.top_2': 'French Blouse', 'outfit.female.top_3': 'Halter Top',
+    'outfit.female.top_4': 'Puff Sleeve Top', 'outfit.female.top_5': 'Cropped Knit', 'outfit.female.top_6': 'Silk Camisole', 'outfit.female.top_7': 'Structured Trench',
+    'outfit.female.bottom_0': 'High-Waist Wide Trousers', 'outfit.female.bottom_1': 'Satin Midi Skirt', 'outfit.female.bottom_2': 'Straight Jeans', 'outfit.female.bottom_3': 'A-Line Mini Skirt',
+    'outfit.female.bottom_4': 'Drape Trousers', 'outfit.female.bottom_5': 'Pleated Midi Skirt',
+    'outfit.female.shoe_0': 'Pointed Kitten Heels', 'outfit.female.shoe_1': 'Square-Toe Sandals', 'outfit.female.shoe_2': 'Platform Loafers', 'outfit.female.shoe_3': 'Combat Boots',
+    'outfit.female.shoe_4': 'Strap Heels', 'outfit.female.shoe_5': 'Ballet Flats',
+    'outfit.female.acc_0': 'Metal Earrings', 'outfit.female.acc_1': 'Chain Hobo Bag', 'outfit.female.acc_2': 'Pearl Necklace', 'outfit.female.acc_3': 'Silk Scarf Hairband',
+    'outfit.female.acc_4': 'Thin Belt', 'outfit.female.acc_5': 'Layered Bracelet',
+    'outfit.female.style_0': 'Quiet Luxury', 'outfit.female.style_1': 'French Effortless', 'outfit.female.style_2': 'Korean Glam',
+    'outfit.female.style_3': 'New Chinese Style', 'outfit.female.style_4': 'Street Chic', 'outfit.female.style_5': 'Intellectual Style',
+  }
+};
+</script>
 
 <!-- ═══════════ 全部 JS 逻辑 ═══════════ -->
 <script>
@@ -507,8 +1317,31 @@ function loadUsers() {
   catch(e) { return {}; }
 }
 function saveUsers(users) {
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(users)); }
-  catch(e) { /* 存储满时静默失败，下次加载用旧数据 */ }
+  try {
+    // 写入前先备份旧数据
+    var old = localStorage.getItem(STORAGE_KEY);
+    localStorage.setItem(STORAGE_KEY + '_backup', old || '');
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(users));
+  } catch(e) {
+    console.error('saveUsers failed (storage full?):', e);
+    showToast(t('error.storage_full'));
+    // 尝试压缩：移除历史对话释放空间后重试
+    try { localStorage.removeItem(CHAT_HISTORY_KEY); } catch(e2) {}
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(users)); } catch(e3) {}
+  }
+}
+
+// 原子更新当前用户字段——避免 load-modify-save 竞态
+function updateCurrentUser(fields) {
+  var cur = getCurrentUser();
+  if (!cur) return false;
+  var users = loadUsers();
+  if (!users[cur.key]) return false;
+  Object.keys(fields).forEach(function(k) {
+    users[cur.key][k] = fields[k];
+  });
+  saveUsers(users);
+  return true;
 }
 function getCurrentUser() {
   try { return JSON.parse(localStorage.getItem(CURRENT_KEY)); }
@@ -531,7 +1364,8 @@ function loadRemembered() {
   catch(e) { return []; }
 }
 function saveRemembered(list) {
-  localStorage.setItem(REMEMBERED_KEY, JSON.stringify(list));
+  try { localStorage.setItem(REMEMBERED_KEY, JSON.stringify(list)); }
+  catch(e) { console.error('saveRemembered failed:', e); }
 }
 function removeRemembered(username) {
   const list = loadRemembered().filter(u => u !== username);
@@ -554,6 +1388,7 @@ function generateId(users) {
 
 // 注册
 function handleRegister(event) {
+  event.preventDefault();
   const username = document.getElementById('regUser').value.trim();
   const password = document.getElementById('regPass').value;
   if (!username || !password) return;
@@ -562,7 +1397,7 @@ function handleRegister(event) {
   // 检查用户名是否已存在
   const exists = Object.values(users).some(u => u.username === username);
   if (exists) {
-    showError('该用户名已被注册');
+    showError(t('error.username_taken'));
     return;
   }
 
@@ -588,20 +1423,29 @@ function handleRegister(event) {
 
 // 登录
 function handleLogin(event) {
+  event.preventDefault();
   const username = document.getElementById('loginUser').value.trim();
   const password = document.getElementById('loginPass').value;
-  if (!username || !password) { showError('请输入用户名和密码'); return; }
+  if (!username || !password) { showError(t('error.fill_both')); return; }
 
   const users = loadUsers();
   if (Object.keys(users).length === 0) {
-    showError('没有已注册的账号，请先注册');
+    showError(t('error.no_users'));
     return;
   }
 
-  const found = Object.entries(users).find(([,u]) => u.username === username && u.password === password);
+  var found;
+  var userKeys = Object.keys(users);
+  for (var i = 0; i < userKeys.length; i++) {
+    var u = users[userKeys[i]];
+    if (u.username === username && u.password === password) {
+      found = [userKeys[i], u];
+      break;
+    }
+  }
 
   if (!found) {
-    showError('用户名或密码错误');
+    showError(t('error.bad_credentials'));
     return;
   }
 
@@ -632,7 +1476,11 @@ function enterApp(username, id) {
       const u = users[current.key];
       if (u.birthday) { document.getElementById('birthday').value = u.birthday; hasBirthInfo = true; }
       if (u.birthtime) document.getElementById('birthtime').value = u.birthtime;
+      if (u.gender) { var gs = document.getElementById('inputGender'); if (gs) gs.value = u.gender; }
     }
+    // 回填语言选择
+    var il = document.getElementById('inputLocale');
+    if (il) il.value = currentLocale();
 
     if (hasBirthInfo) {
       showView('loadingView');
@@ -645,7 +1493,7 @@ function enterApp(username, id) {
     document.getElementById('bottomNav').classList.remove('hidden');
     updateNavActive('input');
   } catch(e) {
-    showError('进入失败：' + e.message);
+    showError(t('error.enter_failed', { msg: e.message }));
     console.error(e);
   }
 }
@@ -671,7 +1519,7 @@ async function autoGenerate(skipAnimation) {
   // 每日首次→加载动画；已有当日结果→跳过
   var todayStr = new Date().toISOString().slice(0,10);
   if (!skipAnimation && window._fortuneDate !== todayStr) {
-    const steps = ['星座运势分析中', '八字命理推算中', '综合运势生成中'];
+    const steps = [t('loading.step_1'), t('loading.step_2'), t('loading.step_3')];
     const stepEl = document.getElementById('loadingStep');
     for (let i = 0; i < steps.length; i++) {
       stepEl.textContent = steps[i];
@@ -710,7 +1558,7 @@ async function autoGenerate(skipAnimation) {
   const uGender = (curUser && allUsers[curUser.key]) ? (allUsers[curUser.key].gender || 'female') : 'female';
   const outfits = generateOutfits(lucky, wuxing, uGender, daySeed);
 
-  currentResult = { compositeScore, level, levelEn, summary, sign, animal: ZODIAC_EMOJI[ZODIAC_ANIMALS.indexOf(animal)] + ' ' + animal,
+  currentResult = { compositeScore, level, levelEn, summary, sign, animal: ZODIAC_EMOJI[ZODIAC_ANIMALS.indexOf(animal)] + ' ' + getZodiacName(ZODIAC_ANIMALS.indexOf(animal)),
     bazi, horoscopeScores, personality, interpersonal, lucky, wuxing, outfits, hasTime };
 
   saveBirthInfo(birthday, birthtime);
@@ -772,11 +1620,17 @@ function goToLLMConfig() {
 }
 
 function resetAllData() {
-  if (confirm('确定要清除所有账号和运势数据吗？此操作不可撤销。')) {
+  if (confirm(t('error.reset_confirm'))) {
     localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(STORAGE_KEY + '_backup');
     localStorage.removeItem(CURRENT_KEY);
     localStorage.removeItem(REMEMBERED_KEY);
     localStorage.removeItem(CHAT_HISTORY_KEY);
+    localStorage.removeItem('fortune_data_version');
+    localStorage.removeItem('fortune_locale');
+    try { localStorage.removeItem('llm_endpoint'); } catch(e) {}
+    try { localStorage.removeItem('llm_key'); } catch(e) {}
+    try { localStorage.removeItem('llm_model'); } catch(e) {}
     clearCurrentUser();
     renderQuickLogin();
     showView('loginView');
@@ -784,7 +1638,7 @@ function resetAllData() {
     document.getElementById('regUser').value = '';
     document.getElementById('regPass').value = '';
     document.getElementById('loginError').classList.add('hidden');
-    showToast('数据已清除，请重新注册');
+    showToast(t('error.data_cleared'));
   }
 }
 
@@ -805,10 +1659,10 @@ function lookupById() {
   const found = Object.values(users).find(u => u.id === id);
   result.classList.remove('hidden');
   if (found) {
-    result.textContent = `✅ 账号「${found.username}」· 创建于 ${found.createdAt}`;
+    result.textContent = t('error.account_found', { user: found.username, date: found.createdAt });
     result.className = 'text-neutral-400 text-xs mt-2';
   } else {
-    result.textContent = '❌ 未找到该 ID 对应的账号';
+    result.textContent = t('error.account_not_found');
     result.className = 'text-red-400 text-xs mt-2';
   }
 }
@@ -833,14 +1687,7 @@ function switchTab(tab) {
 
 // 保存出生信息（在生成运势后调用）
 function saveBirthInfo(birthday, birthtime) {
-  const current = getCurrentUser();
-  if (!current) return;
-  const users = loadUsers();
-  if (users[current.key]) {
-    users[current.key].birthday = birthday;
-    users[current.key].birthtime = birthtime;
-    saveUsers(users);
-  }
+  updateCurrentUser({ birthday: birthday, birthtime: birthtime });
 }
 
 // ===================== 今日穿搭引擎 =====================
@@ -867,29 +1714,31 @@ function getOutfitDb(gender) {
 }
 
 function generateOutfits(lucky, wuxing, gender, daySeed) {
-  const db = getOutfitDb(gender === 'male' ? 'male' : 'female');
+  const prefix = 'outfit.' + (gender === 'male' ? 'male' : 'female') + '.';
+  const topCount = 8, bottomCount = 6, shoeCount = 6, accCount = 6, styleCount = 6;
   const colorMap = {
-    '海洋蓝': ['#4A90D9','#6BAED6','#2171B5','#9ECAE1'],
-    '森林绿': ['#4a9','#2D8A4E','#1B5E20','#81C784'],
-    '琥珀金': ['#d4a853','#F9A825','#F57F17','#FFE082'],
-    '赭石棕': ['#b87351','#8D6E63','#5D4037','#BCAAA4'],
-    '珊瑚橙': ['#e8755a','#FF7043','#E64A19','#FFAB91'],
-    '深空灰': ['#666','#424242','#212121','#9E9E9E'],
+    'ocean_blue': ['#4A90D9','#6BAED6','#2171B5','#9ECAE1'],
+    'forest_green': ['#4a9','#2D8A4E','#1B5E20','#81C784'],
+    'amber_gold': ['#d4a853','#F9A825','#F57F17','#FFE082'],
+    'ochre_brown': ['#b87351','#8D6E63','#5D4037','#BCAAA4'],
+    'coral_orange': ['#e8755a','#FF7043','#E64A19','#FFAB91'],
+    'deepspace_gray': ['#666','#424242','#212121','#9E9E9E'],
   };
-  const palette = colorMap[lucky.color.name] || colorMap['深空灰'];
+  const palette = colorMap[lucky.color.key] || colorMap['deepspace_gray'];
 
-  const seasons = ['春','夏','夏','秋','秋','冬','冬','春'];
-  const season = seasons[new Date().getMonth() % 8];
+  const seasonKeys = ['spring','summer','summer','autumn','autumn','winter','winter','spring'];
+  const seasonKey = seasonKeys[new Date().getMonth() % 8];
+  const season = t('outfit.season_' + seasonKey);
 
   const count = 6;
   const outfits = [];
   for (let i = 0; i < count; i++) {
     const idx = hashDay(daySeed, i * 31 + 17);
-    const top = db.tops[idx % db.tops.length];
-    const bottom = db.bottoms[(idx * 3) % db.bottoms.length];
-    const shoe = db.shoes[(idx * 7) % db.shoes.length];
-    const acc = db.accessories[(idx * 5) % db.accessories.length];
-    const style = db.styles[(idx * 11) % db.styles.length];
+    const top = t(prefix + 'top_' + (idx % topCount));
+    const bottom = t(prefix + 'bottom_' + ((idx * 3) % bottomCount));
+    const shoe = t(prefix + 'shoe_' + ((idx * 7) % shoeCount));
+    const acc = t(prefix + 'acc_' + ((idx * 5) % accCount));
+    const style = t(prefix + 'style_' + ((idx * 11) % styleCount));
     const mainColor = palette[i % palette.length];
     const subColor = palette[(i + 2) % palette.length];
 
@@ -915,7 +1764,9 @@ function getUserFortuneContext() {
   const lucky = generateLuckyItems(bazi, daySeed);
   const wuxing = generateWuxing(bazi.dayMaster, daySeed);
   const gender = user.gender || 'female';
-  const season = ['冬','春','春','夏','夏','夏','秋','秋','秋','冬','冬','冬'][today.getMonth()];
+  const seasonKeys = ['winter','spring','spring','summer','summer','summer','autumn','autumn','autumn','winter','winter','winter'];
+  const seasonKey = seasonKeys[today.getMonth()];
+  const season = t('outfit.season_' + seasonKey);
   const score = 75; // default
 
   return { daySeed, user, sign, bazi, lucky, wuxing, gender, season, today };
@@ -955,13 +1806,13 @@ function generateStandaloneOutfits() {
     document.getElementById('outfitControls').classList.add('hidden');
     // 显示加载动画
     document.getElementById('outfitSearchStatus').classList.remove('hidden');
-    document.getElementById('outfitSearchDetail').textContent = '每日首次自动搜索...';
+    document.getElementById('outfitSearchDetail').textContent = t('outfit.auto_search');
     setTimeout(function() { searchOutfitsOnline(); }, 300);
   } else {
     document.getElementById('outfitControls').classList.remove('hidden');
     document.getElementById('outfitSearchStatus').classList.add('hidden');
     document.getElementById('searchOutfitBtn').classList.remove('hidden');
-    document.getElementById('searchOutfitBtn').textContent = '🔍 AI 联网搜索今日穿搭（需先配置LLM）';
+    document.getElementById('searchOutfitBtn').textContent = t('outfit.btn_search_no_llm');
   }
 }
 
@@ -985,18 +1836,41 @@ async function searchOutfitsOnline(isAuto) {
   // 清除之前可能残留的 interval
   if (window._outfitInterval) clearInterval(window._outfitInterval);
 
-  const platforms = ['小红书', 'Pinterest', 'Instagram', '微博', 'TikTok'];
+  const platforms = ['Xiaohongshu', 'Pinterest', 'Instagram', 'Weibo', 'TikTok'];
   let pi = 0;
-  detail.textContent = '正在检索：' + platforms[0];
+  detail.textContent = t('outfit.searching_detail') + platforms[0];
   window._outfitInterval = setInterval(() => {
-    if (pi < platforms.length) { detail.textContent = '正在检索：' + platforms.slice(0, pi + 1).join(' · '); pi++; }
+    if (pi < platforms.length) { detail.textContent = t('outfit.searching_detail') + platforms.slice(0, pi + 1).join(' · '); pi++; }
     else { clearInterval(window._outfitInterval); window._outfitInterval = null; }
   }, 400);
 
   // 构造搜索提示词（每次带时间戳确保不缓存）
-  const genderText = ctx.gender === 'male' ? '男性' : '女性';
+  const genderText = ctx.gender === 'male' ? t('outfit.gender_male') : t('outfit.gender_female');
   const ts = Date.now();
-  const prompt = `你是一位顶级时尚搭配师。请根据以下信息，为用户推荐 6 套今日穿搭：
+  const isEnglish = currentLocale() === 'en';
+  var prompt;
+  if (isEnglish) {
+    prompt = `You are a top fashion stylist. Based on the following information, recommend 6 outfits for today:
+
+- Gender: ${genderText}
+- Season: ${ctx.season}
+- Lucky Color: ${ctx.lucky.color.name} (hex: ${ctx.lucky.color.hex})
+- Five Elements Status: ${ctx.wuxing.tip}
+- Zodiac Sign: ${ctx.sign.name} (${ctx.sign.el} element)
+- Lucky Number: ${ctx.lucky.num}
+- Style Preference: modern fashion, suitable for daily wear
+
+Return ONLY a JSON array (no markdown, no explanation):
+[{"style":"style name","top":"top description","bottom":"bottom description","shoe":"shoe","acc":"accessory","color":"main color","search":"search keyword"}]
+
+Requirements:
+1. 6 outfits, each with a different style
+2. Incorporate the lucky color and season
+3. Suitable for ${genderText}
+4. "search" field: English keywords for searching this outfit on social media
+5. Fashionable, specific, actionable`;
+  } else {
+    prompt = `你是一位顶级时尚搭配师。请根据以下信息，为用户推荐 6 套今日穿搭：
 
 - 性别：${genderText}
 - 季节：${ctx.season}季
@@ -1015,13 +1889,14 @@ async function searchOutfitsOnline(isAuto) {
 3. 适合${genderText}
 4. search 字段：适合在社交媒体搜索该套搭配的中文关键词（中文短语）
 5. 时尚、具体、可操作`;
+  }
 
   try {
     const reply = await callLLM([{ role: 'user', content: prompt }], 1000);
     clearSearchStatus();
 
     if (!reply) {
-      fallbackToLocalOutfits(ctx, 'AI 不可用，使用本地搭配引擎');
+      fallbackToLocalOutfits(ctx, t('outfit.fallback_ai'));
       return;
     }
 
@@ -1057,7 +1932,7 @@ async function searchOutfitsOnline(isAuto) {
 
   } catch (e) {
     clearSearchStatus();
-    fallbackToLocalOutfits(ctx, '搜索失败：' + (e.message || '') + ' 使用本地搭配引擎');
+    fallbackToLocalOutfits(ctx, t('outfit.fallback_search') + (e.message || '') + ' ' + t('outfit.fallback_search_suffix'));
   }
   window._outfitSearching = false;
 }
@@ -1099,7 +1974,7 @@ function renderOutfitsFromShared(targetId) {
          onclick="var link='${(o.platforms?.[0]?.url || 'https://www.xiaohongshu.com/search_result?keyword=' + encodeURIComponent((o.search||o.style||'') + ' 穿搭')).replace(/'/g, "\\'")}'; window.open(link, '_blank')">
       <div class="p-3">
         <div class="flex items-center justify-between mb-1.5">
-          <span class="text-xs text-neutral-400">${o.style || '时尚搭配'}</span>
+          <span class="text-xs text-neutral-400">${o.style || t('outfit.style_fallback')}</span>
           <span class="text-xs text-neutral-600">❤ ${o.likes || 200}</span>
         </div>
         <p class="text-sm text-white font-medium">${o.top || ''}</p>
@@ -1127,7 +2002,7 @@ function renderOutfitsWithLinks(outfits, targetId) {
     }
     if (o.isAi) {
       html += '<div class="p-3">';
-      html += '<div class="flex items-center justify-between mb-2"><span class="text-xs text-neutral-400 font-medium">' + escHtml(o.style || '时尚搭配') + '</span><span class="text-xs text-neutral-600">❤ ' + (o.likes || 200) + '</span></div>';
+      html += '<div class="flex items-center justify-between mb-2"><span class="text-xs text-neutral-400 font-medium">' + escHtml(o.style || t('outfit.style_fallback')) + '</span><span class="text-xs text-neutral-600">❤ ' + (o.likes || 200) + '</span></div>';
       html += '<p class="text-sm text-white font-medium">' + escHtml(o.top || '') + '</p>';
       html += '<p class="text-xs text-neutral-400 mt-0.5">' + escHtml(o.bottom || '') + ' · ' + escHtml(o.shoe || '') + '</p>';
       html += '<p class="text-xs text-neutral-500 mt-0.5">' + escHtml(o.acc || '') + (o.color ? ' · ' + escHtml(o.color) : '') + '</p>';
@@ -1139,7 +2014,7 @@ function renderOutfitsWithLinks(outfits, targetId) {
       html += '<div class="flex items-center justify-between mb-2"><span class="text-xs text-neutral-500">' + escHtml(o.style || '') + '</span><span class="text-xs text-neutral-700">' + escHtml(o.platform || '') + '</span></div>';
       html += '<p class="text-sm text-white font-medium truncate">' + escHtml(o.top || '') + ' × ' + escHtml(o.bottom || '') + '</p>';
       html += '<p class="text-xs text-neutral-500 mt-0.5">' + escHtml(o.shoe || '') + ' · ' + escHtml(o.acc || '') + '</p>';
-      html += '<div class="flex items-center justify-between mt-2 pt-2 border-t border-neutral-900"><span class="text-xs text-neutral-600">' + escHtml(o.season || '') + '季</span><span class="text-xs text-neutral-700">❤ ' + (o.likes || 0) + '</span></div>';
+      html += '<div class="flex items-center justify-between mt-2 pt-2 border-t border-neutral-900"><span class="text-xs text-neutral-600">' + escHtml(o.season || '') + t('outfit.season_suffix') + '</span><span class="text-xs text-neutral-700">❤ ' + (o.likes || 0) + '</span></div>';
       html += '</div>';
     }
     html += isMobile ? '</div>' : '</a>';
@@ -1160,7 +2035,7 @@ function renderOutfits(outfits, targetId = 'outfitGrid') {
     inner += '<div class="flex items-center justify-between mb-2"><span class="text-xs text-neutral-500">' + escHtml(o.style||'') + '</span><span class="text-xs text-neutral-700">' + escHtml(o.platform||'') + '</span></div>';
     inner += '<p class="text-sm text-white font-medium truncate">' + escHtml(o.top||'') + ' × ' + escHtml(o.bottom||'') + '</p>';
     inner += '<p class="text-xs text-neutral-500 mt-0.5">' + escHtml(o.shoe||'') + ' · ' + escHtml(o.acc||'') + '</p>';
-    inner += '<div class="flex items-center justify-between mt-2 pt-2 border-t border-neutral-900"><span class="text-xs text-neutral-600">' + escHtml(o.season||'') + '季</span><span class="text-xs text-neutral-700">❤ ' + (o.likes||0) + '</span></div>';
+    inner += '<div class="flex items-center justify-between mt-2 pt-2 border-t border-neutral-900"><span class="text-xs text-neutral-600">' + escHtml(o.season||'') + t('outfit.season_suffix') + '</span><span class="text-xs text-neutral-700">❤ ' + (o.likes||0) + '</span></div>';
     inner += '</div>';
     if (isMobile2) {
       return '<div onclick="window._tryOpenApp(\'' + xhsUrl.replace(/'/g, "\\'") + '\')" class="rounded-xl overflow-hidden cursor-pointer hover:ring-1 hover:ring-neutral-700 transition group" style="background:#0a0a0a; border:1px solid #141414; animation:fadeIn 0.4s ease ' + (i*0.06) + 's both;">' + inner + '</div>';
@@ -1172,11 +2047,22 @@ function renderOutfits(outfits, targetId = 'outfitGrid') {
 // ===================== 超时空对话——LLM 动态匹配引擎 =====================
 
 const FALLBACK_FIGURES = [
-  { name:'诸葛亮', era:'三国·蜀', el:'木', traits:['智慧','谋略','忠诚'], emoji:'🎯', soul:'你是诸葛亮，蜀汉丞相。神机妙算。自称"亮"。' },
-  { name:'李白', era:'盛唐', el:'火', traits:['浪漫','豪放','自由'], emoji:'🍷', soul:'你是李白，诗仙。豪放不羁。自称"白"。' },
-  { name:'莎士比亚', era:'文艺复兴', el:'水', traits:['戏剧','人性','诗意'], emoji:'🎭', soul:'你是莎士比亚。To be or not to be。' },
-  { name:'爱因斯坦', era:'现代', el:'水', traits:['天才','好奇','反叛'], emoji:'🧠', soul:'你是爱因斯坦。想象力比知识更重要。' },
+  { idx:0, name:'诸葛亮', era:'三国·蜀', el:'木', traits:['智慧','谋略','忠诚'], emoji:'🎯', soul:'你是诸葛亮，蜀汉丞相。神机妙算。自称"亮"。' },
+  { idx:1, name:'李白', era:'盛唐', el:'火', traits:['浪漫','豪放','自由'], emoji:'🍷', soul:'你是李白，诗仙。豪放不羁。自称"白"。' },
+  { idx:2, name:'莎士比亚', era:'文艺复兴', el:'水', traits:['戏剧','人性','诗意'], emoji:'🎭', soul:'你是莎士比亚。To be or not to be。' },
+  { idx:3, name:'爱因斯坦', era:'现代', el:'水', traits:['天才','好奇','反叛'], emoji:'🧠', soul:'你是爱因斯坦。想象力比知识更重要。' },
 ];
+
+// Locale-aware figure display helpers
+function getFigureDisplayName(fig) { return fig.idx !== undefined ? t('data.figure.' + fig.idx + '.name') : (fig.name || ''); }
+function getFigureDisplayEra(fig) { return fig.idx !== undefined ? t('data.figure.' + fig.idx + '.era') : (fig.era || ''); }
+function getFigureDisplayTraits(fig) { return fig.idx !== undefined ? [t('data.figure.' + fig.idx + '.tag0'), t('data.figure.' + fig.idx + '.tag1'), t('data.figure.' + fig.idx + '.tag2')] : (fig.traits || []); }
+function getFigureDisplaySoul(fig) { return fig.idx !== undefined ? t('data.figure.' + fig.idx + '.soul') : (fig.soul || ''); }
+// Look up display name for history entries (stored by internal Chinese name)
+function getHistoryFigureDisplayName(name) {
+  var found = FALLBACK_FIGURES.find(function(f) { return f.name === name; });
+  return found ? getFigureDisplayName(found) : name;
+}
 
 function matchFigures() {
   const current = getCurrentUser();
@@ -1187,7 +2073,7 @@ function matchFigures() {
 
   window._matchedFigures = null;
   const list = document.getElementById('figureList');
-  list.innerHTML = '<div class="text-center py-8"><p class="text-neutral-500 text-sm animate-pulse">🌐 正在调用大模型联网搜索...</p><p class="text-neutral-700 text-xs mt-2" id="searchProgress">分析用户命理特征中...</p></div>';
+  list.innerHTML = '<div class="text-center py-8"><p class="text-neutral-500 text-sm animate-pulse">' + t('dialogue.searching') + '</p><p class="text-neutral-700 text-xs mt-2" id="searchProgress">' + t('dialogue.analyzing') + '</p></div>';
 
   // 收集用户上下文
   let signName = '未知', dmName = '未知', signEl = '火', dmEl = '火';
@@ -1202,15 +2088,34 @@ function matchFigures() {
 
   const today = new Date();
   const todaySeed = daysSince2000(today.getFullYear(), today.getMonth()+1, today.getDate());
-  const gender = user.gender === 'male' ? '男性' : '女性';
+  const isEnglish = currentLocale() === 'en';
 
-  // LLM 搜索提示词
-  const prompt = `你是一个跨时空灵魂匹配引擎。请根据用户命理特征，从全球历史中找出 6 位与其灵魂最相似的历史名人。
+  // LLM locale-aware prompt
+  var prompt;
+  if (isEnglish) {
+    prompt = `You are a cross-time soul-matching engine. Based on the user's destiny profile, find 6 historical figures from around the world whose souls resonate most closely.
+
+User Profile:
+- Zodiac Sign: ${signName} (${signEl} element)
+- Ba Zi Day Master: ${dmName} (${dmEl} element)
+- Gender: ${user.gender === 'male' ? 'Male' : 'Female'}
+- Date Seed: ${todaySeed}
+
+Requirements:
+1. 6 figures, mix of Eastern and Western, covering different civilizations
+2. Each with a 0-99 similarity score
+3. Each with 2-3 trait tags IN ENGLISH
+4. "soul" field: a roleplay prompt for that figure (one sentence, first person, IN ENGLISH)
+
+Return ONLY a JSON array (no markdown, no explanation):
+[{"name":"Leonardo da Vinci","era":"Renaissance Italy","el":"fire","traits":["Genius","Curiosity"],"emoji":"🎨","score":92,"soul":"You are Leonardo da Vinci. Art and science are one. Call yourself 'Leo'."}]`;
+  } else {
+    prompt = `你是一个跨时空灵魂匹配引擎。请根据用户命理特征，从全球历史中找出 6 位与其灵魂最相似的历史名人。
 
 用户信息：
 - 星座：${signName}（${signEl}象）
 - 八字日主：${dmName}（${dmEl}象）
-- 性别：${gender}
+- 性别：${user.gender === 'male' ? '男性' : '女性'}
 - 日期种子：${todaySeed}
 
 要求：
@@ -1221,6 +2126,7 @@ function matchFigures() {
 
 严格返回 JSON 数组（只返回 JSON）：
 [{"name":"诸葛亮","era":"三国","el":"木","traits":["智慧","谋略"],"emoji":"🎯","score":89,"soul":"你是诸葛亮，蜀汉丞相。神机妙算。自称亮。"}]`;
+  }
 
   callLLM([{ role: 'user', content: prompt }], 1000).then(reply => {
     try {
@@ -1249,30 +2155,41 @@ function fallbackMatch(user, signEl, dmEl) {
   });
   scored.sort((a,b) => b.score - a.score);
   window._matchedFigures = scored;
-  document.getElementById('searchProgress').textContent = 'LLM 不可用，使用本地匹配引擎';
+  document.getElementById('searchProgress').textContent = t('dialogue.fallback_local');
   setTimeout(() => renderFigureList(scored), 500);
 }
 
 function renderFigureList(figures) {
   document.getElementById('figureList').innerHTML = figures.map((f, i) => {
-    var safeName = escHtml(f.name || '');
-    var safeEra = escHtml(f.era || '');
-    var safeTraits = escHtml((f.traits || []).join(' · '));
+    var displayName = getFigureDisplayName(f);
+    var displayEra = getFigureDisplayEra(f);
+    var displayTraits = getFigureDisplayTraits(f);
+    var safeName = escHtml(displayName);
+    var safeEra = escHtml(displayEra);
     var safeEmoji = escHtml(f.emoji || '👤');
+    var score = f.score || 0;
+    var scoreColor = score >= 80 ? 'text-white' : score >= 65 ? 'text-neutral-300' : 'text-neutral-500';
+    // Pass idx for fallback figures, name for LLM-matched figures
+    var chatParam = f.idx !== undefined ? ('idx:' + f.idx) : safeName.replace(/'/g, "\\'");
+    // Build trait chips
+    var traitChips = displayTraits.map(function(t) {
+      return '<span class="chip text-[10px] px-2 py-0.5 rounded-full">' + escHtml(t) + '</span>';
+    }).join('');
     return `
-    <div onclick="startChat('${safeName.replace(/'/g, "\\'")}')" class="card card-clickable rounded-xl p-4 fade-in" style="animation-delay:${i*0.06}s">
-      <div class="flex items-center gap-3">
-        <span class="text-2xl shrink-0">${safeEmoji}</span>
+    <div onclick="startChat('${chatParam}')" class="card card-clickable rounded-xl p-4 fade-in" style="animation-delay:${i*0.06}s">
+      <div class="flex gap-3">
+        <!-- Emoji -->
+        <span class="text-2xl shrink-0 leading-none pt-0.5">${safeEmoji}</span>
+        <!-- Content -->
         <div class="flex-1 min-w-0">
-          <div class="flex items-center justify-between">
-            <span class="text-sm text-white font-semibold">${safeName}</span>
-            <span class="text-xs text-neutral-400">${safeEra}</span>
-          </div>
-          <p class="text-xs text-neutral-500 mt-1 truncate">${safeTraits}</p>
+          <div class="text-sm text-white font-semibold leading-snug">${safeName}</div>
+          <div class="text-[11px] text-neutral-500 mt-0.5">${safeEra}</div>
+          <div class="flex flex-wrap gap-1 mt-2">${traitChips}</div>
         </div>
-        <div class="shrink-0 text-right">
-          <span class="text-lg font-light ${(f.score||0)>=80?'text-white':(f.score||0)>=65?'text-neutral-300':'text-neutral-500'}">${f.score||0}%</span>
-          <p class="text-xs text-neutral-700">相似度</p>
+        <!-- Score -->
+        <div class="shrink-0 text-right flex flex-col items-end justify-center">
+          <span class="text-xl font-light ${scoreColor}" style="line-height:1.1;">${score}%</span>
+          <span class="text-[10px] text-neutral-600 mt-0.5">` + t('dialogue.similarity') + `</span>
         </div>
       </div>
     </div>
@@ -1285,21 +2202,30 @@ function renderFigureList(figures) {
 let currentFigure = null;
 let chatHistory = [];
 
-function startChat(figureName) {
-  const fig = (window._matchedFigures || FALLBACK_FIGURES).find(f => f.name === figureName);
+function startChat(figureParam) {
+  var fig;
+  if (figureParam.startsWith('idx:')) {
+    var idx = parseInt(figureParam.slice(4), 10);
+    fig = (window._matchedFigures || FALLBACK_FIGURES).find(function(f) { return f.idx === idx; });
+  } else {
+    fig = (window._matchedFigures || FALLBACK_FIGURES).find(function(f) { return f.name === figureParam; });
+  }
   if (!fig) return;
   window._isHistoryView = false;
   currentFigure = fig;
-  chatHistory = [{ role: 'system', content: fig.soul }];
+  var displaySoul = getFigureDisplaySoul(fig);
+  chatHistory = [{ role: 'system', content: displaySoul }];
 
-  document.getElementById('chatFigureName').textContent = fig.emoji + ' ' + fig.name;
-  document.getElementById('chatFigureEra').textContent = fig.era + ' · ' + fig.score + '% 相似';
+  var displayName = getFigureDisplayName(fig);
+  var displayEra = getFigureDisplayEra(fig);
+  var safeDisplayName = escHtml(displayName);
+  document.getElementById('chatFigureName').textContent = (fig.emoji || '') + ' ' + displayName;
+  document.getElementById('chatFigureEra').textContent = displayEra + ' · ' + (fig.score || 0) + '% ' + t('dialogue.similarity');
 
   const msgs = document.getElementById('chatMessages');
-  msgs.innerHTML = `
-    <div class="text-center text-neutral-600 text-xs py-4">🌌 你已连接 ${fig.name} 的灵魂</div>
-    <div class="flex justify-start"><div class="chat-bubble-ai max-w-[80%] px-4 py-2.5 text-sm">${getGreeting(fig)}</div></div>
-  `;
+  msgs.innerHTML = ''
+    + '<div class="text-center text-neutral-600 text-xs py-4">' + t('dialogue.connected', { name: safeDisplayName }) + '</div>'
+    + '<div class="flex justify-start"><div class="chat-bubble-ai max-w-[80%] px-4 py-2.5 text-sm">' + escHtml(getGreeting(fig)) + '</div></div>';
   chatHistory.push({ role: 'assistant', content: getGreeting(fig) });
 
   showView('chatView');
@@ -1311,10 +2237,11 @@ function startChat(figureName) {
 }
 
 function getGreeting(fig) {
+  var displayName = getFigureDisplayName(fig);
   const greetings = [
-    `在下${fig.name}。时空交错，竟能与你相遇，实乃奇缘。`,
-    `${fig.name}在此。你的命格与我颇有共鸣，但说无妨。`,
-    `久违了。我${fig.name}虽隔千年，却觉你似曾相识。`,
+    t('dialogue.greeting_1', { name: displayName }),
+    t('dialogue.greeting_2', { name: displayName }),
+    t('dialogue.greeting_3', { name: displayName }),
   ];
   return greetings[Math.floor(Math.random() * greetings.length)];
 }
@@ -1332,7 +2259,7 @@ function clearChat() {
   if (!currentFigure) return;
   chatHistory = [{ role: 'system', content: currentFigure.soul }];
   document.getElementById('chatMessages').innerHTML = `
-    <div class="text-center text-neutral-600 text-xs py-4">对话已清空</div>
+    <div class="text-center text-neutral-600 text-xs py-4">' + t('dialogue.cleared') + '</div>
     <div class="flex justify-start"><div class="chat-bubble-ai max-w-[80%] px-4 py-2.5 text-sm">${getGreeting(currentFigure)}</div></div>
   `;
   chatHistory.push({ role: 'assistant', content: getGreeting(currentFigure) });
@@ -1359,13 +2286,13 @@ async function sendMessage() {
       appendMessage('assistant', reply);
       chatHistory.push({ role: 'assistant', content: reply });
     } else {
-      appendMessage('assistant', '时空信号中断……请检查 LLM 配置后重试。');
+      appendMessage('assistant', t('dialogue.signal_lost'));
     }
   } catch (e) {
     removeLoading(loadingId);
     const errDiv = document.createElement('div');
     errDiv.className = 'flex justify-start';
-    errDiv.innerHTML = `<div class="chat-bubble-ai max-w-[85%] px-4 py-2.5 text-sm" style="color:#f87171; border-color:#3a1a1a;">${escapeHtml(e.message || '未知错误').replace(/\n/g, '<br>')}</div>`;
+    errDiv.innerHTML = `<div class="chat-bubble-ai max-w-[85%] px-4 py-2.5 text-sm" style="color:#f87171; border-color:#3a1a1a;">${escapeHtml(e.message || t('dialogue.unknown_error')).replace(/\n/g, '<br>')}</div>`;
     document.getElementById('chatMessages').appendChild(errDiv);
   }
 
@@ -1439,7 +2366,7 @@ function applyPreset() {
   const endpointInput = document.getElementById('apiEndpoint');
 
   if (!key) {
-    modelSelect.innerHTML = '<option value="">请先选择模型商</option>';
+    modelSelect.innerHTML = '<option value="">' + t('profile.select_preset_first') + '</option>';
     endpointInput.value = '';
     endpointInput.removeAttribute('readonly');
     return;
@@ -1467,8 +2394,8 @@ async function callLLM(messages, maxTokens = 500) {
   const apiKey = store.llmKey || '';
   const model = store.llmModel || 'gpt-4o';
 
-  if (!endpoint) throw new Error('请先在「我的」→ LLM 配置中设置 API 地址');
-  if (!apiKey) throw new Error('请先在「我的」→ LLM 配置中设置 API Key');
+  if (!endpoint) throw new Error(t('api.no_endpoint'));
+  if (!apiKey) throw new Error(t('api.no_key'));
 
   // 限制上下文长度
   let ctx = messages;
@@ -1492,35 +2419,35 @@ async function callLLM(messages, maxTokens = 500) {
       }),
     });
   } catch (e) {
-    throw new Error(`网络请求失败——请检查 API 地址是否正确（当前：${endpoint}）`);
+    throw new Error(t('api.network_fail', { endpoint: endpoint }));
   }
 
   const errBody = await res.text();
 
   if (!res.ok) {
     if (res.status === 404) {
-      throw new Error(`端点不存在 (404)\n当前地址：${endpoint}\n\n请检查：\n· 地址是否包含完整路径（如 /v1/chat/completions）\n· 或使用「服务商预设」下拉选择`);
+      throw new Error(t('api.not_found_detail', { endpoint: endpoint }));
     }
     if (res.status === 401 || res.status === 403) {
-      throw new Error(`认证失败 (${res.status})——API Key 无效或已过期`);
+      throw new Error(t('api.auth_fail', { code: res.status }));
     }
     if (res.status === 429) {
-      throw new Error(`请求过于频繁 (429)——请稍后重试`);
+      throw new Error(t('api.rate_limit'));
     }
     // 尝试解析错误body
     let detail = errBody.slice(0, 200);
     try { const j = JSON.parse(errBody); detail = j.error?.message || j.message || detail; } catch(e) {}
-    throw new Error(`API 错误 (${res.status}): ${detail}`);
+    throw new Error(t('api.error', { code: res.status, detail: detail }));
   }
 
   try {
     const data = JSON.parse(errBody);
     const content = data.choices?.[0]?.message?.content;
-    if (!content) throw new Error('API 返回为空——请检查模型名称是否正确');
+    if (!content) throw new Error(t('api.empty_response'));
     return content;
   } catch (e) {
-    if (e.message.includes('API 返回为空')) throw e;
-    throw new Error(`解析响应失败——返回内容：${errBody.slice(0, 100)}`);
+    if (e.message.includes(t('api.empty_response'))) throw e;
+    throw new Error(t('api.parse_fail', { detail: errBody.slice(0, 100) }));
   }
 }
 
@@ -1559,6 +2486,7 @@ function saveCurrentChat() {
   histories.unshift({
     id,
     figureName: currentFigure.name,
+    figureIdx: currentFigure.idx,
     figureEmoji: currentFigure.emoji,
     date: new Date().toISOString().slice(0, 10),
     messageCount: userMsgs.length,
@@ -1586,14 +2514,14 @@ function renderHistoryList(filterId = '') {
   }
 
   empty.classList.add('hidden');
-  document.getElementById('historyCount').textContent = histories.length + ' 条';
+  document.getElementById('historyCount').textContent = histories.length + ' ' + t('profile.history_count_suffix');
   list.innerHTML = histories.map((h, i) => `
     <div class="flex items-center gap-3 py-3 px-1 hover:bg-neutral-900/30 transition cursor-pointer group -mx-1 rounded"
          onclick="viewHistoryDetail('${h.id}')" style="animation: fadeIn 0.3s ease ${i*0.04}s both;">
       <div class="w-9 h-9 rounded-full flex items-center justify-center text-lg shrink-0" style="background:#0d0d0d;">${h.figureEmoji}</div>
       <div class="flex-1 min-w-0">
         <div class="flex items-center justify-between gap-2">
-          <span class="text-sm text-white truncate font-medium">${h.figureName}</span>
+          <span class="text-sm text-white truncate font-medium">${h.figureIdx !== undefined ? t('data.figure.' + h.figureIdx + '.name') : escHtml(h.figureName)}</span>
           <span class="text-xs text-neutral-600 shrink-0">${h.date}</span>
         </div>
         <p class="text-xs text-neutral-500 truncate mt-0.5">${h.preview}</p>
@@ -1638,14 +2566,17 @@ function viewHistoryDetail(id) {
   if (!h) return;
 
   window._isHistoryView = true;
-  currentFigure = { name: h.figureName, emoji: h.figureEmoji, era: '历史', score: '—' };
+  var displayName = h.figureIdx !== undefined ? t('data.figure.' + h.figureIdx + '.name') : h.figureName;
+  var displayEra = h.figureIdx !== undefined ? t('data.figure.' + h.figureIdx + '.era') : t('dialogue.history_era');
+  var safeDisplayName = escHtml(displayName);
+  currentFigure = { name: h.figureName, idx: h.figureIdx, emoji: h.figureEmoji, era: displayEra, score: '—' };
   chatHistory = h.messages;
 
-  document.getElementById('chatFigureName').textContent = h.figureEmoji + ' ' + h.figureName;
+  document.getElementById('chatFigureName').textContent = h.figureEmoji + ' ' + displayName;
   document.getElementById('chatFigureEra').textContent = h.date + ' · ' + h.id;
 
   const msgs = document.getElementById('chatMessages');
-  msgs.innerHTML = `<div class="text-center text-neutral-600 text-xs py-4">📜 ${h.id} · ${h.figureName} · ${h.messageCount} 条消息</div>`;
+  msgs.innerHTML = '<div class="text-center text-neutral-600 text-xs py-4">' + t('dialogue.history_detail', { id: h.id, figure: safeDisplayName, count: h.messageCount }) + '</div>';
   h.messages.filter(m => m.role === 'user' || m.role === 'assistant').forEach(m => {
     appendMessage(m.role === 'user' ? 'user' : 'assistant', m.content);
   });
@@ -1680,10 +2611,10 @@ function selectAvatar(emoji) {
 function uploadAvatar(event) {
   var file = event.target.files[0];
   if (!file) return;
-  if (file.size > 100 * 1024) { showToast('图片请小于 100KB'); return; }
+  if (file.size > 100 * 1024) { showToast(t('error.image_too_big')); return; }
   // 检查 localStorage 余量
   var used = JSON.stringify(localStorage).length;
-  if (used > 4 * 1024 * 1024) { showToast('存储空间不足，请先清理历史对话'); return; }
+  if (used > 4 * 1024 * 1024) { showToast(t('error.storage_full')); return; }
   var reader = new FileReader();
   reader.onload = function(e) {
     setAvatar('img:' + e.target.result);
@@ -1702,29 +2633,15 @@ function setAvatar(value) {
     preview.textContent = value;
   }
   document.getElementById('avatarPicker').classList.add('hidden');
-  var cur = getCurrentUser();
-  if (!cur) return;
-  var users = loadUsers();
-  if (users[cur.key]) {
-    users[cur.key].avatar = value;
-    saveUsers(users);
-  }
+  updateCurrentUser({ avatar: value });
 }
 
 function saveProfile() {
-  const current = getCurrentUser();
-  if (!current) return;
-  const users = loadUsers();
-  if (!users[current.key]) return;
-
   const birthday = document.getElementById('editBirthday').value;
   const birthtime = document.getElementById('editBirthtime').value;
   const gender = document.getElementById('editGender').value;
 
-  users[current.key].birthday = birthday;
-  users[current.key].birthtime = birthtime;
-  users[current.key].gender = gender;
-  saveUsers(users);
+  updateCurrentUser({ birthday: birthday, birthtime: birthtime, gender: gender });
 
   // 同步到运势输入框
   if (birthday) document.getElementById('birthday').value = birthday;
@@ -1733,6 +2650,29 @@ function saveProfile() {
   const el = document.getElementById('profileSaved');
   el.classList.remove('hidden');
   setTimeout(() => el.classList.add('hidden'), 2000);
+
+  // 全局重新搜索——清除所有缓存，触发运势/穿搭/超时空对话重新生成
+  if (birthday) {
+    // 清除缓存
+    window._fortuneDate = null;
+    window._matchedFigures = null;
+    window._currentOutfits = null;
+    window._outfitAutoSearched = false;
+    window._outfitDate = null;
+    currentResult = null;
+
+    // 跳转到运势加载页，重新生成一切（带动画）
+    showView('loadingView');
+    autoGenerate(false);
+
+    // 异步预加载穿搭和超时空对话（后台静默刷新）
+    setTimeout(function() {
+      if (hasLLMConfigured()) {
+        // 延迟触发穿搭搜索（等运势结果出来后）
+        setTimeout(function() { searchOutfitsOnline(); }, 1000);
+      }
+    }, 500);
+  }
 }
 
 function loadProfile() {
@@ -1756,29 +2696,39 @@ function loadProfile() {
   document.getElementById('editBirthday').value = user.birthday || '';
   document.getElementById('editBirthtime').value = user.birthtime || '';
   document.getElementById('editGender').value = user.gender || '';
+  var locSel = document.getElementById('editLocale');
+  if (locSel) locSel.value = currentLocale();
   renderHistoryList();
   document.getElementById('historySearchId').value = '';
   document.getElementById('historySearchId').value = '';
 }
 
 function saveLLMConfig() {
-  localStorage.setItem('llm_endpoint', document.getElementById('apiEndpoint').value.trim());
-  localStorage.setItem('llm_key', document.getElementById('apiKey').value.trim());
-  localStorage.setItem('llm_model', document.getElementById('apiModel').value.trim());
-  const btn = document.querySelector('#profileView button[onclick="saveLLMConfig()"]');
-  btn.textContent = '✅ 已保存';
-  btn.style.borderColor = '#1a3a1a'; btn.style.color = '#4a9';
-  setTimeout(() => { btn.textContent = '保存 LLM 配置'; btn.style.borderColor = '#1a1a1a'; btn.style.color = '#999'; }, 2000);
+  // 统一写入用户对象（与 saveLLMConfigSilent 同一路径）
+  saveLLMConfigSilent();
+  // 清理旧的全局死 key（如果存在）
+  try { localStorage.removeItem('llm_endpoint'); } catch(e) {}
+  try { localStorage.removeItem('llm_key'); } catch(e) {}
+  try { localStorage.removeItem('llm_model'); } catch(e) {}
+  // 视觉反馈
+  const saveBtns = document.querySelectorAll('#profileView button');
+  var btn = null;
+  saveBtns.forEach(function(b) { if (b.getAttribute('data-i18n') === 'profile.btn_save_llm') btn = b; });
+  if (btn) {
+    btn.textContent = t('llm.saved');
+    btn.style.borderColor = '#1a3a1a'; btn.style.color = '#4a9';
+    setTimeout(function() { btn.textContent = t('llm.save_config'); btn.style.borderColor = '#1a1a1a'; btn.style.color = '#999'; }, 2000);
+  }
 }
 
 async function testLLM() {
   const btn = document.getElementById('testLLMBtn');
   const result = document.getElementById('testResult');
   btn.disabled = true;
-  btn.textContent = '⏳ 检测中...';
+  btn.textContent = t('llm.testing');
   result.classList.remove('hidden');
   result.className = 'text-xs text-center mt-2 text-neutral-400';
-  result.textContent = '正在连接...';
+  result.textContent = t('llm.connecting');
 
   // 先保存当前配置
   saveLLMConfigSilent();
@@ -1790,8 +2740,8 @@ async function testLLM() {
 
   if (!endpoint || !apiKey) {
     result.className = 'text-xs text-center mt-2 text-red-400';
-    result.textContent = '❌ 请填写 API 地址和 Key';
-    btn.disabled = false; btn.textContent = '🔍 检测连接'; return;
+    result.textContent = t('llm.fill_both');
+    btn.disabled = false; btn.textContent = t('llm.test_connection'); return;
   }
 
   try {
@@ -1805,25 +2755,25 @@ async function testLLM() {
       const data = await res.json();
       const reply = data.choices?.[0]?.message?.content;
       result.className = 'text-xs text-center mt-2 text-green-400';
-      result.textContent = `✅ 连接成功！模型回复：${reply ? '"' + reply.slice(0,30) + '"' : '(空)'}`;
+      result.textContent = t('llm.success', { reply: reply ? '"' + reply.slice(0,30) + '"' : '(空)' });
     } else if (res.status === 401 || res.status === 403) {
       result.className = 'text-xs text-center mt-2 text-red-400';
-      result.textContent = '❌ Key 无效 (401)——请检查 API Key';
+      result.textContent = t('llm.unauthorized');
     } else if (res.status === 404) {
       result.className = 'text-xs text-center mt-2 text-red-400';
-      result.textContent = '❌ 地址不存在 (404)——请用下拉预设';
+      result.textContent = t('llm.not_found');
     } else {
       const err = await res.text();
       result.className = 'text-xs text-center mt-2 text-amber-400';
-      result.textContent = `⚠️ 状态 ${res.status}：${err.slice(0,80)}`;
+      result.textContent = t('llm.status_error', { code: res.status, detail: err.slice(0,80) });
     }
   } catch (e) {
     result.className = 'text-xs text-center mt-2 text-red-400';
-    result.textContent = `❌ 网络不通：${e.message.slice(0,60)}`;
+    result.textContent = t('llm.network_error', { detail: e.message.slice(0,60) });
   }
 
   btn.disabled = false;
-  btn.textContent = '🔍 检测连接';
+  btn.textContent = t('llm.test_connection');
 }
 
 function getLLMStorage() {
@@ -1834,14 +2784,11 @@ function getLLMStorage() {
 }
 
 function saveLLMConfigSilent() {
-  var cur = getCurrentUser();
-  if (!cur) return;
-  var users = loadUsers();
-  if (!users[cur.key]) return;
-  users[cur.key].llmEndpoint = document.getElementById('apiEndpoint').value.trim();
-  users[cur.key].llmKey = document.getElementById('apiKey').value.trim();
-  users[cur.key].llmModel = document.getElementById('apiModel').value.trim();
-  saveUsers(users);
+  updateCurrentUser({
+    llmEndpoint: document.getElementById('apiEndpoint').value.trim(),
+    llmKey: document.getElementById('apiKey').value.trim(),
+    llmModel: document.getElementById('apiModel').value.trim()
+  });
 }
 
 function loadLLMConfig() {
@@ -1866,7 +2813,7 @@ function loadLLMConfig() {
     document.getElementById('apiPreset').value = '';
     document.getElementById('apiEndpoint').value = savedEndpoint;
     document.getElementById('apiEndpoint').removeAttribute('readonly');
-    document.getElementById('apiModel').innerHTML = `<option value="${savedModel || ''}">${savedModel || '自定义'}</option>`;
+    document.getElementById('apiModel').innerHTML = '<option value="' + (savedModel || '') + '">' + (savedModel || t('profile.custom_model')) + '</option>';
     document.getElementById('apiModel').value = savedModel;
   }
 }
@@ -2160,8 +3107,8 @@ function getScoreLevel(score) {
 }
 
 function getScoreLabelEn(level) {
-  const map = { '极佳':'EXCELLENT', '良好':'GOOD', '平稳':'STABLE', '稍低':'LOW', '低迷':'CAUTION' };
-  return map[level] || 'STABLE';
+  const map = { '极佳':'result.score_en_excellent', '良好':'result.score_en_good', '平稳':'result.score_en_stable', '稍低':'result.score_en_low', '低迷':'result.score_en_caution' };
+  return t(map[level] || 'result.score_en_stable');
 }
 
 // ===================== 内容生成器 =====================
@@ -2172,87 +3119,74 @@ function generateSummary(scores, hasTime) {
   const best = sorted[0];
   const worst = sorted[sorted.length - 1];
 
-  const templates = {
-    career: ['今日适合主动出击', '职场上贵人运在线', '工作汇报容易获得认可', '团队协作效率高涨'],
-    wealth: ['正财运稳健', '适合做财务规划', '偏财勿碰，守住底线', '小额支出无需纠结'],
-    love: ['桃花运不错', '适合表达心意', '感情上顺其自然就好', '有伴者相处融洽'],
-    health: ['精力充沛', '适合开始新运动计划', '注意作息规律', '身体状态良好'],
-  };
+  const bestPool = [];
+  for (let i = 0; i < 4; i++) {
+    var bt = t('summary.' + best.key + '_best_' + i);
+    if (bt !== 'summary.' + best.key + '_best_' + i) bestPool.push(bt);
+  }
+  const cautionPool = [];
+  for (let i = 0; i < 3; i++) {
+    var ct = t('summary.' + worst.key + '_caution_' + i);
+    if (ct !== 'summary.' + worst.key + '_caution_' + i) cautionPool.push(ct);
+  }
 
-  const tips = {
-    career: ['重要会议安排在上午', '避免与同事争执', '多听少说，观察为先'],
-    wealth: ['不宜大额支出', '控制冲动消费', '适合记账复盘'],
-    love: ['给对方一些空间', '不要翻旧账', '多表达感激之情'],
-    health: ['避免熬夜', '多喝水', '适当活动颈部'],
-  };
-
-  const bestTip = templates[best.key] ? templates[best.key][Math.floor(hashDay(0, best.score) / 25)] : '运势不错';
+  const bestTip = bestPool.length ? bestPool[Math.floor(hashDay(0, best.score) / 25) % bestPool.length] : t('summary.generic_best');
   const worstKey = worst.key;
-  const cautionTip = tips[worstKey] ? tips[worstKey][Math.floor(hashDay(0, worst.score) / 33)] : '保持谨慎';
+  const cautionTip = cautionPool.length ? cautionPool[Math.floor(hashDay(0, worst.score) / 33) % cautionPool.length] : t('summary.generic_caution');
 
   if (best.score >= 75) {
-    return `"${bestTip}；${cautionTip}。"`;
+    return '"' + bestTip + '；' + cautionTip + '。"';
   } else if (best.score < 50) {
-    return `"今日整体运势偏低，${cautionTip}，不必焦虑，明天会好起来。"`;
+    return t('summary.low_score', { tip: cautionTip });
   }
-  return `"运势平稳的一天，${bestTip}；${cautionTip}。"`;
+  return t('summary.mid_score', { tip: bestTip + '；' + cautionTip });
 }
 
 function generateCategoryText(key, score, signName) {
-  const highTexts = {
-    career: ['适合主动汇报工作，领导认可度高', '下午适合谈判签约', '团队协作顺畅高效'],
-    wealth: ['正财运稳定，适合做财务规划', '偏财运一般，不宜大额投资', '小额理财可考虑'],
-    love: ['桃花运在线，适合出门社交', '有伴者感情升温', '单身者有机会遇见有趣的人'],
-    health: ['精力充沛，适合运动', '身体状态良好', '保持当前作息即可'],
-  };
-  const midTexts = {
-    career: ['按部就班即可，不必急于表现', '注意细节，避免小失误'],
-    wealth: ['收支平衡，不宜冒险', '保守理财为上策'],
-    love: ['桃花运一般，顺其自然', '有伴者注意沟通方式，小事莫计较'],
-    health: ['注意颈椎和用眼疲劳', '建议每小时起身活动5分钟'],
-  };
-  const lowTexts = {
-    career: ['宜低调行事，避免正面冲突', '重要决策推迟到明天'],
-    wealth: ['谨慎支出，避免冲动消费', '今天不宜做投资决定'],
-    love: ['不宜表白或重大感情决定', '给自己一些独处的时间'],
-    health: ['容易疲劳，注意休息', '避免高强度运动'],
-  };
+  const level = score >= 75 ? 'high' : score >= 55 ? 'mid' : 'low';
+  const pool = [];
+  for (let i = 0; i < 3; i++) {
+    var ct = t('cat.' + key + '_' + level + '_' + i);
+    if (ct !== 'cat.' + key + '_' + level + '_' + i) pool.push(ct);
+  }
 
-  let pool;
-  if (score >= 75) pool = highTexts[key];
-  else if (score >= 55) pool = midTexts[key];
-  else pool = lowTexts[key];
-
-  if (!pool) return '运势平稳，保持平常心。';
+  if (!pool.length) return t('summary.fallback');
   return pool[Math.floor(hashDay(0, score * 7) / (100 / pool.length)) % pool.length];
 }
 
 function generatePersonality(sign, bazi) {
-  const signInfo = SIGN_TRAITS[sign.name] || { desc:'', tags:[] };
-  const dmInfo = DAY_MASTER_TRAITS[bazi.dayMaster] || { name:'', el:'', desc:'', tags:[] };
+  const signIdx = getSignIndex(sign.name);
+  const signDesc = getStarSignDesc(signIdx);
+  const signTags = getStarSignTags(signIdx);
+  const dmName = getDmName(bazi.dayMaster);
+  const dmDesc = getDmDesc(bazi.dayMaster);
+  const dmTags = getDmTags(bazi.dayMaster);
+  const dmEl = (DAY_MASTER_TRAITS[bazi.dayMaster] || {}).el || '火';
 
   // 交叉分析
-  const sameElement = sign.el === dmInfo.el;
+  const sameElement = sign.el === dmEl;
   let crossDesc = '';
   if (sameElement) {
-    crossDesc = `${sign.name}与${dmInfo.name}同属${sign.el}象，双重叠加让你在人群中格外耀眼。`;
+    crossDesc = t('data.persona.same_element', { sign: getStarSignName(signIdx), dm: dmName, el: sign.el });
   } else {
-    crossDesc = `${sign.name}（${sign.el}象）与${dmInfo.name}（${dmInfo.el}象）互为补充，内外兼修。`;
+    crossDesc = t('data.persona.diff_element', { sign: getStarSignName(signIdx), signEl: sign.el, dm: dmName, dmEl: dmEl });
   }
 
-  const fullDesc = `${crossDesc}${signInfo.desc}。${dmInfo.desc}。`;
-  const allTags = [...new Set([...signInfo.tags, ...dmInfo.tags, sameElement ? '双重特质' : '刚柔并济'])];
+  const fullDesc = crossDesc + signDesc + '。' + dmDesc + '。';
+  const crossTag = sameElement ? t('data.persona.tag_same') : t('data.persona.tag_diff');
+  const allTags = [...new Set([...signTags, ...dmTags, crossTag])];
 
+  const elEmojiMap = { '木':'🌳', '火':'☀️', '土':'⛰', '金':'⚙', '水':'💧' };
   return {
-    signCard: { emoji: sign.emoji, name: sign.name },
-    dmCard: { emoji: dmInfo.el==='木'?'🌳':dmInfo.el==='火'?'☀️':dmInfo.el==='土'?'⛰':dmInfo.el==='金'?'⚙':'💧', name: dmInfo.name },
+    signCard: { emoji: sign.emoji, name: getStarSignName(signIdx) },
+    dmCard: { emoji: elEmojiMap[dmEl] || '💧', name: dmName },
     desc: fullDesc,
     tags: allTags.slice(0, 6),
   };
 }
 
 function generateInterpersonal(bazi, daySeed) {
-  const allTypes = ['沉稳务实型','理性分析型','幽默风趣型','温和包容型','果断利落型','热情开朗型','细腻敏感型','独立创新型'];
+  const allTypes = [t('data.itype.0'),t('data.itype.1'),t('data.itype.2'),t('data.itype.3'),t('data.itype.4'),t('data.itype.5'),t('data.itype.6'),t('data.itype.7')];
   // 根据日主五行选择宜近/宜远
   const elOrder = ['木','火','土','金','水'];
   const dmEl = DAY_MASTER_TRAITS[bazi.dayMaster]?.el || '火';
@@ -2261,14 +3195,16 @@ function generateInterpersonal(bazi, daySeed) {
   const goodEl = elOrder[(elIdx + 1) % 5]; // 相生
   const badEl = elOrder[(elIdx + 3) % 5]; // 相克
 
-  const goodTypes = allTypes.filter(t => hashDay(daySeed, allTypes.indexOf(t) * 3) > 40).slice(0, 3);
-  const badTypes = allTypes.filter(t => hashDay(daySeed, allTypes.indexOf(t) * 7 + 50) > 55).slice(0, 2);
+  const goodTypes = allTypes.filter(function(t, i) { return hashDay(daySeed, i * 3) > 40; }).slice(0, 3);
+  const badTypes = allTypes.filter(function(t, i) { return hashDay(daySeed, i * 7 + 50) > 55; }).slice(0, 2);
 
+  const defaultGood = [t('data.itype.0'),t('data.itype.1'),t('data.itype.3')];
+  const defaultBad = [t('data.itype.bad_0'),t('data.itype.bad_1')];
   return {
-    good: goodTypes.length ? goodTypes : ['沉稳务实型','理性分析型','温和包容型'],
-    bad: badTypes.length ? badTypes : ['急躁冲动型','情绪多变型'],
-    goodReason: `今日与${elOrder[goodEl] || '土'}象特质的人相处更合拍`,
-    badReason: '火星逆行期间，注意情绪管理',
+    good: goodTypes.length ? goodTypes : defaultGood,
+    bad: badTypes.length ? badTypes : defaultBad,
+    goodReason: t('data.itype.good_reason', { el: goodEl }),
+    badReason: t('data.itype.bad_reason'),
     goodEl, badEl,
   };
 }
@@ -2276,7 +3212,7 @@ function generateInterpersonal(bazi, daySeed) {
 function generateLuckyItems(bazi, daySeed) {
   // ── 幸运色：基于今日日柱天干的「印星」（生我者）──
   // 每日天干不同 → 印星不同 → 幸运色每天变化，且有五行相生理论依据
-  const colors = { '木':{name:'森林绿',hex:'#4a9'}, '火':{name:'海洋蓝',hex:'#4A90D9'}, '土':{name:'琥珀金',hex:'#d4a853'}, '金':{name:'赭石棕',hex:'#b87351'}, '水':{name:'珊瑚橙',hex:'#e8755a'} };
+  const colors = { '木':{key:'forest_green',hex:'#4a9'}, '火':{key:'ocean_blue',hex:'#4A90D9'}, '土':{key:'amber_gold',hex:'#d4a853'}, '金':{key:'ochre_brown',hex:'#b87351'}, '水':{key:'coral_orange',hex:'#e8755a'} };
   // daySeed = daysSince2000(today), 2000-01-01 日柱为戊午(天干戊=索引4)
   const todayStemIdx = ((4 + daySeed) % 10 + 10) % 10;
   // 十天干五行: 甲乙(0,1)=木 丙丁(2,3)=火 戊己(4,5)=土 庚辛(6,7)=金 壬癸(8,9)=水
@@ -2285,12 +3221,14 @@ function generateLuckyItems(bazi, daySeed) {
   // 五行相生: 木→火→土→金→水→木，生我者（印星）为上一环
   const elOrder = ['木','火','土','金','水'];
   const luckyEl = elOrder[(elOrder.indexOf(todayEl) - 1 + 5) % 5]; // 生我者
-  const color = colors[luckyEl];
+  const colorInfo = colors[luckyEl];
+  const color = { key: colorInfo.key, name: t('data.color.' + colorInfo.key), hex: colorInfo.hex };
 
   const dirs = ['东','南','西','北','东南','西南','东北','西北'];
   const nums = [3,7,11,23,28,32,47,55];
   const num = nums[hashDay(daySeed, 99) % nums.length];
-  const dir = dirs[hashDay(daySeed, 77) % dirs.length];
+  const dirKey = dirs[hashDay(daySeed, 77) % dirs.length];
+  const dir = getDirectionName(dirKey);
 
   return { color, num, dir };
 }
@@ -2319,12 +3257,41 @@ function generateWuxing(dayMaster, daySeed) {
   return {
     items: els.map((el, i) => ({
       el, emoji: elEmoji[el],
-      level: strengths[i] >= 65 ? '旺' : strengths[i] >= 45 ? '平' : '弱',
+      level: strengths[i] >= 65 ? t('data.wuxing.level_high') : strengths[i] >= 45 ? t('data.wuxing.level_mid') : t('data.wuxing.level_low'),
       strong: strengths[i] >= 65,
       weak: strengths[i] < 45,
     })),
-    tip: `${els[maxIdx]}旺${els[minIdx]}弱，今日宜多补${els[minIdx]}元素`,
+    tip: t('data.wuxing.tip', { maxEl: getElementName(els[maxIdx]), minEl: getElementName(els[minIdx]) }),
   };
+}
+
+// ===================== 语言切换 =====================
+
+function handleLocaleChange(locale) {
+  if (!SUPPORTED_LOCALES.includes(locale)) return;
+  setLocale(locale);
+  applyStaticTexts();
+  // Re-render current view for dynamic JS text
+  var currentViewId = '';
+  ['resultView','profileView','dialogueView','outfitView','chatView'].forEach(function(id) {
+    if (!document.getElementById(id).classList.contains('hidden')) currentViewId = id;
+  });
+  if (currentViewId === 'resultView' && currentResult) {
+    renderResult(currentResult, new Date());
+  } else if (currentViewId === 'profileView') {
+    loadProfile();
+    loadLLMConfig();
+  } else if (currentViewId === 'outfitView') {
+    generateStandaloneOutfits();
+  } else if (currentViewId === 'dialogueView') {
+    if (window._matchedFigures && window._matchedFigures.length) {
+      renderFigureList(window._matchedFigures);
+    }
+  }
+  // Update html lang attribute
+  document.documentElement.lang = locale === 'en' ? 'en' : 'zh-CN';
+  // Update title
+  document.title = t('login.title');
 }
 
 // ===================== UI 控制器 =====================
@@ -2371,14 +3338,26 @@ function backToInput() {
 }
 
 async function handleSubmit(event) {
+  event.preventDefault();
   const birthday = document.getElementById('birthday').value;
   if (!birthday) return;
   const birthtime = document.getElementById('birthtime').value;
   const hasTime = !!birthtime;
 
+  // 保存性别和语言偏好（原子更新）
+  const gender = document.getElementById('inputGender').value;
+  const locale = document.getElementById('inputLocale').value;
+  updateCurrentUser({ gender: gender });
+  if (locale && SUPPORTED_LOCALES.includes(locale) && locale !== currentLocale()) {
+    setLocale(locale);
+    applyStaticTexts();
+    document.documentElement.lang = locale === 'en' ? 'en' : 'zh-CN';
+    document.title = t('login.title');
+  }
+
   // 切换到加载态
   showView('loadingView');
-  const steps = ['星座运势分析中', '八字命理推算中', '综合运势生成中'];
+  const steps = [t('loading.step_1'), t('loading.step_2'), t('loading.step_3')];
   const stepEl = document.getElementById('loadingStep');
   for (let i = 0; i < steps.length; i++) {
     stepEl.textContent = steps[i];
@@ -2433,7 +3412,7 @@ async function handleSubmit(event) {
   const userGender = (currentUser && users[currentUser.key]) ? (users[currentUser.key].gender || 'female') : 'female';
   const outfits = generateOutfits(lucky, wuxing, userGender, daySeed);
 
-  currentResult = { compositeScore, level, levelEn, summary, sign, animal: ZODIAC_EMOJI[ZODIAC_ANIMALS.indexOf(animal)] + ' ' + animal,
+  currentResult = { compositeScore, level, levelEn, summary, sign, animal: ZODIAC_EMOJI[ZODIAC_ANIMALS.indexOf(animal)] + ' ' + getZodiacName(ZODIAC_ANIMALS.indexOf(animal)),
     bazi, horoscopeScores, personality, interpersonal, lucky, wuxing, outfits, hasTime };
 
   // 保存出生信息到账号
@@ -2466,9 +3445,9 @@ async function handleSubmit(event) {
 function renderResult(r, today) {
   // 日期
   const y = today.getFullYear(), m = today.getMonth() + 1, d = today.getDate();
-  const weekdays = ['日','一','二','三','四','五','六'];
+  const weekdays = [t('result.weekday_sun'),t('result.weekday_mon'),t('result.weekday_tue'),t('result.weekday_wed'),t('result.weekday_thu'),t('result.weekday_fri'),t('result.weekday_sat')];
   const wd = weekdays[today.getDay()];
-  document.getElementById('reportDate').textContent = `${y} / ${m.toString().padStart(2,'0')} / ${d.toString().padStart(2,'0')} · 星期${wd}`;
+  document.getElementById('reportDate').textContent = y + ' / ' + m.toString().padStart(2,'0') + ' / ' + d.toString().padStart(2,'0') + ' · ' + t('result.weekday_prefix') + wd;
 
   // 评分
   document.getElementById('scoreNum').textContent = r.compositeScore;
@@ -2481,15 +3460,16 @@ function renderResult(r, today) {
 
   // 总结
   document.getElementById('summaryText').textContent = r.summary;
-  const sourceParts = [r.sign.emoji + ' ' + r.sign.name];
-  if (r.hasTime) sourceParts.push(r.bazi.dayMaster + '火日主'[0] + '日主');
+  const signIdx = getSignIndex(r.sign.name);
+  const sourceParts = [r.sign.emoji + ' ' + getStarSignName(signIdx)];
+  if (r.hasTime) sourceParts.push(getDmName(r.bazi.dayMaster));
   sourceParts.push(r.animal);
   document.getElementById('sourceText').textContent = sourceParts.join(' · ');
 
   // 分类运势
   const catColors = { career:'white', wealth:'#ccc', love:'#888', health:'#888' };
   const catIcons = { career:'💼', wealth:'💰', love:'❤️', health:'🏥' };
-  const catNames = { career:'事业运', wealth:'财运', love:'感情运', health:'健康运' };
+  const catNames = { career: t('result.cat_career'), wealth: t('result.cat_wealth'), love: t('result.cat_love'), health: t('result.cat_health') };
   document.getElementById('categoryFortunes').innerHTML = r.horoscopeScores.map(s => `
     <div>
       <div class="flex justify-between text-sm mb-2">
@@ -2497,7 +3477,7 @@ function renderResult(r, today) {
         <span class="text-neutral-200 font-medium">${s.score}</span>
       </div>
       <div class="bar-track"><div class="bar-fill" style="width:${s.score}%; background:${catColors[s.key]};"></div></div>
-      <p class="text-neutral-600 text-xs mt-1.5">${generateCategoryText(s.key, s.score, r.sign.name)}</p>
+      <p class="text-neutral-600 text-xs mt-1.5">${generateCategoryText(s.key, s.score, getStarSignName(signIdx))}</p>
     </div>
   `).join('');
 
@@ -2521,14 +3501,14 @@ function renderResult(r, today) {
   const ip = r.interpersonal;
   document.getElementById('interpersonalContent').innerHTML = `
     <div class="mb-4 p-4 rounded-lg" style="background:#080f08; border:1px solid #0f1f0f;">
-      <p class="text-xs text-neutral-500 mb-2 tracking-wider">宜近</p>
+      <p class="text-xs text-neutral-500 mb-2 tracking-wider">${t('result.close_to')}</p>
       <div class="flex flex-wrap gap-1.5">
         ${ip.good.map(t => `<span class="chip-green text-xs px-2.5 py-1 rounded-full">${t}</span>`).join('')}
       </div>
       <p class="text-neutral-600 text-xs mt-2">${ip.goodReason}</p>
     </div>
     <div class="p-4 rounded-lg" style="background:#0f0c08; border:1px solid #1f180f;">
-      <p class="text-xs text-neutral-500 mb-2 tracking-wider">宜远</p>
+      <p class="text-xs text-neutral-500 mb-2 tracking-wider">${t('result.avoid')}</p>
       <div class="flex flex-wrap gap-1.5">
         ${ip.bad.map(t => `<span class="chip-amber text-xs px-2.5 py-1 rounded-full">${t}</span>`).join('')}
       </div>
@@ -2543,11 +3523,11 @@ function renderResult(r, today) {
     </div>
     <div class="py-3 rounded-lg" style="background:#0a0a0a; border:1px solid #141414;">
       <p class="text-xl text-neutral-200 font-light">${r.lucky.num}</p>
-      <p class="text-xs text-neutral-600">数字</p>
+      <p class="text-xs text-neutral-600">${t('result.lucky_number')}</p>
     </div>
     <div class="py-3 rounded-lg" style="background:#0a0a0a; border:1px solid #141414;">
       <p class="text-xl text-neutral-200 font-light">${r.lucky.dir}</p>
-      <p class="text-xs text-neutral-600">方位</p>
+      <p class="text-xs text-neutral-600">${t('result.lucky_direction')}</p>
     </div>`;
 
   // 五行
@@ -2568,7 +3548,7 @@ function renderResult(r, today) {
   // 分享数据
   document.getElementById('shareDate').textContent = document.getElementById('reportDate').textContent;
   document.getElementById('shareScore').textContent = r.compositeScore;
-  document.getElementById('shareLabel').textContent = r.level;
+  document.getElementById('shareLabel').textContent = r.levelEn;
   document.getElementById('shareSummary').textContent = r.summary.replace(/"/g, '');
 }
 
@@ -2608,8 +3588,8 @@ function splitTextAnimate(el, text, delayMs, className) {
 }
 
 (function initSplitTitles() {
-  splitTextAnimate(document.getElementById('splitTitle'), '今日运势分析器', 80);
-  splitTextAnimate(document.getElementById('splitSubtitle'), '星座 × 传统命理 · 每日运势早知道', 35);
+  splitTextAnimate(document.getElementById('splitTitle'), t('login.title'), 80);
+  splitTextAnimate(document.getElementById('splitSubtitle'), t('login.subtitle'), 35);
 })();
 
 // 全局错误边界——防白屏
@@ -2685,6 +3665,21 @@ function quickLoginFill(username) {
   showView('loginView');
 })();
 
+// 初始化 i18n
+(function initI18n() {
+  // Set locale selectors to current value
+  var sel = document.getElementById('editLocale');
+  if (sel) sel.value = currentLocale();
+  var sel2 = document.getElementById('inputLocale');
+  if (sel2) sel2.value = currentLocale();
+  // Apply translations to static HTML
+  applyStaticTexts();
+  // Set html lang
+  document.documentElement.lang = currentLocale() === 'en' ? 'en' : 'zh-CN';
+  // Set title
+  document.title = t('login.title');
+})();
+
 // 兜底事件绑定——已移除，改用 onsubmit
 // form 直接用 onsubmit="return handleXxx(event)" 单次绑定
 
@@ -2695,8 +3690,8 @@ document.getElementById('randomBtn').addEventListener('click', () => {
   document.getElementById('birthday').value = `${year}-${month}-${day}`;
   document.getElementById('birthtime').value = `${String(6 + Math.floor(Math.random() * 16)).padStart(2, '0')}:${String(Math.floor(Math.random() * 60)).padStart(2, '0')}`;
   const btn = document.getElementById('randomBtn');
-  btn.textContent = '已生成'; btn.style.borderColor = '#444'; btn.style.color = '#fff';
-  setTimeout(() => { btn.textContent = '随机体验'; btn.style.borderColor = '#1a1a1a'; btn.style.color = '#999'; }, 1500);
+  btn.textContent = t('input.btn_generated'); btn.style.borderColor = '#444'; btn.style.color = '#fff';
+  setTimeout(() => { btn.textContent = t('input.btn_random'); btn.style.borderColor = '#1a1a1a'; btn.style.color = '#999'; }, 1500);
 });
 
 var llmGuide = document.getElementById('llmGuideModal');
